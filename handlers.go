@@ -183,6 +183,16 @@ func handleModifierIntegerUnit(tokens []Token) (*ParsedDateSlots, error) {
 	}, nil
 }
 
+// handleModifierIntegerUnitIntegerUnit handles: MODIFIER INTEGER UNIT INTEGER UNIT
+// Example: "hace 1 hora y 10 minutos" (Spanish: 1 hour and 10 minutes ago)
+// This is the modifier-first compound form used by many non-English languages.
+func handleModifierIntegerUnitIntegerUnit(tokens []Token) (*ParsedDateSlots, error) {
+	toks := filterFillers(tokens)
+	sign := int(toks[0].Value.(Modifier))
+	secs, period := sumTwoUnits(toks, 1)
+	return &ParsedDateSlots{DeltaSeconds: new(secs * sign), Period: period}, nil
+}
+
 // handleWeekdayDirection handles: WEEKDAY DIRECTION
 // Example: "lunes próximo" (Spanish: next Monday), "lundi prochain" (French: next Monday)
 // This is the weekday-first word order used by many non-English languages.
@@ -279,6 +289,48 @@ func handlePrepIntegerUnit(tokens []Token) (*ParsedDateSlots, error) {
 		DeltaSeconds: new(n * secs),
 		Period:       period,
 	}, nil
+}
+
+// sumTwoUnits sums two adjacent INTEGER UNIT pairs starting at toks[idx]
+// and returns the total seconds and the finer of the two periods.
+// toks must be already filtered (no FILLER tokens).
+func sumTwoUnits(toks []Token, idx int) (secs int, period Period) {
+	n1 := toks[idx].Value.(int)
+	p1 := toks[idx+1].Value.(Period)
+	n2 := toks[idx+2].Value.(int)
+	p2 := toks[idx+3].Value.(Period)
+	secs = n1*periodToSeconds[p1] + n2*periodToSeconds[p2]
+	if periodToSeconds[p1] < periodToSeconds[p2] {
+		period = p1
+	} else {
+		period = p2
+	}
+	return
+}
+
+// handlePrepIntegerUnitIntegerUnit handles: PREP INTEGER UNIT INTEGER UNIT
+// Example: "in 1 hour and 10 minutes"
+func handlePrepIntegerUnitIntegerUnit(tokens []Token) (*ParsedDateSlots, error) {
+	toks := filterFillers(tokens)
+	secs, period := sumTwoUnits(toks, 1)
+	return &ParsedDateSlots{DeltaSeconds: new(secs), Period: period}, nil
+}
+
+// handleIntegerUnitIntegerUnit handles: INTEGER UNIT INTEGER UNIT
+// Example: "1 hour and 10 minutes" — implied future.
+func handleIntegerUnitIntegerUnit(tokens []Token) (*ParsedDateSlots, error) {
+	toks := filterFillers(tokens)
+	secs, period := sumTwoUnits(toks, 0)
+	return &ParsedDateSlots{DeltaSeconds: new(secs), Period: period}, nil
+}
+
+// handleIntegerUnitIntegerUnitModifier handles: INTEGER UNIT INTEGER UNIT MODIFIER
+// Example: "1 hour and 10 minutes ago"
+func handleIntegerUnitIntegerUnitModifier(tokens []Token) (*ParsedDateSlots, error) {
+	toks := filterFillers(tokens)
+	secs, period := sumTwoUnits(toks, 0)
+	sign := int(toks[4].Value.(Modifier))
+	return &ParsedDateSlots{DeltaSeconds: new(secs * sign), Period: period}, nil
 }
 
 // handlePrepDirectionIntegerUnit handles: PREP DIRECTION INTEGER UNIT

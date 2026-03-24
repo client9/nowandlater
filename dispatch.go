@@ -67,18 +67,22 @@ var handlers = map[string]Handler{
 	"YEAR": handleYear,
 
 	// Relative deltas
-	"INTEGER UNIT":                 handleIntegerUnit,         // "4 hours", "3 días" — implied future
-	"DECIMAL UNIT":                 handleDecimalUnit,         // "3.5 days", "1.5 horas" — implied future
-	"PREP DECIMAL UNIT":            handlePrepDecimalUnit,     // "in 1.5 hours"
-	"DECIMAL UNIT MODIFIER":        handleDecimalUnitModifier, // "1.5 hours ago"
-	"MODIFIER DECIMAL UNIT":        handleModifierDecimalUnit, // "hace 1.5 días"
-	"INTEGER UNIT MODIFIER":        handleRelativeDelta,
-	"INTEGER UNIT MODIFIER ANCHOR": handleRelativeDeltaAnchor,
-	"MODIFIER INTEGER UNIT":        handleModifierIntegerUnit, // "hace 3 días" word order
-	"PREP INTEGER UNIT":            handlePrepIntegerUnit,
-	"PREP DIRECTION INTEGER UNIT":  handlePrepDirectionIntegerUnit,
-	"PREP UNIT":                    handlePrepUnit,     // "in a week", "in an hour"
-	"UNIT MODIFIER":                handleUnitModifier, // "a week ago"
+	"INTEGER UNIT":                       handleIntegerUnit,                    // "4 hours", "3 días" — implied future
+	"INTEGER UNIT INTEGER UNIT":          handleIntegerUnitIntegerUnit,         // "1 hour and 10 minutes"
+	"INTEGER UNIT INTEGER UNIT MODIFIER": handleIntegerUnitIntegerUnitModifier, // "1 hour and 10 minutes ago"
+	"DECIMAL UNIT":                       handleDecimalUnit,                    // "3.5 days", "1.5 horas" — implied future
+	"PREP DECIMAL UNIT":                  handlePrepDecimalUnit,                // "in 1.5 hours"
+	"DECIMAL UNIT MODIFIER":              handleDecimalUnitModifier,            // "1.5 hours ago"
+	"MODIFIER DECIMAL UNIT":              handleModifierDecimalUnit,            // "hace 1.5 días"
+	"INTEGER UNIT MODIFIER":              handleRelativeDelta,
+	"INTEGER UNIT MODIFIER ANCHOR":       handleRelativeDeltaAnchor,
+	"MODIFIER INTEGER UNIT":              handleModifierIntegerUnit,            // "hace 3 días" word order
+	"MODIFIER INTEGER UNIT INTEGER UNIT": handleModifierIntegerUnitIntegerUnit, // "hace 1 hora y 10 minutos"
+	"PREP INTEGER UNIT":                  handlePrepIntegerUnit,
+	"PREP INTEGER UNIT INTEGER UNIT":     handlePrepIntegerUnitIntegerUnit, // "in 1 hour and 10 minutes"
+	"PREP DIRECTION INTEGER UNIT":        handlePrepDirectionIntegerUnit,
+	"PREP UNIT":                          handlePrepUnit,     // "in a week", "in an hour"
+	"UNIT MODIFIER":                      handleUnitModifier, // "a week ago"
 
 	// Weekday-first word order: "lunes próximo", "lundi prochain"
 	"WEEKDAY DIRECTION": handleWeekdayDirection,

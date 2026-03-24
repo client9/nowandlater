@@ -42,6 +42,13 @@ var spanishCases = []struct {
 	{"hace 2 horas", u(2026, 3, 22, 8, 0, 0)},
 	{"hace 1 quincena", u(2026, 3, 8, 10, 0, 0)}, // −14 days
 
+	// --- Compound durations ---
+	{"en 1 hora y 10 minutos", u(2026, 3, 22, 11, 10, 0)},
+	{"1 hora y 10 minutos", u(2026, 3, 22, 11, 10, 0)},
+	{"1 hora y 10 minutos atrás", u(2026, 3, 22, 8, 50, 0)},
+	{"hace 1 hora y 10 minutos", u(2026, 3, 22, 8, 50, 0)},
+	{"dentro de 2 días y 3 horas", u(2026, 3, 24, 13, 0, 0)},
+
 	// --- Relative delta: prep-first word order ---
 	{"en 3 días", u(2026, 3, 25, 10, 0, 0)},
 	{"en 2 horas", u(2026, 3, 22, 12, 0, 0)},

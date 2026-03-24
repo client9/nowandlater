@@ -132,6 +132,13 @@ var parseCases = []parseCase{
 	{input: "2 hours after today", delta: new(7200), period: PeriodHour},
 	{input: "in 2 days", delta: new(172800), period: PeriodDay},
 	{input: "in next 2 days", delta: new(172800), period: PeriodDay},
+
+	// --- Compound durations ---
+	{input: "in 1 hour and 10 minutes", delta: new(4200), period: PeriodMinute},
+	{input: "1 hour and 10 minutes", delta: new(4200), period: PeriodMinute},
+	{input: "1 hour and 10 minutes ago", delta: new(-4200), period: PeriodMinute},
+	{input: "in 2 days and 3 hours", delta: new(183600), period: PeriodHour},
+	{input: "in 1 day and 30 minutes", delta: new(88200), period: PeriodMinute},
 	{input: "in 3 hours", delta: new(10800), period: PeriodHour},
 	{input: "in a week", delta: new(604800), period: PeriodWeek}, // "a" is FILLER
 	{input: "in an hour", delta: new(3600), period: PeriodHour},  // "an" is FILLER
