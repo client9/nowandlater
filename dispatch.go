@@ -46,6 +46,7 @@ var handlers = map[string]Handler{
 
 	// Calendar date: month-name forms
 	"MONTH INTEGER":                      handleMonthDay,
+	"MONTH INTEGER TIME":                 handleMonthIntegerTime, // Go Stamp format
 	"INTEGER MONTH":                      handleDayMonth,
 	"MONTH INTEGER YEAR":                 handleMonthDayYear,
 	"MONTH YEAR":                         handleMonthYear,

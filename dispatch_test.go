@@ -82,6 +82,10 @@ var parseCases = []parseCase{
 	{input: "January 21st", month: 1, day: 21, period: PeriodDay},
 	{input: "3rd of January", month: 1, day: 3, period: PeriodDay},
 	{input: "Dec 3rd 2026", year: 2026, month: 12, day: 3, period: PeriodDay},
+	// Go Stamp format: "Jan _2 15:04:05" (MONTH INTEGER TIME, no year)
+	{input: "Mar  2 15:04:05", month: 3, day: 2, hour: new(15), minute: new(4), period: PeriodSecond},
+	{input: "Jan 15 09:30:00", month: 1, day: 15, hour: new(9), minute: new(30), period: PeriodSecond},
+	{input: "Dec  1 00:00:00", month: 12, day: 1, hour: new(0), minute: new(0), period: PeriodSecond},
 	{input: "December 2026", year: 2026, month: 12, period: PeriodMonth},
 	{input: "Dec 2026", year: 2026, month: 12, period: PeriodMonth},
 	{input: "2026 December", year: 2026, month: 12, period: PeriodMonth},

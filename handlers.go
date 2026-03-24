@@ -128,6 +128,23 @@ func handleMonthDay(tokens []Token) (*ParsedDateSlots, error) {
 	}, nil
 }
 
+// handleMonthIntegerTime handles: MONTH INTEGER TIME
+// Example: "Mar  2 15:04:05" (Go Stamp format)
+// No year present; resolver uses the current year.
+func handleMonthIntegerTime(tokens []Token) (*ParsedDateSlots, error) {
+	toks := filterFillers(tokens)
+	// [0]=MONTH, [1]=INTEGER (day), [2]=TIME
+	h, m, s := mustParseTime(toks[2].Value.(string))
+	return &ParsedDateSlots{
+		Month:  int(toks[0].Value.(Month)),
+		Day:    toks[1].Value.(int),
+		Hour:   h,
+		Minute: m,
+		Second: s,
+		Period: timePeriod(toks[2].Value.(string)),
+	}, nil
+}
+
 // handleDayMonth handles: INTEGER MONTH
 // Example: "3rd of January" (fillers already dropped in signature)
 func handleDayMonth(tokens []Token) (*ParsedDateSlots, error) {
