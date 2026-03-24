@@ -91,7 +91,7 @@ var defaultTimezones = map[string]*time.Location{
 //  1. lang.Timezones (caller-supplied overrides)
 //  2. defaultTimezones (built-in abbreviation table)
 //  3. numeric offset parsing (+HH, +HHMM, +HH:MM and negative equivalents)
-func parseTimezoneValue(value string, lang Lang) (*time.Location, error) {
+func parseTimezoneValue(value string, lang *Lang) (*time.Location, error) {
 	if lang.Timezones != nil {
 		if loc, ok := lang.Timezones[value]; ok {
 			return loc, nil

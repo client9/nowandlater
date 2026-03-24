@@ -85,20 +85,23 @@ type Token struct {
 // Tokenize preprocesses and normalizes input, splits on whitespace, classifies
 // each chunk, and returns the resulting token slice.
 // FILLER tokens are included; callers that build signatures should skip them.
-func (lang Lang) Tokenize(input string) []Token {
+func (lang *Lang) Tokenize(input string) []Token {
 	normalized := normalize(preprocess(input, lang), lang)
 	chunks := strings.Fields(normalized)
 
-	// Compute the maximum phrase length (in words) by scanning Words for
-	// space-containing keys. Multi-word keys are matched longest-first.
-	maxPhraseWords := 0
-	for key := range lang.Words {
-		if n := strings.Count(key, " ") + 1; n > maxPhraseWords {
-			maxPhraseWords = n
+	// Compute the maximum phrase length (in words) lazily on first call.
+	// The result is cached in lang.maxPhraseWords via sync.Once and reused on
+	// subsequent calls. Words never changes after construction, so this is safe.
+	lang.phraseOnce.Do(func() {
+		for key := range lang.Words {
+			if n := strings.Count(key, " ") + 1; n > lang.maxPhraseWords {
+				lang.maxPhraseWords = n
+			}
 		}
-	}
+	})
+	maxPhraseWords := lang.maxPhraseWords
 
-	var tokens []Token
+	tokens := make([]Token, 0, len(chunks))
 	i := 0
 	for i < len(chunks) {
 		// Phrase match: try longest possible span first, down to 2 words.
@@ -143,18 +146,22 @@ func (lang Lang) Tokenize(input string) []Token {
 // INTEGER2 is folded into INTEGER: the leading-zero distinction is not relevant
 // to handler logic (handlers read the pre-parsed int value, not the raw string).
 func Signature(tokens []Token) string {
-	parts := make([]string, 0, len(tokens))
+	var b strings.Builder
+	b.Grow(len(tokens) * 8) // avg token name ≤ 8 chars (WEEKDAY=7, INTEGER=7, UNIT=4…)
 	for _, t := range tokens {
 		if t.Type == TokenFiller {
 			continue
 		}
-		name := t.Type.String()
-		if t.Type == TokenInteger2 {
-			name = "INTEGER"
+		if b.Len() > 0 {
+			b.WriteByte(' ')
 		}
-		parts = append(parts, name)
+		if t.Type == TokenInteger2 {
+			b.WriteString("INTEGER")
+		} else {
+			b.WriteString(t.Type.String())
+		}
 	}
-	return strings.Join(parts, " ")
+	return b.String()
 }
 
 // ---------------------------------------------------------------------------
@@ -172,7 +179,7 @@ func Signature(tokens []Token) string {
 //
 // Time-word and number-word substitutions are no longer done here; they are
 // expressed as Words entries and handled by the tokenizer's phrase/word lookup.
-func preprocess(s string, lang Lang) string {
+func preprocess(s string, lang *Lang) string {
 	s = strings.ToLower(s)
 
 	// ISO 8601 T separator: "2026-12-04T09:30:00" → "2026-12-04 09:30:00".
@@ -244,10 +251,8 @@ func preprocessTimeDot(s string) string {
 //   - expands dotted abbreviations (A.M. → AM, Mon. → Mon)
 //   - collapses whitespace
 //   - lowercases (word lookup is case-insensitive; we lowercase here once)
-func normalize(s string, lang Lang) string {
+func normalize(s string, lang *Lang) string {
 	// Work through the string byte by byte building the output.
-	// We lowercase everything; word table keys are already lowercase.
-	s = strings.ToLower(s)
 
 	var b strings.Builder
 	b.Grow(len(s))
@@ -338,7 +343,7 @@ func normalize(s string, lang Lang) string {
 // Word classification
 // ---------------------------------------------------------------------------
 
-func classifyWord(w string, lang Lang) Token {
+func classifyWord(w string, lang *Lang) Token {
 	if entry, ok := lang.Words[w]; ok {
 		return Token(entry)
 	}
@@ -358,7 +363,7 @@ func classifyWord(w string, lang Lang) Token {
 // classifyNumber handles a chunk that begins with a digit.
 // It may return more than one token (e.g. "3pm" → INTEGER + AMPM,
 // "2026-12-04" → YEAR + INTEGER + INTEGER, "7:15pm" → TIME + AMPM).
-func classifyNumber(chunk string, lang Lang) []Token {
+func classifyNumber(chunk string, lang *Lang) []Token {
 	// Time with glued numeric timezone: "09:30:00-07:00", "9:30+05:30"
 	if toks := splitTimeAndZone(chunk); toks != nil {
 		return toks
@@ -455,7 +460,7 @@ func classifyBareInteger(s string) Token {
 //     all 1–3 digit numeric pieces become INTEGER (not INTEGER2).
 //   - If no YEAR or MONTH token is found among the pieces, the result is
 //     ambiguous (unknown day/month order) → returns DATE_FRAGMENT.
-func splitCompoundDate(chunk string, lang Lang) []Token {
+func splitCompoundDate(chunk string, lang *Lang) []Token {
 	sep := byte(0)
 	for i := 0; i < len(chunk); i++ {
 		c := chunk[i]

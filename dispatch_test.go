@@ -239,20 +239,20 @@ func TestDateOrder(t *testing.T) {
 	dmyLang := Lang{Words: englishWords, OrdinalSuffixes: English.OrdinalSuffixes, DateOrder: DMY}
 
 	cases := []struct {
-		lang  Lang
+		lang  *Lang
 		input string
 		month int
 		day   int
 	}{
 		// MDY (English default): 02/03/2016 → Feb 3
-		{English, "02/03/2016", 2, 3},
-		{English, "12-04-2026", 12, 4},
+		{&English, "02/03/2016", 2, 3},
+		{&English, "12-04-2026", 12, 4},
 		// DMY: 02/03/2016 → Mar 2
-		{dmyLang, "02/03/2016", 3, 2},
-		{dmyLang, "04-12-2026", 12, 4},
+		{&dmyLang, "02/03/2016", 3, 2},
+		{&dmyLang, "04-12-2026", 12, 4},
 		// DMY: Spanish
-		{Spanish, "02/03/2016", 3, 2},
-		{Spanish, "04/12/2026", 12, 4},
+		{&Spanish, "02/03/2016", 3, 2},
+		{&Spanish, "04/12/2026", 12, 4},
 	}
 	for _, tc := range cases {
 		t.Run(tc.input, func(t *testing.T) {

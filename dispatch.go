@@ -132,7 +132,7 @@ var handlers = map[string]Handler{
 //  3. global handlers map (language-neutral fallback)
 //
 // Returns nil if no handler is found.
-func (lang Lang) resolveHandler(sig string) Handler {
+func (lang *Lang) resolveHandler(sig string) Handler {
 	if h, ok := lang.Handlers[sig]; ok {
 		return h
 	}
@@ -148,7 +148,7 @@ func (lang Lang) resolveHandler(sig string) Handler {
 // dateOrderHandler returns a handler for signatures that are sensitive to
 // lang.DateOrder (ambiguous all-numeric dates). Returns nil for all other
 // signatures — those fall through to the global handlers map.
-func (lang Lang) dateOrderHandler(sig string) Handler {
+func (lang *Lang) dateOrderHandler(sig string) Handler {
 	base := makeIntegerIntegerYearHandler(lang.DateOrder)
 	switch sig {
 	case "INTEGER INTEGER YEAR":
@@ -166,7 +166,7 @@ func (lang Lang) dateOrderHandler(sig string) Handler {
 // Parse tokenizes input, computes its signature, and dispatches to the
 // matching handler. It returns ErrUnknownSignature if no handler is registered
 // for the input's signature.
-func (lang Lang) Parse(input string) (*ParsedDateSlots, error) {
+func (lang *Lang) Parse(input string) (*ParsedDateSlots, error) {
 	tokens := lang.Tokenize(input)
 
 	// Strip a trailing TIMEZONE token before signature dispatch.

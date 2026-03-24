@@ -1,6 +1,9 @@
 package nowandlater
 
-import "time"
+import (
+	"sync"
+	"time"
+)
 
 // DateOrder specifies how to interpret ambiguous all-numeric dates like
 // "02/03/2016" where month and day cannot be inferred from the tokens alone.
@@ -86,4 +89,9 @@ type Lang struct {
 	//   "WEEKDAY DIRECTION" → handleWeekdayDirection  (French "lundi prochain")
 	// Leave nil to use only the global handlers (correct for English).
 	Handlers map[string]Handler
+
+	// phraseOnce guards one-time computation of maxPhraseWords.
+	// Lang must not be copied after first use (same restriction as sync.Mutex).
+	phraseOnce     sync.Once
+	maxPhraseWords int
 }
