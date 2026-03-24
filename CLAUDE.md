@@ -19,7 +19,7 @@ input string
     │    they are handled by the tokenizer's Words map lookup below)
     │
     ▼ normalize(s, lang)
-    │   • Lowercases, strips OrdinalSuffixes ("3rd"→"3")
+    │   • Strips OrdinalSuffixes ("3rd"→"3")
     │   • Expands dotted abbreviations ("a.m."→"am")
     │   • Collapses whitespace/commas to single spaces
     │
@@ -196,7 +196,7 @@ three variants in `dispatch.go`. This avoids duplicating date+time handler logic
 ## Deferred / planned work
 
 See `TODO.md` for the full list. Highlights:
-- DST-aware timezone resolution
-- "morning/afternoon/evening" time-of-day ranges
-- "start/end of week/month/year"
+- "morning/afternoon/evening" time-of-day ranges (semantics unclear)
+- "start/end of week/month/year" (needs new `Anchor` field design)
 - Unix timestamp (10-digit integer)
+- 2-digit year inference
