@@ -107,6 +107,19 @@ func parseAMPM(s string) AMPM {
 	return AMPMPm
 }
 
+// expand2DigitYear converts a 2-digit year to a 4-digit year using the
+// RFC 2822 rule: 00–49 → 2000+y, 50–99 → 1900+y.
+// Values ≥ 100 are returned unchanged (already a full year).
+func expand2DigitYear(y int) int {
+	if y >= 100 {
+		return y
+	}
+	if y < 50 {
+		return 2000 + y
+	}
+	return 1900 + y
+}
+
 // applyAMPM converts a 12-hour clock value to 24-hour using an AMPM token value.
 // Handles the edge cases: 12 AM = 0 (midnight), 12 PM = 12 (noon).
 func applyAMPM(hour int, ampm AMPM) int {

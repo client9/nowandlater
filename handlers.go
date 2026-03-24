@@ -419,6 +419,76 @@ func handleWeekdayIntegerMonthYearTime(tokens []Token) (*ParsedDateSlots, error)
 	}, nil
 }
 
+// handleIntegerMonthIntegerTime handles: INTEGER MONTH INTEGER TIME
+// Examples: "02 Jan 06 15:04 MST" (RFC822), "22 Mar 26 10:04 -0700" (RFC822Z)
+// The second INTEGER is a 2-digit year expanded via the RFC 2822 rule.
+func handleIntegerMonthIntegerTime(tokens []Token) (*ParsedDateSlots, error) {
+	toks := filterFillers(tokens)
+	// [0]=INTEGER (day), [1]=MONTH, [2]=INTEGER (2-digit year), [3]=TIME
+	h, m, s := mustParseTime(toks[3].Value.(string))
+	return &ParsedDateSlots{
+		Year:   expand2DigitYear(toks[2].Value.(int)),
+		Month:  int(toks[1].Value.(Month)),
+		Day:    toks[0].Value.(int),
+		Hour:   h,
+		Minute: m,
+		Second: s,
+		Period: timePeriod(toks[3].Value.(string)),
+	}, nil
+}
+
+// handleWeekdayIntegerMonthIntegerTime handles: WEEKDAY INTEGER MONTH INTEGER TIME
+// Example: "Monday, 02-Jan-06 15:04:05 MST" (RFC850)
+// The weekday is informational and is ignored. Second INTEGER is a 2-digit year.
+func handleWeekdayIntegerMonthIntegerTime(tokens []Token) (*ParsedDateSlots, error) {
+	toks := filterFillers(tokens)
+	// [0]=WEEKDAY (ignored), [1]=INTEGER (day), [2]=MONTH, [3]=INTEGER (2-digit year), [4]=TIME
+	h, m, s := mustParseTime(toks[4].Value.(string))
+	return &ParsedDateSlots{
+		Year:   expand2DigitYear(toks[3].Value.(int)),
+		Month:  int(toks[2].Value.(Month)),
+		Day:    toks[1].Value.(int),
+		Hour:   h,
+		Minute: m,
+		Second: s,
+		Period: timePeriod(toks[4].Value.(string)),
+	}, nil
+}
+
+// handleWeekdayMonthIntegerYear handles: WEEKDAY MONTH INTEGER YEAR
+// The weekday is informational and is ignored.
+// Example: "Mon Jan 2 2026"
+func handleWeekdayMonthIntegerYear(tokens []Token) (*ParsedDateSlots, error) {
+	toks := filterFillers(tokens)
+	// [0]=WEEKDAY (ignored), [1]=MONTH, [2]=INTEGER (day), [3]=YEAR
+	return &ParsedDateSlots{
+		Year:   toks[3].Value.(int),
+		Month:  int(toks[1].Value.(Month)),
+		Day:    toks[2].Value.(int),
+		Period: PeriodDay,
+	}, nil
+}
+
+// handleWeekdayMonthIntegerTimeYear handles: WEEKDAY MONTH INTEGER TIME YEAR
+// The weekday is informational and is ignored.
+// Examples: "Mon Jan  2 15:04:05 2026" (ANSIC), "Mon Jan  2 15:04:05 MST 2026" (UnixDate),
+//
+//	"Mon Jan 02 15:04:05 -0700 2026" (RubyDate)
+func handleWeekdayMonthIntegerTimeYear(tokens []Token) (*ParsedDateSlots, error) {
+	toks := filterFillers(tokens)
+	// [0]=WEEKDAY (ignored), [1]=MONTH, [2]=INTEGER (day), [3]=TIME, [4]=YEAR
+	h, m, s := mustParseTime(toks[3].Value.(string))
+	return &ParsedDateSlots{
+		Year:   toks[4].Value.(int),
+		Month:  int(toks[1].Value.(Month)),
+		Day:    toks[2].Value.(int),
+		Hour:   h,
+		Minute: m,
+		Second: s,
+		Period: timePeriod(toks[3].Value.(string)),
+	}, nil
+}
+
 // handleYear handles: YEAR
 // Example: "2026"
 func handleYear(tokens []Token) (*ParsedDateSlots, error) {

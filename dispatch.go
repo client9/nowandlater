@@ -45,13 +45,17 @@ var handlers = map[string]Handler{
 	"ANCHOR PREP INTEGER":      handleAnchorPrepInteger,
 
 	// Calendar date: month-name forms
-	"MONTH INTEGER":                   handleMonthDay,
-	"INTEGER MONTH":                   handleDayMonth,
-	"MONTH INTEGER YEAR":              handleMonthDayYear,
-	"MONTH YEAR":                      handleMonthYear,
-	"YEAR MONTH":                      handleYearMonth,
-	"WEEKDAY INTEGER MONTH YEAR":      handleWeekdayIntegerMonthYear,     // RFC 2822 date-only
-	"WEEKDAY INTEGER MONTH YEAR TIME": handleWeekdayIntegerMonthYearTime, // RFC 2822 full
+	"MONTH INTEGER":                      handleMonthDay,
+	"INTEGER MONTH":                      handleDayMonth,
+	"MONTH INTEGER YEAR":                 handleMonthDayYear,
+	"MONTH YEAR":                         handleMonthYear,
+	"YEAR MONTH":                         handleYearMonth,
+	"WEEKDAY INTEGER MONTH YEAR":         handleWeekdayIntegerMonthYear,        // RFC 2822 date-only
+	"WEEKDAY INTEGER MONTH YEAR TIME":    handleWeekdayIntegerMonthYearTime,    // RFC 2822 full
+	"WEEKDAY MONTH INTEGER YEAR":         handleWeekdayMonthIntegerYear,        // ANSIC date-only
+	"WEEKDAY MONTH INTEGER TIME YEAR":    handleWeekdayMonthIntegerTimeYear,    // ANSIC, UnixDate, RubyDate
+	"INTEGER MONTH INTEGER TIME":         handleIntegerMonthIntegerTime,        // RFC822, RFC822Z
+	"WEEKDAY INTEGER MONTH INTEGER TIME": handleWeekdayIntegerMonthIntegerTime, // RFC850
 
 	// Calendar date: numeric compound forms (all separators → same signature)
 	"YEAR INTEGER INTEGER": handleYearIntegerInteger,
@@ -173,17 +177,16 @@ func (lang *Lang) dateOrderHandler(sig string) Handler {
 func (lang *Lang) Parse(input string) (*ParsedDateSlots, error) {
 	tokens := lang.Tokenize(input)
 
-	// Strip a trailing TIMEZONE token before signature dispatch.
-	// Timezone is always a suffix so we can peel it off without affecting handlers.
+	// Strip any TIMEZONE token before signature dispatch.
+	// Timezone is a free-standing modifier that can appear in any position
+	// (trailing in most formats, but mid-sequence in UnixDate/RubyDate where
+	// the year follows the timezone). Handlers never index it.
 	var tzValue string
-	filtered := filterFillers(tokens)
-	if len(filtered) > 0 && filtered[len(filtered)-1].Type == TokenTimezone {
-		tzValue = filtered[len(filtered)-1].Value.(string)
-		for i := len(tokens) - 1; i >= 0; i-- {
-			if tokens[i].Type == TokenTimezone {
-				tokens = append(tokens[:i], tokens[i+1:]...)
-				break
-			}
+	for i := len(tokens) - 1; i >= 0; i-- {
+		if tokens[i].Type == TokenTimezone {
+			tzValue = tokens[i].Value.(string)
+			tokens = append(tokens[:i], tokens[i+1:]...)
+			break
 		}
 	}
 

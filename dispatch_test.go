@@ -197,6 +197,35 @@ var parseCases = []parseCase{
 	{input: "Mon, 02 Jan 2006", year: 2006, month: 1, day: 2, period: PeriodDay},
 	// Leading-zero bare day (INTEGER2 folded into INTEGER by Signature)
 	{input: "02 Jan 2026", year: 2026, month: 1, day: 2, period: PeriodDay},
+
+	// --- ANSIC / UnixDate / RubyDate (WEEKDAY MONTH INTEGER TIME YEAR ±TZ) ---
+	// Go ANSIC:    "Mon Jan _2 15:04:05 2006"
+	// Go UnixDate: "Mon Jan _2 15:04:05 MST 2006"
+	// Go RubyDate: "Mon Jan 02 15:04:05 -0700 2006"
+	{input: "Mon Jan  2 15:04:05 2006", year: 2006, month: 1, day: 2, hour: new(15), minute: new(4), period: PeriodSecond},
+	{input: "Sun Mar 22 10:00:00 2026", year: 2026, month: 3, day: 22, hour: new(10), minute: new(0), period: PeriodSecond},
+	{input: "Mon Jan  2 15:04:05 MST 2006", year: 2006, month: 1, day: 2, hour: new(15), minute: new(4), period: PeriodSecond},    // UnixDate
+	{input: "Sun Mar 22 10:00:00 UTC 2026", year: 2026, month: 3, day: 22, hour: new(10), minute: new(0), period: PeriodSecond},   // UnixDate
+	{input: "Mon Jan 02 15:04:05 -0700 2006", year: 2006, month: 1, day: 2, hour: new(15), minute: new(4), period: PeriodSecond},  // RubyDate
+	{input: "Sun Mar 22 10:00:00 +0530 2026", year: 2026, month: 3, day: 22, hour: new(10), minute: new(0), period: PeriodSecond}, // RubyDate
+	// Date-only variant
+	{input: "Mon Jan  2 2006", year: 2006, month: 1, day: 2, period: PeriodDay},
+	{input: "Sun Mar 22 2026", year: 2026, month: 3, day: 22, period: PeriodDay},
+
+	// --- RFC822 / RFC822Z (INTEGER MONTH INTEGER TIME, 2-digit year) ---
+	// Go RFC822:  "02 Jan 06 15:04 MST"
+	// Go RFC822Z: "02 Jan 06 15:04 -0700"
+	{input: "02 Jan 06 15:04 MST", year: 2006, month: 1, day: 2, hour: new(15), minute: new(4), period: PeriodMinute},
+	{input: "22 Mar 26 10:04 -0700", year: 2026, month: 3, day: 22, hour: new(10), minute: new(4), period: PeriodMinute},
+	{input: "15 Aug 99 08:30 UTC", year: 1999, month: 8, day: 15, hour: new(8), minute: new(30), period: PeriodMinute},   // 50–99 → 19xx
+	{input: "01 Jan 50 00:00 UTC", year: 1950, month: 1, day: 1, hour: new(0), minute: new(0), period: PeriodMinute},     // boundary: 50 → 1950
+	{input: "31 Dec 49 23:59 UTC", year: 2049, month: 12, day: 31, hour: new(23), minute: new(59), period: PeriodMinute}, // boundary: 49 → 2049
+
+	// --- RFC850 (WEEKDAY INTEGER MONTH INTEGER TIME, 2-digit year) ---
+	// Go RFC850: "Monday, 02-Jan-06 15:04:05 MST"
+	{input: "Monday, 02-Jan-06 15:04:05 MST", year: 2006, month: 1, day: 2, hour: new(15), minute: new(4), period: PeriodSecond},
+	{input: "Sunday, 22-Mar-26 10:00:00 UTC", year: 2026, month: 3, day: 22, hour: new(10), minute: new(0), period: PeriodSecond},
+	{input: "Friday, 15-Aug-99 08:30:00 MST", year: 1999, month: 8, day: 15, hour: new(8), minute: new(30), period: PeriodSecond}, // 50–99 → 19xx
 }
 
 func FuzzParse(f *testing.F) {
