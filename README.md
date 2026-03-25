@@ -19,6 +19,7 @@ import "github.com/client9/nowandlater"
 * Just code - No weird parser/generator langauge (ANTLR, PEG, Bison)
 * Fast - 500ns per call
 * Scalable - adding languages or rules has no additional performance cost.
+* MIT License - do whatever you want with it!
 
 ## How does it work?
 
@@ -33,9 +34,22 @@ Read the CLAUDE.md summary, but simply it:
 * The tokenization in step 1 handles 99% of the variations between different human languages.
 * It's data driven -- translate `lang_en.go` into whatever language, add a few special cases, and done.
 
+
+## Can it parse other human languages?
+
+Yes, fairly easily. Look at lang_en.go (English) or lang_es.go (Spanish). Translate that, run tests, perhaps add a handler. Done.
+
+## Is it fast?
+
+It can parse a date and time snippet in about 500ns.  Python's dateparser, takes about 1,000,000ns.  So that's 2000x faster.
+
+## Can it be ported to another (computer) lanaguge?
+
+Please do so!  It should be easy.  Let me know if you need help.
+
 ## Can't AI LLMs do this?
 
-Sorta.  In 2026, LLMs are good at converting a arbitrary text into date snippets
+Sorta.  In 2026, LLMs are good at extracting and converting an arbitrary text into date snippets:
 
 ```
 Tomorrow, let's get ice cream at 3pm"
@@ -51,7 +65,7 @@ but they are not very good at converting that to a standard time format or conve
 
 Also it's very slow (relative to converting locally).
 
-## Why?
+## What about other Go libraries?
 
 Assuming you need this functionality, the existing projects in Go are mostly abandoned or obsolete.  As of 2026:
 
@@ -64,7 +78,7 @@ Assuming you need this functionality, the existing projects in Go are mostly aba
 * [araddon/dateparse](https://github.com/araddon/dateparse) - last commit in 2021, more for fixed computer formats
 * [shadiestgoat/dateparse](https://github.com/shadiestgoat/dateparse) - last commit in 2024, fixed formats
 
-So Go needs something better.
+All (?) use regexp soup or some parser/generator.  Go needs something better.
 
 ## What about porting code from other prgramming langauges or libraries?
 
@@ -76,20 +90,7 @@ So Go needs something better.
 
 etc, etc.
 
-None are really good to port to Go.
-
-
-## Can it parse other human languages?
-
-Yes, fairly easily. Look at lang_en.go (English) or lang_es.go (Spanish). Translate that, run tests, perhaps add a handler. Done.
-
-## Is it fast?
-
-It can parse a date and time snippet in about 500ns.  Python's dateparser, takes about 1,000,000ns.  So that's 2000x faster.
-
-## Can it be ported to another (computer) lanaguge?
-
-Please do so!  It should be easy.  Let me know if you need help.
+None are really good to port to Go.  And it's hard to keep track up subsequent changes.
 
 ## Installation
 
