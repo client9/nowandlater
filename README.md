@@ -45,7 +45,7 @@ It can parse a date and time snippet in about 500ns.
 
 Python's dateparser, takes about 1,000,000ns. That's 2000x faster.
 
-Go's native time parser on a fixed format thats 20ns.  That's 25x slower.
+Go's native time parser on a fixed format in 20ns. That's 25x slower.
 
 
 ### Can it be ported to another (computer) lanaguge?
