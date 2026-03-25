@@ -5,7 +5,7 @@ clean:
 	rm -rf testdata
 
 fmt:
-	gofmt -w  .
+	gofmt -w -s .
 
 lint:
 	go vet ./...
