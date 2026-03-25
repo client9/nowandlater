@@ -7,6 +7,86 @@ date and time strings into `time.Time` values.
 import "github.com/client9/nowandlater"
 ```
 
+## What makes it different?
+
+* Simple to recognize new date, time, and duration expressions
+* Simple to add additional human languages
+* Simple to translate to other programming languages
+* No regular expressions
+* Fast - 500ns per call
+* Scalable - adding languages or rules has no additional performance cost.
+
+## How does it work?
+
+Read the CLAUDE.md summary, but simply it:
+
+* Turns input into a list of tokens, e.g. "Monday" --> { WEEKDAY, Monday }
+* The list of tokens is a "signature"
+* The signature is used to find a handler function using a map (i.e. hashmap).
+* The handler converts the Signature into a golang struct hold numeric values for day, month, hour, etc.   The handler func is normally a few lines long.
+* The struct is converted into go a `time.Time` object.
+
+* The tokenization in step 1 handles 99% of the variations between different human languages.
+* It's data driven -- translate `lang_en.go` into whatever language, add a few special cases, and done.
+
+## Can't AI LLMs do this?
+
+Sorta.  In 2026, LLMs are good at converting a arbitrary text into date snippets
+
+```
+Tomorrow, let's get ice cream at 3pm"
+```
+
+into
+
+```
+tomorrow at 3pm
+```
+
+but they are not very good at converting that to a standard time format or converting to a native datetime object.  There are a lot of off by one errors, time zone issues, and confusion.
+
+Also it's very slow (relative to converting locally).
+
+## Why?
+
+Assuming you need this functionality, the existing projects in Go are mostly abandoned or obsolete.  As of 2026:
+
+* [go-anytime](https://github.com/ijt/go-anytime) - last commit in 2023, English only
+* [naturaltime](https://github.com/Sho0pi/naturaltime) - last commit in 2025, runs a javacript interpreter (!!) to execute[chrononode](https://github.com/wanasit/chrono/tree/master) which is pile of regexp.
+* [when](https://github.com/olebedev/when) - last commit in 2025, complicated rule set using regexp.
+* [go-naturaldate](https://github.com/tj/go-naturaldate) - last commit in 2020, parser/generator PEG based.  English only
+* [naturaldate](https://github.com/anatol/naturaldate.go) - a fork of previous
+* [go-dateparser](https://github.com/markusmobius/go-dateparser) - direct port of python's dateparser, last commit 1 year, has not kept up to date
+* [araddon/dateparse](https://github.com/araddon/dateparse) - last commit in 2021, more for fixed computer formats
+* [shadiestgoat/dateparse](https://github.com/shadiestgoat/dateparse] - last commit in 2024, fixed formats
+
+So Go needs something better.
+
+## What about porting code from other prgramming langauges or libraries?
+
+* Python [dateparser](https://github.com/scrapinghub/dateparser)  - actively maintained, regexp based.
+* Typescript [chrononode](https://github.com/wanasit/chrono/tree/master) - complicated, but has a lot of interesting features.
+* Ruby [chronic](https://github.com/mojombo/chronic) - English only, last commit in 2023.
+* Java [natty](https://github.com/joestelmach/natty) - Last commit in 2017 - English only - parser/generator
+* GNU date has some interesting date parsing abilities
+
+etc, etc.
+
+None are really good to port to Go.
+
+
+## Can it parse other human languages?
+
+Yes, fairly easily. Look at lang_en.go (English) or lang_es.go (Spanish). Translate that, run tests, perhaps add a handler. Done.
+
+## Is it fast?
+
+It can parse a date and time snippet in about 500ns.  Python's dateparser, takes about 1,000,000ns.  So that's 2000x faster.
+
+## Can it be ported to another (computer) lanaguge?
+
+Please do so!  It should be easy.  Let me know if you need help.
+
 ## Installation
 
 ```
@@ -99,6 +179,7 @@ are also supported.
 |---|---|
 | `nowandlater.English` | English (default) |
 | `nowandlater.Spanish` | Spanish / Español |
+| `nowandlater.Japanese` | Japanese / 日本語 |
 
 ```go
 p := nowandlater.Parser{Lang: &nowandlater.Spanish}
