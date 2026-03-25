@@ -1,9 +1,9 @@
 ![Now-and-Later-Wrapper-Small](https://github.com/user-attachments/assets/6095d42b-a443-4363-8b73-29cbdf297725)
 
-# nowandlater
+# nowandlater - fast natural date and time parsing
+
 A self-contained, zero-dependency Go library for parsing natural-language
 date and time strings into `time.Time` values.
-
 
 
 ```go
@@ -16,6 +16,7 @@ import "github.com/client9/nowandlater"
 * Simple to add additional human languages
 * Simple to translate to other programming languages
 * No regular expressions
+* Just code - No weird parser/generator langauge (ANTLR, PEG, Bison)
 * Fast - 500ns per call
 * Scalable - adding languages or rules has no additional performance cost.
 
@@ -61,7 +62,7 @@ Assuming you need this functionality, the existing projects in Go are mostly aba
 * [naturaldate](https://github.com/anatol/naturaldate.go) - a fork of previous
 * [go-dateparser](https://github.com/markusmobius/go-dateparser) - direct port of python's dateparser, last commit 1 year, has not kept up to date
 * [araddon/dateparse](https://github.com/araddon/dateparse) - last commit in 2021, more for fixed computer formats
-* [shadiestgoat/dateparse](https://github.com/shadiestgoat/dateparse] - last commit in 2024, fixed formats
+* [shadiestgoat/dateparse](https://github.com/shadiestgoat/dateparse) - last commit in 2024, fixed formats
 
 So Go needs something better.
 
