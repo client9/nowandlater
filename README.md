@@ -26,7 +26,7 @@ import "github.com/client9/nowandlater"
 
 Read the CLAUDE.md summary, but simply it:
 
-* Turns input into a list of tokens, e.g. "Monday" --> `{ WEEKDAY, Monday }`.  This 99% of variations between different human languages.
+* Turns input into a list of tokens, e.g. "Monday" --> `{ WEEKDAY, Monday }`. This is 99% of variations between different human languages.
 * It's data driven -- the tokens are in a map (e.g. `lang_en.go`)
 * The list of tokens is a "signature" - across all langauges there under 100 signatures (see dispatch.go)
 * The signature is used to find a handler function using a map.
@@ -35,7 +35,7 @@ Read the CLAUDE.md summary, but simply it:
 
 ### Can I add another human languages?
 
-Yes, fairly easily. Look at lang_en.go (English) or lang_es.go (Spanish). Translate that, run tests, perhaps add a handler. Done.
+Yes. Look at lang_en.go (English) or lang_es.go (Spanish). Translate that, run tests, perhaps add a handler. Done.
 
 Your favorite coding AI assistant can do most of it in 5 minutes.
 
@@ -54,7 +54,7 @@ Please do so!  It should be easy.  Let me know if you need help.
 
 ### Can't AI LLMs do this?
 
-Sorta.  In 2026, LLMs are good at extracting and converting an arbitrary text into date snippets:
+In 2026, LLMs are good at extracting and converting an arbitrary text into date snippets:
 
 ```
 Tomorrow, let's get ice cream at 3pm"
@@ -87,7 +87,7 @@ All (?) use regexp soup or some parser/generator.  Go needs something better.
 
 ### What about porting code from other prgramming langauges or libraries?
 
-There are some good libraries:
+There are good libraries in other programming languages, some with unique features:
 
 * Python [dateparser](https://github.com/scrapinghub/dateparser)  - actively maintained, regexp based.
 * Typescript [chrononode](https://github.com/wanasit/chrono/tree/master) - complicated, but has a lot of interesting features.
@@ -95,7 +95,7 @@ There are some good libraries:
 * Java [natty](https://github.com/joestelmach/natty) - Last commit in 2017 - English only - parser/generator
 * GNU date has some interesting date parsing abilities
 
-Some have unique features, but all are either English-only or regexp/parser/generator based. Let me know if I'm missing one.
+But all are either English-only or regexp/parser/generator based. Let me know if I'm missing one.
 
 None are really good to port to Go.  And it's hard to keep track up subsequent changes.
 
