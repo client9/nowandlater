@@ -68,6 +68,12 @@ type Lang struct {
 	// Example French:  ["er", "re", "me", "ème"] — supports multibyte suffixes.
 	OrdinalSuffixes []string
 
+	// TokenizerFunc is an optional custom tokenizer. When non-nil it replaces the
+	// default whitespace-splitting tokenizer entirely. Use for languages (e.g.
+	// Japanese) that do not use spaces as word delimiters. The function receives
+	// the raw input string and the Lang, and must return the full token slice.
+	TokenizerFunc func(input string, lang *Lang) []Token
+
 	// Timezones maps lowercase timezone token values to *time.Location.
 	// Checked before the built-in defaultTimezones table in timezone.go.
 	// nil means use only the built-in table.

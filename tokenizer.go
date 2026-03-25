@@ -85,7 +85,11 @@ type Token struct {
 // Tokenize preprocesses and normalizes input, splits on whitespace, classifies
 // each chunk, and returns the resulting token slice.
 // FILLER tokens are included; callers that build signatures should skip them.
+// If lang.TokenizerFunc is set it is called instead of the default pipeline.
 func (lang *Lang) Tokenize(input string) []Token {
+	if lang.TokenizerFunc != nil {
+		return lang.TokenizerFunc(input, lang)
+	}
 	normalized := normalize(preprocess(input, lang), lang)
 	chunks := strings.Fields(normalized)
 

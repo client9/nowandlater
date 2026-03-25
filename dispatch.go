@@ -95,6 +95,9 @@ var handlers = map[string]Handler{
 	// Unit-first word order: "mes pasado", "semaine prochaine"
 	"UNIT DIRECTION": handleUnitDirection,
 
+	// Direction + unit + weekday: "来週の月曜日" (next Monday in Japanese)
+	"DIRECTION UNIT WEEKDAY": handleDirectionUnitWeekday,
+
 	// Combined date + time
 	"YEAR INTEGER INTEGER TIME":      handleYearIntegerIntegerTime,
 	"YEAR INTEGER INTEGER TIME AMPM": handleYearIntegerIntegerTimeAMPM,
