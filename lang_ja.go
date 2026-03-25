@@ -11,9 +11,7 @@ import (
 // Known limitations:
 //   - Kanji day numbers (二十四日) are not supported; use Arabic numerals (24日).
 //   - Kanji year numbers (二〇二六年) are not supported; use Arabic numerals (2026年).
-//   - Combined date + AMPM time (2026年3月24日の午後3時) is not yet handled.
 //   - Irregular day-of-month readings (ついたち, ふつか, etc.) are not supported.
-//   - Era-based years (令和7年) are not supported.
 //   - Full-width numerals (３月２４日) are normalized to ASCII automatically.
 var Japanese = Lang{
 	Words:         japaneseWords,
@@ -24,8 +22,9 @@ var Japanese = Lang{
 // japaneseHandlers overrides the global dispatch map for signatures that are
 // specific to Japanese word order (AMPM before TIME, as in "午後3時30分").
 var japaneseHandlers = map[string]Handler{
-	"AMPM TIME":        handleAMPMTime,
-	"ANCHOR AMPM TIME": handleAnchorAMPMTime,
+	"AMPM TIME":                    handleAMPMTime,
+	"ANCHOR AMPM TIME":             handleAnchorAMPMTime,
+	"YEAR MONTH INTEGER AMPM TIME": handleYearMonthIntegerAMPMTime,
 }
 
 // japaneseWords is the word table for Japanese.
@@ -124,6 +123,12 @@ func japaneseTokenize(input string, lang *Lang) []Token {
 	tokens := make([]Token, 0, 8)
 	i := 0
 	for i < len(input) {
+		// 0. Imperial era prefix (令和7年, 平成元年, etc.) — must precede digit check
+		if toks, n, ok := jaEraMatch(input[i:]); ok {
+			tokens = append(tokens, toks...)
+			i += n
+			continue
+		}
 		// 1. Macro longest-match
 		if toks, n, ok := jaMacroMatch(input[i:]); ok {
 			tokens = append(tokens, toks...)
@@ -349,6 +354,55 @@ func jaFullWidthNorm(s string) string {
 }
 
 // ---------------------------------------------------------------------------
+// Imperial era support
+// ---------------------------------------------------------------------------
+
+// japaneseEras maps era name prefixes to their Gregorian start year.
+// Era year 1 equals the base year (e.g. 令和1年 = 2019, 令和7年 = 2025).
+var japaneseEras = []struct {
+	name     string
+	baseYear int
+}{
+	{"令和", 2019}, // Reiwa: 2019–
+	{"平成", 1989}, // Heisei: 1989–2019
+	{"昭和", 1926}, // Showa: 1926–1989
+	{"大正", 1912}, // Taisho: 1912–1926
+	{"明治", 1868}, // Meiji: 1868–1912
+}
+
+// jaEraMatch checks whether s begins with a known era name followed by either
+// "元年" (year 1) or ASCII digits + "年". On success it returns a single
+// TokenYear and the number of bytes consumed.
+func jaEraMatch(s string) ([]Token, int, bool) {
+	for _, era := range japaneseEras {
+		if !strings.HasPrefix(s, era.name) {
+			continue
+		}
+		rest := s[len(era.name):]
+
+		// 元年 = era year 1 (= base year)
+		if strings.HasPrefix(rest, "元年") {
+			return []Token{{Type: TokenYear, Value: era.baseYear}},
+				len(era.name) + len("元年"), true
+		}
+
+		// digit run + 年
+		if len(rest) > 0 && isDigitByte(rest[0]) {
+			j := 0
+			for j < len(rest) && isDigitByte(rest[j]) {
+				j++
+			}
+			if strings.HasPrefix(rest[j:], "年") {
+				eraYear := mustAtoi(rest[:j])
+				return []Token{{Type: TokenYear, Value: era.baseYear + eraYear - 1}},
+					len(era.name) + j + len("年"), true
+			}
+		}
+	}
+	return nil, 0, false
+}
+
+// ---------------------------------------------------------------------------
 // Handlers for Japanese (and other AMPM-prefix) token orders
 // ---------------------------------------------------------------------------
 
@@ -375,6 +429,28 @@ func handleAnchorAMPMTime(tokens []Token) (*ParsedDateSlots, error) {
 		Hour:         h,
 		Minute:       m,
 		Period:       timePeriod(timeVal),
+	}
+	slots.Second = sec
+	return slots, nil
+}
+
+// handleYearMonthIntegerAMPMTime handles: YEAR MONTH INTEGER AMPM TIME
+// Example: 2026年3月24日の午後3時 → 2026-03-24 15:00
+// Japanese word order places AMPM before TIME (cf. English "3:00 PM").
+func handleYearMonthIntegerAMPMTime(tokens []Token) (*ParsedDateSlots, error) {
+	toks := filterFillers(tokens) // [YEAR, MONTH, INTEGER, AMPM, TIME]
+	y := toks[0].Value.(int)
+	d := toks[2].Value.(int)
+	timeVal := toks[4].Value.(string)
+	h, m, sec := mustParseTime(timeVal)
+	h = applyAMPM(h, toks[3].Value.(AMPM))
+	slots := &ParsedDateSlots{
+		Year:   y,
+		Month:  int(toks[1].Value.(Month)),
+		Day:    d,
+		Hour:   h,
+		Minute: m,
+		Period: timePeriod(timeVal),
 	}
 	slots.Second = sec
 	return slots, nil

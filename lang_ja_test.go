@@ -82,6 +82,18 @@ var japaneseCases = []struct {
 	// --- カ月 (katakana variant) ---
 	// Month deltas use the 30-day approximation from periodToSeconds (3×30d = 90d).
 	{"3カ月後", u(2026, 6, 20, 10, 0, 0)},
+
+	// --- Combined absolute date + AMPM time ---
+	{"2026年3月24日の午後3時", u(2026, 3, 24, 15, 0, 0)},
+	{"2026年3月24日の午後3時30分", u(2026, 3, 24, 15, 30, 0)},
+	{"2026年3月24日の午前10時", u(2026, 3, 24, 10, 0, 0)},
+
+	// --- Imperial era years ---
+	{"令和7年3月", u(2025, 3, 1, 0, 0, 0)},     // 2019 + 7 - 1 = 2025
+	{"令和元年", u(2019, 1, 1, 0, 0, 0)},       // era year 1 = base year
+	{"平成31年4月", u(2019, 4, 1, 0, 0, 0)},    // 1989 + 31 - 1 = 2019
+	{"昭和64年1月", u(1989, 1, 1, 0, 0, 0)},    // 1926 + 64 - 1 = 1989
+	{"令和7年3月24日", u(2025, 3, 24, 0, 0, 0)}, // era + full date
 }
 
 func TestJapanese(t *testing.T) {
