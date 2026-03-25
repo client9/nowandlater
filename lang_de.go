@@ -28,7 +28,7 @@ var German = Lang{
 // without requiring separate handlers.
 var germanWords = map[string]WordEntry{
 	// --- Weekdays ---
-	// "die" (Tuesday abbrev) kept as filler (article); "mit" (Wednesday 
+	// "die" (Tuesday abbrev) kept as filler (article); "mit" (Wednesday
 	// abbrev) kept as common preposition — see Known Limitations.
 	"montag":     {TokenWeekday, WeekdayMonday},
 	"mo":         {TokenWeekday, WeekdayMonday},
