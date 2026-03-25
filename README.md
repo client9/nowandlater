@@ -95,7 +95,7 @@ There are some good libraries:
 * Java [natty](https://github.com/joestelmach/natty) - Last commit in 2017 - English only - parser/generator
 * GNU date has some interesting date parsing abilities
 
-Some have unique features, but all are regexp, parser/generator or English-only based.
+Some have unique features, but all are either English-only or regexp/parser/generator based. Let me know if I'm missing one.
 
 None are really good to port to Go.  And it's hard to keep track up subsequent changes.
 
