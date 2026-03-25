@@ -24,10 +24,46 @@ import (
 	"github.com/client9/nowandlater"
 )
 
+// langByCode maps ISO 639-1 codes and common locale prefixes to a Lang pointer.
+var langByCode = map[string]*nowandlater.Lang{
+	"en": &nowandlater.English,
+	"es": &nowandlater.Spanish,
+	"fr": &nowandlater.French,
+	"de": &nowandlater.German,
+	"it": &nowandlater.Italian,
+	"pt": &nowandlater.Portuguese,
+	"ru": &nowandlater.Russian,
+	"ja": &nowandlater.Japanese,
+	"zh": &nowandlater.Chinese,
+}
+
+func lookupLang(code string) (*nowandlater.Lang, error) {
+	// Normalise: lowercase, strip region suffix (e.g. "en_US" → "en", "zh-CN" → "zh").
+	code = strings.ToLower(strings.TrimSpace(code))
+	if i := strings.IndexAny(code, "-_"); i >= 0 {
+		code = code[:i]
+	}
+	if l, ok := langByCode[code]; ok {
+		return l, nil
+	}
+	codes := make([]string, 0, len(langByCode))
+	for k := range langByCode {
+		codes = append(codes, k)
+	}
+	return nil, fmt.Errorf("unknown language %q; supported: %s", code, strings.Join(codes, ", "))
+}
+
 func main() {
 	nowFlag := flag.String("now", "", "reference time (RFC3339 or YYYY-MM-DD); default: time.Now()")
 	intervalFlag := flag.Bool("interval", false, "show resolved interval [start, end)")
+	langFlag := flag.String("lang", "en", "language code or locale (e.g. en, es, fr, de, it, pt, ru, ja, zh, en_US, zh-CN)")
 	flag.Parse()
+
+	lang, err := lookupLang(*langFlag)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "tokenize: -lang: %v\n", err)
+		os.Exit(1)
+	}
 
 	now, err := parseNowFlag(*nowFlag)
 	if err != nil {
@@ -38,7 +74,7 @@ func main() {
 	// Args mode: join non-flag arguments as one input string.
 	if flag.NArg() > 0 {
 		input := strings.Join(flag.Args(), " ")
-		printTokens(input, now, *intervalFlag)
+		printTokens(input, now, *intervalFlag, lang)
 		return
 	}
 
@@ -56,15 +92,15 @@ func main() {
 		if line == "" {
 			continue
 		}
-		printTokens(line, now, *intervalFlag)
+		printTokens(line, now, *intervalFlag, lang)
 		if interactive {
 			fmt.Println()
 		}
 	}
 }
 
-func printTokens(input string, now time.Time, showInterval bool) {
-	tokens := nowandlater.English.Tokenize(input)
+func printTokens(input string, now time.Time, showInterval bool, lang *nowandlater.Lang) {
+	tokens := lang.Tokenize(input)
 	sig := nowandlater.Signature(tokens)
 
 	fmt.Printf("input:     %q\n", input)
@@ -74,7 +110,7 @@ func printTokens(input string, now time.Time, showInterval bool) {
 		fmt.Printf("  [%d] %-14s %s\n", i, tok.Type, formatValue(tok.Value))
 	}
 
-	slots, err := nowandlater.English.Parse(input)
+	slots, err := lang.Parse(input)
 	if err != nil {
 		fmt.Printf("parse:     error: %v\n", err)
 		return
