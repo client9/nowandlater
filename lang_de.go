@@ -10,6 +10,12 @@ package nowandlater
 //   - "Mai" is both a month (May) and an uncommon first name; month wins.
 //   - Case inflection for weekdays and months in prepositional phrases
 //     (e.g. "am Montag" → "Montag" correct, "eines Montags" → genitive not mapped).
+//   - "die" (abbreviation for Tuesday/Dienstag) is mapped to TokenFiller
+//     as a German article. Write "di" or "dienstag" for Tuesday.
+//   - "mit" (abbreviation for Wednesday/Mittwoch) is mapped to TokenPrep
+//     as the common German preposition "with". Write "mi" or "mittwoch" for Wednesday.
+//   - Single-char unit abbreviations "h" (Stunde), "m" (Minute), "s" (Sekunde)
+//     are intentionally omitted to avoid false positives.
 var German = Lang{
 	Words:     germanWords,
 	DateOrder: DMY,
@@ -22,31 +28,42 @@ var German = Lang{
 // without requiring separate handlers.
 var germanWords = map[string]WordEntry{
 	// --- Weekdays ---
+	// "die" (Tuesday abbrev) kept as filler (article); "mit" (Wednesday 
+	// abbrev) kept as common preposition — see Known Limitations.
 	"montag":     {TokenWeekday, WeekdayMonday},
 	"mo":         {TokenWeekday, WeekdayMonday},
+	"mon":        {TokenWeekday, WeekdayMonday},
 	"dienstag":   {TokenWeekday, WeekdayTuesday},
 	"di":         {TokenWeekday, WeekdayTuesday},
 	"mittwoch":   {TokenWeekday, WeekdayWednesday},
 	"mi":         {TokenWeekday, WeekdayWednesday},
 	"donnerstag": {TokenWeekday, WeekdayThursday},
 	"do":         {TokenWeekday, WeekdayThursday},
+	"don":        {TokenWeekday, WeekdayThursday},
 	"freitag":    {TokenWeekday, WeekdayFriday},
 	"fr":         {TokenWeekday, WeekdayFriday},
+	"fre":        {TokenWeekday, WeekdayFriday},
 	"samstag":    {TokenWeekday, WeekdaySaturday},
 	"sonnabend":  {TokenWeekday, WeekdaySaturday}, // North German variant
 	"sa":         {TokenWeekday, WeekdaySaturday},
+	"sam":        {TokenWeekday, WeekdaySaturday},
 	"sonntag":    {TokenWeekday, WeekdaySunday},
 	"so":         {TokenWeekday, WeekdaySunday},
+	"son":        {TokenWeekday, WeekdaySunday},
 
 	// --- Months ---
 	"januar":    {TokenMonth, MonthJanuary},
 	"jan":       {TokenMonth, MonthJanuary},
+	"jänner":    {TokenMonth, MonthJanuary}, // Austrian German variant
+	"janner":    {TokenMonth, MonthJanuary},
 	"februar":   {TokenMonth, MonthFebruary},
 	"feb":       {TokenMonth, MonthFebruary},
+	"feber":     {TokenMonth, MonthFebruary}, // Austrian German variant
 	"märz":      {TokenMonth, MonthMarch},
 	"marz":      {TokenMonth, MonthMarch},
 	"mär":       {TokenMonth, MonthMarch},
 	"mar":       {TokenMonth, MonthMarch},
+	"mrz":       {TokenMonth, MonthMarch}, // supplementary abbreviation
 	"april":     {TokenMonth, MonthApril},
 	"apr":       {TokenMonth, MonthApril},
 	"mai":       {TokenMonth, MonthMay},
@@ -118,13 +135,15 @@ var germanWords = map[string]WordEntry{
 	"an": {TokenPrep, nil},
 
 	// --- Fillers ---
-	"der": {TokenFiller, nil},
-	"die": {TokenFiller, nil},
-	"das": {TokenFiller, nil},
-	"den": {TokenFiller, nil},
-	"dem": {TokenFiller, nil},
-	"des": {TokenFiller, nil},
-	"und": {TokenFiller, nil},
+	"der":  {TokenFiller, nil},
+	"die":  {TokenFiller, nil}, // article; "Die"  abbrev for Tuesday loses to article
+	"das":  {TokenFiller, nil},
+	"den":  {TokenFiller, nil},
+	"dem":  {TokenFiller, nil},
+	"des":  {TokenFiller, nil},
+	"und":  {TokenFiller, nil},
+	"im":   {TokenFiller, nil}, // contraction of "in dem"; "im nächsten Monat" → DIRECTION UNIT
+	"etwa": {TokenFiller, nil}, // "vor etwa 3 Tagen" = approximately 3 days ago
 
 	// --- Units (nominative, accusative, genitive, dative) ---
 	"sekunde":  {TokenUnit, PeriodSecond},

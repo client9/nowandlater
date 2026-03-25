@@ -13,6 +13,10 @@ package nowandlater
 //   - Elided articles glued to the following noun (e.g. "l'an", "d'ici") are
 //     treated as single tokens. Only "l'année"/"l'annee"/"l'an" is pre-mapped to
 //     TokenUnit; other contractions become TokenUnknown and are ignored at dispatch.
+//   - 2-letter weekday abbreviations (lu/ma/me/je/ve/sa/di) from supplementary data
+//     conflict with common French words: "ma" (my), "me" (me), "je" (I), "sa"
+//     (his/her). These are mapped to weekdays; inputs containing these words in a
+//     non-weekday role will produce unexpected signatures.
 var French = Lang{
 	Words:           frenchWords,
 	OrdinalSuffixes: []string{"ière", "iere", "ère", "ere", "er", "ième", "ieme", "ème", "eme"},
@@ -24,20 +28,29 @@ var French = Lang{
 // and number words — all in one map.
 var frenchWords = map[string]WordEntry{
 	// --- Weekdays ---
+	// 2-letter forms from supplementary data; note "ma"/"me"/"je"/"sa" are common
+	// French words — they win over their pronoun/possessive meanings in date context.
 	"lundi":    {TokenWeekday, WeekdayMonday},
 	"lun":      {TokenWeekday, WeekdayMonday},
+	"lu":       {TokenWeekday, WeekdayMonday},
 	"mardi":    {TokenWeekday, WeekdayTuesday},
 	"mar":      {TokenWeekday, WeekdayTuesday}, // ambiguous: "mars" is March; weekday wins for abbreviation
+	"ma":       {TokenWeekday, WeekdayTuesday},
 	"mercredi": {TokenWeekday, WeekdayWednesday},
 	"mer":      {TokenWeekday, WeekdayWednesday},
+	"me":       {TokenWeekday, WeekdayWednesday},
 	"jeudi":    {TokenWeekday, WeekdayThursday},
 	"jeu":      {TokenWeekday, WeekdayThursday},
+	"je":       {TokenWeekday, WeekdayThursday},
 	"vendredi": {TokenWeekday, WeekdayFriday},
 	"ven":      {TokenWeekday, WeekdayFriday},
+	"ve":       {TokenWeekday, WeekdayFriday},
 	"samedi":   {TokenWeekday, WeekdaySaturday},
 	"sam":      {TokenWeekday, WeekdaySaturday},
+	"sa":       {TokenWeekday, WeekdaySaturday},
 	"dimanche": {TokenWeekday, WeekdaySunday},
 	"dim":      {TokenWeekday, WeekdaySunday},
+	"di":       {TokenWeekday, WeekdaySunday},
 
 	// --- Months ---
 	"janvier": {TokenMonth, MonthJanuary},
@@ -55,10 +68,13 @@ var frenchWords = map[string]WordEntry{
 	"avr":       {TokenMonth, MonthApril},
 	"mai":       {TokenMonth, MonthMay},
 	"juin":      {TokenMonth, MonthJune},
+	"jun":       {TokenMonth, MonthJune}, // supplementary abbreviation
 	"juillet":   {TokenMonth, MonthJuly},
 	"juil":      {TokenMonth, MonthJuly},
+	"jul":       {TokenMonth, MonthJuly}, // supplementary abbreviation
 	"août":      {TokenMonth, MonthAugust},
 	"aout":      {TokenMonth, MonthAugust},
+	"aoû":       {TokenMonth, MonthAugust}, // supplementary abbreviation
 	"septembre": {TokenMonth, MonthSeptember},
 	"sep":       {TokenMonth, MonthSeptember},
 	"octobre":   {TokenMonth, MonthOctober},
@@ -101,23 +117,27 @@ var frenchWords = map[string]WordEntry{
 	// "il y a" is the canonical 3-word past modifier (e.g. "il y a 3 jours" = 3 days ago).
 	// This is the primary test of the phrase-match infrastructure for 3-word phrases.
 	"il y a": {TokenModifier, ModifierPast},
+	"il ya":  {TokenModifier, ModifierPast}, // no-space typo variant
 
 	// --- Prepositions ---
-	"dans": {TokenPrep, nil},
-	"en":   {TokenPrep, nil},
-	"à":    {TokenPrep, nil},
-	"a":    {TokenPrep, nil},
+	"dans":  {TokenPrep, nil},
+	"en":    {TokenPrep, nil},
+	"à":     {TokenPrep, nil},
+	"a":     {TokenPrep, nil},
+	"après": {TokenPrep, nil}, // "après 3 jours" = in/after 3 days
+	"apres": {TokenPrep, nil},
 
 	// --- Fillers ---
-	"le":  {TokenFiller, nil},
-	"la":  {TokenFiller, nil},
-	"les": {TokenFiller, nil},
-	"l'":  {TokenFiller, nil},
-	"du":  {TokenFiller, nil},
-	"de":  {TokenFiller, nil},
-	"d'":  {TokenFiller, nil},
-	"et":  {TokenFiller, nil},
-	"au":  {TokenFiller, nil},
+	"le":      {TokenFiller, nil},
+	"environ": {TokenFiller, nil}, // "il y a environ 3 jours" = approximately 3 days ago
+	"la":      {TokenFiller, nil},
+	"les":     {TokenFiller, nil},
+	"l'":      {TokenFiller, nil},
+	"du":      {TokenFiller, nil},
+	"de":      {TokenFiller, nil},
+	"d'":      {TokenFiller, nil},
+	"et":      {TokenFiller, nil},
+	"au":      {TokenFiller, nil},
 
 	// --- Units (singular and plural) ---
 	"seconde":    {TokenUnit, PeriodSecond},

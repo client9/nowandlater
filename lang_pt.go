@@ -72,6 +72,7 @@ var portugueseWords = map[string]WordEntry{
 	"agosto":    {TokenMonth, MonthAugust},
 	"ago":       {TokenMonth, MonthAugust},
 	"setembro":  {TokenMonth, MonthSeptember},
+	"septembro": {TokenMonth, MonthSeptember}, // supplementary alternate spelling
 	"set":       {TokenMonth, MonthSeptember},
 	"outubro":   {TokenMonth, MonthOctober},
 	"out":       {TokenMonth, MonthOctober},
@@ -120,18 +121,19 @@ var portugueseWords = map[string]WordEntry{
 	"ao": {TokenPrep, nil}, // "ao meio-dia" = at noon
 
 	// --- Fillers ---
-	"o":   {TokenFiller, nil},
-	"a":   {TokenFiller, nil},
-	"os":  {TokenFiller, nil},
-	"as":  {TokenFiller, nil},
-	"de":  {TokenFiller, nil},
-	"do":  {TokenFiller, nil},
-	"da":  {TokenFiller, nil},
-	"dos": {TokenFiller, nil},
-	"das": {TokenFiller, nil},
-	"e":   {TokenFiller, nil},
-	"na":  {TokenFiller, nil},
-	"no":  {TokenFiller, nil},
+	"o":     {TokenFiller, nil},
+	"a":     {TokenFiller, nil},
+	"os":    {TokenFiller, nil},
+	"as":    {TokenFiller, nil},
+	"de":    {TokenFiller, nil},
+	"do":    {TokenFiller, nil},
+	"da":    {TokenFiller, nil},
+	"dos":   {TokenFiller, nil},
+	"das":   {TokenFiller, nil},
+	"e":     {TokenFiller, nil},
+	"cerca": {TokenFiller, nil}, // "há cerca de 3 dias" = approximately 3 days ago
+	"na":    {TokenFiller, nil},
+	"no":    {TokenFiller, nil},
 
 	// --- Units ---
 	"segundo":   {TokenUnit, PeriodSecond},

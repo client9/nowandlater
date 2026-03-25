@@ -14,7 +14,8 @@ import (
 // Simplified Chinese characters and time-unit vocabulary.
 //
 // Known limitations:
-//   - Traditional Chinese characters are not supported (e.g. 時 vs 时).
+//   - Traditional Chinese characters are largely not supported (e.g. 時 vs 时);
+//     個月 (traditional "month" measure word) is the only exception.
 //   - Kanji ordinal day numbers (二十四日) are not supported; use digits (24日).
 //   - Full-width digits are not normalised (use ASCII digits).
 var Chinese = Lang{
@@ -34,15 +35,18 @@ var chineseHandlers = map[string]Handler{
 // chineseWords is the word table for Simplified Chinese.
 var chineseWords = map[string]WordEntry{
 	// --- Anchors ---
-	"现在": {TokenAnchor, AnchorNow},
-	"今天": {TokenAnchor, AnchorToday},
-	"今日": {TokenAnchor, AnchorToday},
-	"明天": {TokenAnchor, AnchorTomorrow},
-	"明日": {TokenAnchor, AnchorTomorrow},
-	"昨天": {TokenAnchor, AnchorYesterday},
-	"昨日": {TokenAnchor, AnchorYesterday},
-	"后天": {TokenAnchor, Anchor2DaysFromNow},
-	"前天": {TokenAnchor, Anchor2DaysAgo},
+	"现在":   {TokenAnchor, AnchorNow},
+	"刚刚":   {TokenAnchor, AnchorNow}, // just now; supplementary data
+	"此时":   {TokenAnchor, AnchorNow}, // at this moment; supplementary data
+	"这一时间": {TokenAnchor, AnchorNow}, // at this time; supplementary data
+	"今天":   {TokenAnchor, AnchorToday},
+	"今日":   {TokenAnchor, AnchorToday},
+	"明天":   {TokenAnchor, AnchorTomorrow},
+	"明日":   {TokenAnchor, AnchorTomorrow},
+	"昨天":   {TokenAnchor, AnchorYesterday},
+	"昨日":   {TokenAnchor, AnchorYesterday},
+	"后天":   {TokenAnchor, Anchor2DaysFromNow},
+	"前天":   {TokenAnchor, Anchor2DaysAgo},
 
 	// --- AM / PM ---
 	"上午": {TokenAMPM, AMPMAm}, // morning
@@ -65,6 +69,16 @@ var chineseWords = map[string]WordEntry{
 	"星期六": {TokenWeekday, WeekdaySaturday},
 	"星期日": {TokenWeekday, WeekdaySunday},
 	"星期天": {TokenWeekday, WeekdaySunday}, // colloquial Sunday
+
+	// --- Weekdays (礼拜X colloquial form — supplementary data) ---
+	"礼拜一": {TokenWeekday, WeekdayMonday},
+	"礼拜二": {TokenWeekday, WeekdayTuesday},
+	"礼拜三": {TokenWeekday, WeekdayWednesday},
+	"礼拜四": {TokenWeekday, WeekdayThursday},
+	"礼拜五": {TokenWeekday, WeekdayFriday},
+	"礼拜六": {TokenWeekday, WeekdaySaturday},
+	"礼拜日": {TokenWeekday, WeekdaySunday},
+	"礼拜天": {TokenWeekday, WeekdaySunday},
 
 	// --- Weekdays (周X abbreviated form) ---
 	"周一": {TokenWeekday, WeekdayMonday},
@@ -238,11 +252,12 @@ func zhParseNumber(input string, start int) ([]Token, int) {
 			{Type: TokenUnit, Value: PeriodMinute},
 		}, (i - start) + len("分钟")
 
-	case strings.HasPrefix(rest, "个月"): // month (measure word 个 + 月)
+	case strings.HasPrefix(rest, "个月") || strings.HasPrefix(rest, "個月"): // month (个月 simplified / 個月 traditional)
+		suffixLen := len("个月") // both are 6 bytes
 		return []Token{
 			{Type: TokenInteger, Value: n},
 			{Type: TokenUnit, Value: PeriodMonth},
-		}, (i - start) + len("个月")
+		}, (i - start) + suffixLen
 
 	case strings.HasPrefix(rest, "星期"): // week (must check before 期 alone)
 		return []Token{

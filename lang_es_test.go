@@ -102,6 +102,11 @@ var spanishCases = []struct {
 	{"hace 2 sem", u(2026, 3, 8, 10, 0, 0)},         // sem = semanas
 	{"dentro de 30 min", u(2026, 3, 22, 10, 30, 0)}, // min = minutos
 	{"hace 45 seg", u(2026, 3, 22, 9, 59, 15)},      // seg = segundos (es-AR)
+
+	// --- Supplementary data ---
+	{"hace cerca de 3 días", u(2026, 3, 19, 10, 0, 0)}, // "cerca" as filler
+	{"lu próximo", u(2026, 3, 23, 0, 0, 0)},            // "lu" = lunes
+	{"vi pasado", u(2026, 3, 20, 0, 0, 0)},             // "vi" = viernes (last Friday)
 }
 
 func TestSpanish(t *testing.T) {

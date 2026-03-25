@@ -75,6 +75,10 @@ var portugueseCases = []struct {
 	{"15 mai 2026", u(2026, 5, 15, 0, 0, 0)}, // mai = maio
 	{"há 2 sem", u(2026, 3, 8, 10, 0, 0)},    // sem = semanas
 	{"em 30 min", u(2026, 3, 22, 10, 30, 0)}, // min = minutos
+
+	// --- Supplementary data ---
+	{"10 septembro 2026", u(2026, 9, 10, 0, 0, 0)},   // alternate September spelling
+	{"há cerca de 3 dias", u(2026, 3, 19, 10, 0, 0)}, // "cerca" as filler
 }
 
 func TestPortuguese(t *testing.T) {

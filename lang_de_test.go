@@ -60,6 +60,14 @@ var germanCases = []struct {
 
 	// --- Compound numeric date ---
 	{"24.03.2026", u(2026, 3, 24, 0, 0, 0)},
+
+	// --- Supplementary data ---
+	{"5 Jänner 2027", u(2027, 1, 5, 0, 0, 0)},      // Austrian: Jänner = Januar
+	{"15 Feber 2026", u(2026, 2, 15, 0, 0, 0)},     // Austrian: Feber = Februar
+	{"15 Mrz 2026", u(2026, 3, 15, 0, 0, 0)},       // Mrz abbreviation
+	{"vor etwa 3 Tagen", u(2026, 3, 19, 10, 0, 0)}, // "etwa" as filler
+	{"im nächsten Monat", u(2026, 4, 1, 0, 0, 0)},  // "im" as filler → DIRECTION UNIT
+	{"nächsten Mon", u(2026, 3, 23, 0, 0, 0)},      // "Mon" = Montag
 }
 
 func TestGerman(t *testing.T) {

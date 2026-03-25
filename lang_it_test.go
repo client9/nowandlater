@@ -71,6 +71,10 @@ var italianCases = []struct {
 	{"3 gg fa", u(2026, 3, 19, 10, 0, 0)},    // gg = giorni
 	{"tra 2 sett", u(2026, 4, 5, 10, 0, 0)},  // sett = settimane
 	{"30 sec fa", u(2026, 3, 22, 9, 59, 30)}, // sec = secondi
+
+	// --- Supplementary data ---
+	{"altro ieri", u(2026, 3, 20, 10, 0, 0)},        // bare form (no elided article)
+	{"circa 3 giorni fa", u(2026, 3, 19, 10, 0, 0)}, // "circa" as filler
 }
 
 func TestItalian(t *testing.T) {

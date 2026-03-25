@@ -75,6 +75,13 @@ var chineseCases = []struct {
 	// --- CLDR patterns: N秒钟前/后 (emphatic second form) ---
 	{"30秒钟前", u(2026, 3, 22, 9, 59, 30)}, // 30 seconds ago
 	{"10秒钟后", u(2026, 3, 22, 10, 0, 10)}, // in 10 seconds
+
+	// --- Supplementary data ---
+	{"礼拜一", u(2026, 3, 23, 0, 0, 0)},   // colloquial Monday (nearest, from Sunday)
+	{"礼拜天", u(2026, 3, 22, 0, 0, 0)},   // colloquial Sunday (nearest = today, reference is Sunday)
+	{"刚刚", u(2026, 3, 22, 10, 0, 0)},   // just now → AnchorNow
+	{"此时", u(2026, 3, 22, 10, 0, 0)},   // at this moment → AnchorNow
+	{"2個月后", u(2026, 5, 21, 10, 0, 0)}, // traditional 個月 (2×30 days = 60 days)
 }
 
 func TestChinese(t *testing.T) {

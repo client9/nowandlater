@@ -133,6 +133,7 @@ var italianWords = map[string]WordEntry{
 	"della": {TokenFiller, nil},
 	"dei":   {TokenFiller, nil},
 	"e":     {TokenFiller, nil},
+	"circa": {TokenFiller, nil}, // "circa 3 giorni fa" = approximately 3 days ago
 	"l'":    {TokenFiller, nil}, // elided article not followed by a known word
 	"d'":    {TokenFiller, nil},
 
@@ -163,8 +164,9 @@ var italianWords = map[string]WordEntry{
 	"l'anno": {TokenUnit, PeriodYear}, // for "l'anno prossimo" → UNIT DIRECTION
 	"un'ora": {TokenUnit, PeriodHour}, // for "fra un'ora" → PREP UNIT
 
-	// --- Multi-word anchor ---
-	"l'altro ieri": {TokenAnchor, Anchor2DaysAgo}, // phrase match
+	// --- Multi-word anchors ---
+	"l'altro ieri": {TokenAnchor, Anchor2DaysAgo}, // elided article form
+	"altro ieri":   {TokenAnchor, Anchor2DaysAgo}, // bare form from supplementary data
 
 	// --- AM/PM ---
 	"am": {TokenAMPM, AMPMAm},

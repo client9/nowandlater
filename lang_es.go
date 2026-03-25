@@ -9,6 +9,8 @@ package nowandlater
 //   - Single-char unit abbreviations "h" (hora), "d" (día), "s" (segundo),
 //     "m" (mes), "a" (año) are intentionally omitted to avoid false positives.
 //     "a" would also shadow the preposition entry.
+//   - "mi" (Wednesday abbreviation from supplementary data) also means the
+//     possessive pronoun "my" in Spanish; it maps to Wednesday in date context.
 var Spanish = Lang{
 	Words:           spanishWords,
 	OrdinalSuffixes: []string{},
@@ -20,24 +22,32 @@ var Spanish = Lang{
 // and number words — all in one map.
 var spanishWords = map[string]WordEntry{
 	// --- Weekdays ---
+	// 2-letter forms from supplementary data. Note: "mi" also means the possessive
+	// pronoun "my" in Spanish — see Known Limitations.
 	"lunes":     {TokenWeekday, WeekdayMonday},
 	"lun":       {TokenWeekday, WeekdayMonday},
+	"lu":        {TokenWeekday, WeekdayMonday},
 	"martes":    {TokenWeekday, WeekdayTuesday},
 	"mar":       {TokenWeekday, WeekdayTuesday}, // ambiguous: also marzo abbrev; weekday wins
 	"miércoles": {TokenWeekday, WeekdayWednesday},
 	"miercoles": {TokenWeekday, WeekdayWednesday},
 	"mié":       {TokenWeekday, WeekdayWednesday},
 	"mie":       {TokenWeekday, WeekdayWednesday},
+	"mi":        {TokenWeekday, WeekdayWednesday},
 	"jueves":    {TokenWeekday, WeekdayThursday},
 	"jue":       {TokenWeekday, WeekdayThursday},
+	"ju":        {TokenWeekday, WeekdayThursday},
 	"viernes":   {TokenWeekday, WeekdayFriday},
 	"vie":       {TokenWeekday, WeekdayFriday},
+	"vi":        {TokenWeekday, WeekdayFriday},
 	"sábado":    {TokenWeekday, WeekdaySaturday},
 	"sabado":    {TokenWeekday, WeekdaySaturday},
 	"sáb":       {TokenWeekday, WeekdaySaturday},
 	"sab":       {TokenWeekday, WeekdaySaturday},
+	"sa":        {TokenWeekday, WeekdaySaturday},
 	"domingo":   {TokenWeekday, WeekdaySunday},
 	"dom":       {TokenWeekday, WeekdaySunday},
+	"do":        {TokenWeekday, WeekdaySunday},
 
 	// --- Months ---
 	"enero":   {TokenMonth, MonthJanuary},
@@ -106,15 +116,16 @@ var spanishWords = map[string]WordEntry{
 	"a":  {TokenPrep, nil}, // "a las" handled by multi-word key below
 
 	// --- Fillers (value not consumed semantically) ---
-	"el":  {TokenFiller, nil},
-	"la":  {TokenFiller, nil},
-	"lo":  {TokenFiller, nil},
-	"los": {TokenFiller, nil},
-	"las": {TokenFiller, nil},
-	"de":  {TokenFiller, nil},
-	"del": {TokenFiller, nil},
-	"al":  {TokenFiller, nil},
-	"y":   {TokenFiller, nil}, // "treinta y uno" — "y" consumed as filler (but see multi-word number below)
+	"el":    {TokenFiller, nil},
+	"la":    {TokenFiller, nil},
+	"lo":    {TokenFiller, nil},
+	"los":   {TokenFiller, nil},
+	"las":   {TokenFiller, nil},
+	"de":    {TokenFiller, nil},
+	"del":   {TokenFiller, nil},
+	"al":    {TokenFiller, nil},
+	"y":     {TokenFiller, nil}, // "treinta y uno" — "y" consumed as filler (but see multi-word number below)
+	"cerca": {TokenFiller, nil}, // "hace cerca de 3 días" = approximately 3 days ago
 
 	// --- Units (singular and plural — all variants carry the same Period constant) ---
 	"segundo":   {TokenUnit, PeriodSecond},

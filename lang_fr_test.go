@@ -67,6 +67,14 @@ var frenchCases = []struct {
 	{"15 févr 2026", u(2026, 2, 15, 0, 0, 0)}, // févr = février
 	{"il y a 2 sem", u(2026, 3, 8, 10, 0, 0)}, // sem = semaine
 	{"dans 3 sem", u(2026, 4, 12, 10, 0, 0)},  // sem = semaines
+
+	// --- Supplementary data ---
+	{"15 jul 2026", u(2026, 7, 15, 0, 0, 0)},             // jul = juillet
+	{"10 aoû 2026", u(2026, 8, 10, 0, 0, 0)},             // aoû = août
+	{"il ya 3 jours", u(2026, 3, 19, 10, 0, 0)},          // no-space "il ya" variant
+	{"il y a environ 3 jours", u(2026, 3, 19, 10, 0, 0)}, // "environ" as filler
+	{"après 3 jours", u(2026, 3, 25, 10, 0, 0)},          // "après" as future prep
+	{"lu prochain", u(2026, 3, 23, 0, 0, 0)},             // "lu" = lundi (Monday)
 }
 
 func TestFrench(t *testing.T) {
