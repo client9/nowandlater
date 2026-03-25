@@ -258,7 +258,7 @@ if errors.Is(err, nowandlater.ErrUnknownSignature) {
 - **"second" ambiguity**: the ordinal "second" (2nd) conflicts with the time unit.
   Use `"2nd"` instead of `"second"` when referring to the second day.
 - **Spanish "mar"**: resolves to Tuesday (martes), not March. Write "marzo" in full.
-- **2-digit years**: not currently supported.
+- **2-digit years**: are partially currently supported.
 - **Unix timestamps**: 10-digit integers are not yet recognised.
 - **morning / afternoon / evening**: semantics undefined; not yet supported.
 
@@ -275,6 +275,8 @@ echo "in 2 days" | go run ./cmd/tokenize
 Output shows the token list, signature, parsed period, and resolved time.
 
 ## Running tests
+
+See Makefile
 
 ```
 go test ./...
