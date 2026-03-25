@@ -95,6 +95,13 @@ var spanishCases = []struct {
 	{"hace doce horas", u(2026, 3, 21, 22, 0, 0)},
 	{"en veinte días", u(2026, 4, 11, 10, 0, 0)},
 	{"el veintiuno de abril", u(2026, 4, 21, 0, 0, 0)},
+
+	// --- CLDR abbreviations ---
+	{"15 may 2026", u(2026, 5, 15, 0, 0, 0)},        // may = mayo
+	{"10 sept 2026", u(2026, 9, 10, 0, 0, 0)},       // sept = septiembre (base es)
+	{"hace 2 sem", u(2026, 3, 8, 10, 0, 0)},         // sem = semanas
+	{"dentro de 30 min", u(2026, 3, 22, 10, 30, 0)}, // min = minutos
+	{"hace 45 seg", u(2026, 3, 22, 9, 59, 15)},      // seg = segundos (es-AR)
 }
 
 func TestSpanish(t *testing.T) {

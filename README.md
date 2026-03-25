@@ -92,6 +92,10 @@ etc, etc.
 
 None are really good to port to Go.  And it's hard to keep track up subsequent changes.
 
+## What's with the name?
+
+[Now and Later](https://en.wikipedia.org/wiki/Now_and_Later) is a classic American candy.
+
 ## Installation
 
 ```

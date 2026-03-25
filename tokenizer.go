@@ -424,6 +424,13 @@ func classifyNumber(chunk string, lang *Lang) []Token {
 		}
 	}
 
+	// Trailing ordinal dot: "1." "2." "3." (German/European ordinal marker).
+	// Only strips when the entire prefix before the dot is ASCII digits, so that
+	// compound dates like "1.1.2026" (which end with a digit) are unaffected.
+	if len(chunk) > 1 && chunk[len(chunk)-1] == '.' && allDigits(chunk[:len(chunk)-1]) {
+		return classifyNumber(chunk[:len(chunk)-1], lang)
+	}
+
 	// Compound date chunk: contains a consistent separator (-, /, .)
 	// Returns decomposed tokens if YEAR or MONTH is present, DATE_FRAGMENT otherwise.
 	// Returns nil if no separator found.

@@ -6,6 +6,9 @@ package nowandlater
 //   - "mar" resolves to martes (Tuesday); write "marzo" in full for March.
 //   - "segundo"/"segunda" (ordinal: 2nd) conflicts with the second time-unit token;
 //     use "2" for the 2nd day of the month.
+//   - Single-char unit abbreviations "h" (hora), "d" (día), "s" (segundo),
+//     "m" (mes), "a" (año) are intentionally omitted to avoid false positives.
+//     "a" would also shadow the preposition entry.
 var Spanish = Lang{
 	Words:           spanishWords,
 	OrdinalSuffixes: []string{},
@@ -46,6 +49,7 @@ var spanishWords = map[string]WordEntry{
 	"abril":      {TokenMonth, MonthApril},
 	"abr":        {TokenMonth, MonthApril},
 	"mayo":       {TokenMonth, MonthMay},
+	"may":        {TokenMonth, MonthMay}, // CLDR standard abbreviation
 	"junio":      {TokenMonth, MonthJune},
 	"jun":        {TokenMonth, MonthJune},
 	"julio":      {TokenMonth, MonthJuly},
@@ -54,8 +58,9 @@ var spanishWords = map[string]WordEntry{
 	"ago":        {TokenMonth, MonthAugust},
 	"septiembre": {TokenMonth, MonthSeptember},
 	"setiembre":  {TokenMonth, MonthSeptember},
-	"sep":        {TokenMonth, MonthSeptember},
-	"set":        {TokenMonth, MonthSeptember},
+	"sept":       {TokenMonth, MonthSeptember}, // CLDR base es standard abbreviation
+	"sep":        {TokenMonth, MonthSeptember}, // Latin America (es-419 and most locales)
+	"set":        {TokenMonth, MonthSeptember}, // es-PE, es-UY
 	"octubre":    {TokenMonth, MonthOctober},
 	"oct":        {TokenMonth, MonthOctober},
 	"noviembre":  {TokenMonth, MonthNovember},
@@ -113,23 +118,26 @@ var spanishWords = map[string]WordEntry{
 
 	// --- Units (singular and plural — all variants carry the same Period constant) ---
 	"segundo":   {TokenUnit, PeriodSecond},
+	"segundos":  {TokenUnit, PeriodSecond},
+	"seg":       {TokenUnit, PeriodSecond}, // es-AR, es-PY abbreviation
 	"minuto":    {TokenUnit, PeriodMinute},
+	"minutos":   {TokenUnit, PeriodMinute},
+	"min":       {TokenUnit, PeriodMinute}, // CLDR abbreviation
 	"hora":      {TokenUnit, PeriodHour},
+	"horas":     {TokenUnit, PeriodHour},
 	"día":       {TokenUnit, PeriodDay},
 	"dia":       {TokenUnit, PeriodDay},
+	"días":      {TokenUnit, PeriodDay},
+	"dias":      {TokenUnit, PeriodDay},
 	"semana":    {TokenUnit, PeriodWeek},
+	"semanas":   {TokenUnit, PeriodWeek},
+	"sem":       {TokenUnit, PeriodWeek},      // CLDR abbreviation
 	"quincena":  {TokenUnit, PeriodFortnight}, // 14-day period; "quincena" is literally 15 days but used colloquially for a fortnight
 	"quincenas": {TokenUnit, PeriodFortnight},
 	"mes":       {TokenUnit, PeriodMonth},
+	"meses":     {TokenUnit, PeriodMonth},
 	"año":       {TokenUnit, PeriodYear},
 	"ano":       {TokenUnit, PeriodYear},
-	"segundos":  {TokenUnit, PeriodSecond},
-	"minutos":   {TokenUnit, PeriodMinute},
-	"horas":     {TokenUnit, PeriodHour},
-	"días":      {TokenUnit, PeriodDay},
-	"dias":      {TokenUnit, PeriodDay},
-	"semanas":   {TokenUnit, PeriodWeek},
-	"meses":     {TokenUnit, PeriodMonth},
 	"años":      {TokenUnit, PeriodYear},
 	"anos":      {TokenUnit, PeriodYear},
 
