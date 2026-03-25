@@ -14,6 +14,7 @@ var englishWords = map[string]WordEntry{
 	"monday":    {TokenWeekday, WeekdayMonday},
 	"mon":       {TokenWeekday, WeekdayMonday},
 	"tuesday":   {TokenWeekday, WeekdayTuesday},
+	"tu":        {TokenWeekday, WeekdayTuesday},
 	"tue":       {TokenWeekday, WeekdayTuesday},
 	"tues":      {TokenWeekday, WeekdayTuesday},
 	"wednesday": {TokenWeekday, WeekdayWednesday},
@@ -28,6 +29,7 @@ var englishWords = map[string]WordEntry{
 	"saturday":  {TokenWeekday, WeekdaySaturday},
 	"sat":       {TokenWeekday, WeekdaySaturday},
 	"sunday":    {TokenWeekday, WeekdaySunday},
+	"su":        {TokenWeekday, WeekdaySunday},
 	"sun":       {TokenWeekday, WeekdaySunday},
 
 	// Months
@@ -106,19 +108,27 @@ var englishWords = map[string]WordEntry{
 	"fortnights": {TokenUnit, PeriodFortnight},
 	"week":       {TokenUnit, PeriodWeek},
 	"weeks":      {TokenUnit, PeriodWeek},
+	"wk":         {TokenUnit, PeriodWeek},
 	"month":      {TokenUnit, PeriodMonth},
 	"months":     {TokenUnit, PeriodMonth},
+	"mo":         {TokenUnit, PeriodMonth},
 	"year":       {TokenUnit, PeriodYear},
 	"years":      {TokenUnit, PeriodYear},
 	"yr":         {TokenUnit, PeriodYear},
 	"yrs":        {TokenUnit, PeriodYear},
 
 	// Filler (grammatical noise — value not consumed semantically)
-	"the": {TokenFiller, nil},
-	"of":  {TokenFiller, nil},
-	"a":   {TokenFiller, nil},
-	"an":  {TokenFiller, nil},
-	"and": {TokenFiller, nil},
+	"the":   {TokenFiller, nil},
+	"of":    {TokenFiller, nil},
+	"a":     {TokenFiller, nil},
+	"an":    {TokenFiller, nil},
+	"and":   {TokenFiller, nil},
+	"about": {TokenFiller, nil},
+	"just":  {TokenFiller, nil},
+
+	// Multi-word anchors (matched longest-first by tokenizer)
+	"day before yesterday": {TokenAnchor, Anchor2DaysAgo},
+	"day after tomorrow":   {TokenAnchor, Anchor2DaysFromNow},
 
 	// Time-word substitutions — produce TokenTime directly
 	// ("noon" and "midnight" as words tokenize to TIME rather than requiring preprocessing)

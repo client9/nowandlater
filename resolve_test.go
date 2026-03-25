@@ -103,6 +103,22 @@ var resolveCases = []resolveCase{
 	{"2026", u(2026, 1, 1, 0, 0, 0)},
 	{"2027", u(2027, 1, 1, 0, 0, 0)},
 
+	// --- CLDR unit abbreviations ---
+	{"in 2 wk", u(2026, 4, 5, 10, 0, 0)},    // wk = weeks
+	{"3 mo ago", u(2025, 12, 22, 10, 0, 0)}, // mo = months (3×30 days)
+
+	// --- 2-letter weekday abbreviations ---
+	{"tu", u(2026, 3, 24, 0, 0, 0)}, // tu = Tuesday (nearest from Sunday)
+	{"su", u(2026, 3, 22, 0, 0, 0)}, // su = Sunday (nearest = today)
+
+	// --- Multi-word anchors ---
+	{"day before yesterday", u(2026, 3, 20, 10, 0, 0)},
+	{"day after tomorrow", u(2026, 3, 24, 10, 0, 0)},
+
+	// --- Filler words ---
+	{"about 3 days ago", u(2026, 3, 19, 10, 0, 0)}, // "about" as filler
+	{"just now", u(2026, 3, 22, 10, 0, 0)},         // "just" as filler
+
 	// --- Time only (applied to today) ---
 	{"at 9:30", u(2026, 3, 22, 9, 30, 0)},
 	{"at 9:30 AM", u(2026, 3, 22, 9, 30, 0)},
