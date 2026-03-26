@@ -3,6 +3,7 @@
 - [ ] **morning / afternoon / evening / night** — semantics unclear
 - [ ] **start / end / beginning of week/month/year** — needs `Anchor` field in
       `ParsedDateSlots`; design the resolver behaviour first
+- [ ] Support "later" in English.  "Two days later", etc.
 - [ ] **Unix timestamp** — 10-digit integer (seconds since epoch); easy to detect
       in number sub-parser (`len == 10 && allDigits`), resolver just wraps it
 - [ ] **2-digit year** — partially done in some fixed formats. `26` → infer century (e.g. ±50 years from now window)
