@@ -3,9 +3,9 @@ package nowandlater
 // Spanish is the built-in Spanish Lang.
 //
 // Known limitations:
-//   - "mar" resolves to martes (Tuesday); write "marzo" in full for March.
-//   - "segundo"/"segunda" (ordinal: 2nd) conflicts with the second time-unit token;
-//     use "2" for the 2nd day of the month.
+//   - "mar" resolves to Tuesday (martes) in weekday contexts ("el mar pasado" = last
+//     Tuesday). In numeric date position ("mar 5", "5 de mar") the input is genuinely
+//     ambiguous and Parse returns [ErrAmbiguous]. Write "marzo" to avoid ambiguity.
 //   - Single-char unit abbreviations "h" (hora), "d" (día), "s" (segundo),
 //     "m" (mes), "a" (año) are intentionally omitted to avoid false positives.
 //     "a" would also shadow the preposition entry.
@@ -15,6 +15,15 @@ var Spanish = Lang{
 	Words:           spanishWords,
 	OrdinalSuffixes: []string{},
 	DateOrder:       DMY,
+	Handlers: map[string]Handler{
+		// "mar" abbreviates both martes (Tuesday) and marzo (March).
+		// These signatures are genuinely ambiguous; return ErrAmbiguous
+		// so callers can ask for clarification rather than getting a wrong date.
+		"WEEKDAY INTEGER":      handleAmbiguous,
+		"INTEGER WEEKDAY":      handleAmbiguous,
+		"WEEKDAY INTEGER YEAR": handleAmbiguous,
+		"INTEGER WEEKDAY YEAR": handleAmbiguous,
+	},
 }
 
 // spanishWords is the word table for Spanish.
@@ -129,6 +138,7 @@ var spanishWords = map[string]WordEntry{
 
 	// --- Units (singular and plural — all variants carry the same Period constant) ---
 	"segundo":   {TokenUnit, PeriodSecond},
+	"segunda":   {TokenUnit, PeriodSecond}, // feminine; also ordinal "2nd" — handled by replaceSecondUnit
 	"segundos":  {TokenUnit, PeriodSecond},
 	"seg":       {TokenUnit, PeriodSecond}, // es-AR, es-PY abbreviation
 	"minuto":    {TokenUnit, PeriodMinute},
@@ -178,7 +188,7 @@ var spanishWords = map[string]WordEntry{
 	"de la noche":  {TokenAMPM, AMPMPm}, // "a las 10 de la noche" → 10 PM
 
 	// --- Number words — Cardinals ---
-	// "segundo"/"segunda" (ordinal: 2nd) omitted — conflict with TokenUnit PeriodSecond.
+	// "segundo"/"segunda" are mapped to TokenUnit above; replaceSecondUnit handles them as ordinal day-2.
 	"uno": {TokenInteger, 1}, "un": {TokenInteger, 1}, "una": {TokenInteger, 1},
 	"dos": {TokenInteger, 2}, "tres": {TokenInteger, 3}, "cuatro": {TokenInteger, 4},
 	"cinco": {TokenInteger, 5}, "seis": {TokenInteger, 6}, "siete": {TokenInteger, 7},

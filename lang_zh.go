@@ -16,7 +16,7 @@ import (
 // Known limitations:
 //   - Traditional Chinese characters are largely not supported (e.g. 時 vs 时);
 //     個月 (traditional "month" measure word) is the only exception.
-//   - Kanji ordinal day numbers (二十四日) are not supported; use digits (24日).
+//   - Character ordinal day numbers (二十四日) are not supported; use digits (24日).
 //   - Full-width digits are not normalised (use ASCII digits).
 var Chinese = Lang{
 	Words:         chineseWords,
@@ -90,7 +90,7 @@ var chineseWords = map[string]WordEntry{
 	"周日": {TokenWeekday, WeekdaySunday},
 	"周天": {TokenWeekday, WeekdaySunday},
 
-	// --- Kanji month names (identical characters to Japanese) ---
+	// --- character month names ---
 	// "十一月"/"十二月" (9 bytes) beat "十月" (6 bytes) via longest-match.
 	"一月":  {TokenMonth, MonthJanuary},
 	"二月":  {TokenMonth, MonthFebruary},

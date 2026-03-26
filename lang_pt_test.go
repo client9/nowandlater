@@ -1,6 +1,7 @@
 package nowandlater
 
 import (
+	"errors"
 	"testing"
 	"time"
 )
@@ -31,6 +32,10 @@ var portugueseCases = []struct {
 	{"24 de março de 2026", u(2026, 3, 24, 0, 0, 0)},
 	{"1º de março de 2026", u(2026, 3, 1, 0, 0, 0)}, // ordinal º stripped
 	{"março de 2026", u(2026, 3, 1, 0, 0, 0)},       // MONTH YEAR
+
+	// --- "segundo" as ordinal day-2 (replaceSecondUnit) ---
+	{"o segundo de março", u(2027, 3, 2, 0, 0, 0)},
+	{"segundo de março 2026", u(2026, 3, 2, 0, 0, 0)},
 
 	// --- Relative: future (PREP INTEGER UNIT) ---
 	{"em 3 dias", u(2026, 3, 25, 10, 0, 0)},
@@ -79,6 +84,30 @@ var portugueseCases = []struct {
 	// --- Supplementary data ---
 	{"10 septembro 2026", u(2026, 9, 10, 0, 0, 0)},   // alternate September spelling
 	{"há cerca de 3 dias", u(2026, 3, 19, 10, 0, 0)}, // "cerca" as filler
+}
+
+// portugueseAmbiguousCases are inputs that are recognisably date-like but cannot
+// be resolved because weekday names double as feminine ordinals in Portuguese:
+// "segunda" (Monday / 2nd), "quarta" (Wednesday / 4th), "quinta" (Thursday / 5th),
+// "sexta" (Friday / 6th).
+var portugueseAmbiguousCases = []string{
+	"segunda de março",
+	"quarta de março",
+	"quinta de março",
+	"sexta de março",
+	"quarta de março 2026",
+	"quinta de março 2026",
+}
+
+func TestPortugueseAmbiguous(t *testing.T) {
+	for _, input := range portugueseAmbiguousCases {
+		t.Run(input, func(t *testing.T) {
+			_, err := Portuguese.Parse(input)
+			if !errors.Is(err, ErrAmbiguous) {
+				t.Errorf("Parse(%q) error = %v, want ErrAmbiguous", input, err)
+			}
+		})
+	}
 }
 
 func TestPortuguese(t *testing.T) {

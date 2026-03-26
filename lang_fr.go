@@ -3,10 +3,16 @@ package nowandlater
 // French is the built-in French Lang.
 //
 // Known limitations:
-//   - "mar" resolves to mardi (Tuesday); write "mars" in full for March.
-//   - "sept" resolves to the number 7; use "sep" or "septembre" for September.
-//   - "second"/"seconde" (ordinal: 2nd) conflicts with the second time-unit token;
-//     use "2" for the 2nd day of the month.
+//   - "mar" resolves to Tuesday (mardi) in weekday contexts ("mar prochain" = next Tuesday).
+//     In numeric date position ("mar 5", "5 mar 2026") the input is genuinely ambiguous
+//     and Parse returns [ErrAmbiguous]. Write "mars" to avoid ambiguity.
+//   - "sept" resolves to the number 7 and produces SILENT WRONG ANSWERS in date
+//     expressions: "10 sept 2026" parses as July 10 (month=7), not September 10.
+//     The trailing-dot form "sept." is identical after normalization, so it has
+//     the same problem. The INTEGER INTEGER YEAR signature is handled by the DMY
+//     date-order handler with no way to distinguish "sept-as-7" from a real
+//     integer month; conflict resolution is architecturally impossible.
+//     Use "sep" or "septembre" instead.
 //   - Single-char unit abbreviations "j" (jour), "h" (heure), "s" (seconde),
 //     "m" (mois), "a" (an) are intentionally omitted to avoid false positives.
 //     "a" would also shadow the preposition entry.
@@ -21,6 +27,15 @@ var French = Lang{
 	Words:           frenchWords,
 	OrdinalSuffixes: []string{"ière", "iere", "ère", "ere", "er", "ième", "ieme", "ème", "eme"},
 	DateOrder:       DMY,
+	Handlers: map[string]Handler{
+		// "mar" abbreviates both mardi (Tuesday) and mars (March).
+		// These signatures are genuinely ambiguous; return ErrAmbiguous
+		// so callers can ask for clarification rather than getting a wrong date.
+		"WEEKDAY INTEGER":      handleAmbiguous,
+		"INTEGER WEEKDAY":      handleAmbiguous,
+		"WEEKDAY INTEGER YEAR": handleAmbiguous,
+		"INTEGER WEEKDAY YEAR": handleAmbiguous,
+	},
 }
 
 // frenchWords is the word table for French.
@@ -140,7 +155,8 @@ var frenchWords = map[string]WordEntry{
 	"au":      {TokenFiller, nil},
 
 	// --- Units (singular and plural) ---
-	"seconde":    {TokenUnit, PeriodSecond},
+	"second":     {TokenUnit, PeriodSecond}, // masculine; also ordinal "2nd" — handled by replaceSecondUnit
+	"seconde":    {TokenUnit, PeriodSecond}, // feminine; also ordinal "2nd" — handled by replaceSecondUnit
 	"secondes":   {TokenUnit, PeriodSecond},
 	"minute":     {TokenUnit, PeriodMinute},
 	"minutes":    {TokenUnit, PeriodMinute},
@@ -182,7 +198,7 @@ var frenchWords = map[string]WordEntry{
 	"minuit": {TokenTime, "0:00"},
 
 	// --- Number words — Cardinals ---
-	// "second"/"seconde" omitted — conflict with TokenUnit PeriodSecond.
+	// "second"/"seconde" are mapped to TokenUnit above; replaceSecondUnit handles them as ordinal day-2.
 	// "sept" = 7; use "sep" or "septembre" for September.
 	"un": {TokenInteger, 1}, "une": {TokenInteger, 1},
 	"deux":      {TokenInteger, 2},
@@ -224,7 +240,7 @@ var frenchWords = map[string]WordEntry{
 
 	// --- Number words — Ordinals ---
 	"premier": {TokenInteger, 1}, "première": {TokenInteger, 1}, "premiere": {TokenInteger, 1},
-	// "second"/"seconde" → unit conflict; omitted
+	// "second"/"seconde" → mapped to TokenUnit above; replaceSecondUnit handles ordinal day-2
 	"troisième": {TokenInteger, 3}, "troisieme": {TokenInteger, 3},
 	"quatrième": {TokenInteger, 4}, "quatrieme": {TokenInteger, 4},
 	"cinquième": {TokenInteger, 5}, "cinquieme": {TokenInteger, 5},

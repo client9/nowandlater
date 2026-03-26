@@ -1,6 +1,7 @@
 package nowandlater
 
 import (
+	"errors"
 	"testing"
 	"time"
 )
@@ -71,6 +72,8 @@ var spanishCases = []struct {
 	{"el 5 de marzo", u(2027, 3, 5, 0, 0, 0)}, // March 5 has passed → next year
 	{"el 10 de abril", u(2026, 4, 10, 0, 0, 0)},
 	{"el primero de mayo", u(2026, 5, 1, 0, 0, 0)},
+	{"el segundo de marzo", u(2027, 3, 2, 0, 0, 0)}, // "segundo" as ordinal
+	{"el segunda de marzo", u(2027, 3, 2, 0, 0, 0)}, // feminine form
 
 	// --- Absolute date with year ---
 	{"el 5 de marzo de 2027", u(2027, 3, 5, 0, 0, 0)},
@@ -107,6 +110,26 @@ var spanishCases = []struct {
 	{"hace cerca de 3 días", u(2026, 3, 19, 10, 0, 0)}, // "cerca" as filler
 	{"lu próximo", u(2026, 3, 23, 0, 0, 0)},            // "lu" = lunes
 	{"vi pasado", u(2026, 3, 20, 0, 0, 0)},             // "vi" = viernes (last Friday)
+}
+
+// spanishAmbiguousCases are inputs that are recognisably date-like but cannot be
+// resolved because "mar" abbreviates both martes (Tuesday) and marzo (March).
+var spanishAmbiguousCases = []string{
+	"mar 5",
+	"5 de mar",
+	"mar 5 2027",
+	"5 de mar 2027",
+}
+
+func TestSpanishAmbiguous(t *testing.T) {
+	for _, input := range spanishAmbiguousCases {
+		t.Run(input, func(t *testing.T) {
+			_, err := Spanish.Parse(input)
+			if !errors.Is(err, ErrAmbiguous) {
+				t.Errorf("Parse(%q) error = %v, want ErrAmbiguous", input, err)
+			}
+		})
+	}
 }
 
 func TestSpanish(t *testing.T) {

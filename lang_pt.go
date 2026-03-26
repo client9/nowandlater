@@ -10,11 +10,17 @@ package nowandlater
 //   - Ordinal suffixes: º (masculine) and ª (feminine) stripped from digits.
 //
 // Known limitations:
-//   - "segundo"/"segundos" is mapped to TokenUnit PeriodSecond; the ordinal
-//     "segundo" (2nd) conflicts and must be written as "2".
-//   - "dez" maps to the number 10; write "dezembro" in full for December.
-//   - "quarta"/"quinta"/"sexta" map to weekdays (Wednesday/Thursday/Friday);
-//     ordinal uses (4th/5th/6th) must be written as digits or "quarto"/"quinto"/"sexto".
+//   - "dez" maps to the number 10 and produces SILENT WRONG ANSWERS in date
+//     expressions: "10 dez 2026" parses as October 10 (month=10), not December 10.
+//     The INTEGER INTEGER YEAR signature is handled by the DMY date-order handler
+//     with no way to distinguish "dez-as-10" from a real integer month; conflict
+//     resolution is architecturally impossible. Write "dezembro" in full.
+//   - "segunda", "quarta", "quinta", "sexta" are both weekday names and feminine
+//     ordinals (2nd/4th/5th/6th). In WEEKDAY MONTH position ("quarta de março")
+//     the input is genuinely ambiguous and Parse returns [ErrAmbiguous]. Use the
+//     masculine ordinals "quarto"/"quinto"/"sexto" or digits to avoid ambiguity.
+//     The masculine "segundo" is unambiguous in this context (UNIT MONTH is handled
+//     by replaceSecondUnit).
 //   - "seg" maps to WeekdayMonday (segunda-feira); write "segundo"/"segundos" in
 //     full for the second time unit. CLDR lists "seg" as a second abbreviation too.
 //   - Single-char unit abbreviations "h" (hora), "m" (minuto), "s" (segundo)
@@ -23,6 +29,13 @@ var Portuguese = Lang{
 	Words:           portugueseWords,
 	OrdinalSuffixes: []string{"º", "ª"},
 	DateOrder:       DMY,
+	Handlers: map[string]Handler{
+		// "segunda", "quarta", "quinta", "sexta" are both weekday names and
+		// feminine ordinals (2nd/4th/5th/6th). WEEKDAY MONTH is genuinely
+		// ambiguous ("quarta de março" = Wednesday in March OR 4th of March).
+		"WEEKDAY MONTH":      handleAmbiguous,
+		"WEEKDAY MONTH YEAR": handleAmbiguous,
+	},
 }
 
 var portugueseWords = map[string]WordEntry{
@@ -182,7 +195,8 @@ var portugueseWords = map[string]WordEntry{
 	"da noite": {TokenAMPM, AMPMPm}, // "10 da noite" = 10 PM
 
 	// --- Number words — Cardinals ---
-	// "segundo"/"segunda" omitted — conflict with TokenUnit PeriodSecond.
+	// "segundo" is mapped to TokenUnit above; replaceSecondUnit handles it as ordinal day-2.
+	// "segunda" is mapped to WeekdayMonday above; use "segundo" or digits for the 2nd day.
 	"um": {TokenInteger, 1}, "uma": {TokenInteger, 1},
 	"dois": {TokenInteger, 2}, "duas": {TokenInteger, 2},
 	"três": {TokenInteger, 3}, "tres": {TokenInteger, 3},

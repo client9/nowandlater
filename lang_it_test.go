@@ -1,6 +1,7 @@
 package nowandlater
 
 import (
+	"errors"
 	"testing"
 	"time"
 )
@@ -32,6 +33,12 @@ var italianCases = []struct {
 	{"1° marzo 2026", u(2026, 3, 1, 0, 0, 0)},    // ordinal ° stripped
 	{"primo marzo 2026", u(2026, 3, 1, 0, 0, 0)}, // ordinal word
 	{"marzo 2026", u(2026, 3, 1, 0, 0, 0)},       // MONTH YEAR
+
+	// --- "secondo"/"seconda" as ordinal day-2 ---
+	{"il secondo marzo", u(2027, 3, 2, 0, 0, 0)},   // masculine form
+	{"la seconda marzo", u(2027, 3, 2, 0, 0, 0)},   // feminine form (was missing from Words)
+	{"secondo marzo 2026", u(2026, 3, 2, 0, 0, 0)}, // UNIT MONTH YEAR
+	{"seconda di marzo", u(2027, 3, 2, 0, 0, 0)},   // UNIT MONTH
 
 	// --- Relative: future (PREP INTEGER UNIT) ---
 	{"fra 3 giorni", u(2026, 3, 25, 10, 0, 0)},
@@ -75,6 +82,26 @@ var italianCases = []struct {
 	// --- Supplementary data ---
 	{"altro ieri", u(2026, 3, 20, 10, 0, 0)},        // bare form (no elided article)
 	{"circa 3 giorni fa", u(2026, 3, 19, 10, 0, 0)}, // "circa" as filler
+}
+
+// italianAmbiguousCases are inputs that are recognisably date-like but cannot be
+// resolved because "mar" abbreviates both martedì (Tuesday) and marzo (March).
+var italianAmbiguousCases = []string{
+	"mar 5",
+	"5 mar",
+	"mar 5 2026",
+	"5 mar 2026",
+}
+
+func TestItalianAmbiguous(t *testing.T) {
+	for _, input := range italianAmbiguousCases {
+		t.Run(input, func(t *testing.T) {
+			_, err := Italian.Parse(input)
+			if !errors.Is(err, ErrAmbiguous) {
+				t.Errorf("Parse(%q) error = %v, want ErrAmbiguous", input, err)
+			}
+		})
+	}
 }
 
 func TestItalian(t *testing.T) {

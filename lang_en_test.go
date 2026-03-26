@@ -83,6 +83,13 @@ var englishCases = []struct {
 	// April 10 with time
 	{"April 10 at 3 PM", u(2026, 4, 10, 15, 0, 0)},
 
+	// --- "second" as ordinal day-2 (unit/ordinal conflict) ---
+	{"march second", u(2027, 3, 2, 0, 0, 0)},
+	{"march second, 2010", u(2010, 3, 2, 0, 0, 0)},
+	{"second of march", u(2027, 3, 2, 0, 0, 0)},
+	{"second of march, 2010", u(2010, 3, 2, 0, 0, 0)},
+	{"march second at 3pm", u(2027, 3, 2, 15, 0, 0)},
+
 	// --- Number words (cardinal + ordinal) ---
 	{"the first of March", u(2027, 3, 1, 0, 0, 0)}, // March 1 has passed → next year
 	{"the twenty-first of April", u(2026, 4, 21, 0, 0, 0)},

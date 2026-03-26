@@ -55,6 +55,8 @@
 //
 // # Error handling
 //
-// An unrecognised input returns [ErrUnknownSignature]. No other sentinel
-// errors are defined; all other errors indicate invalid timezone tokens.
+// An unrecognised input returns [ErrUnknownSignature]. An input that is
+// recognisably date-like but genuinely ambiguous returns [ErrAmbiguous] —
+// for example, "mar 5" in Spanish where "mar" abbreviates both martes (Tuesday)
+// and marzo (March). All other errors indicate invalid timezone tokens.
 package nowandlater

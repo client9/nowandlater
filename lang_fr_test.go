@@ -1,6 +1,7 @@
 package nowandlater
 
 import (
+	"errors"
 	"testing"
 	"time"
 )
@@ -30,6 +31,12 @@ var frenchCases = []struct {
 	{"24 mars 2026", u(2026, 3, 24, 0, 0, 0)},
 	{"1er mars 2026", u(2026, 3, 1, 0, 0, 0)}, // ordinal suffix stripped: "1er"→"1"
 	{"mars 2026", u(2026, 3, 1, 0, 0, 0)},     // MONTH YEAR
+
+	// --- "second"/"seconde" as ordinal day-2 ---
+	{"le second mars", u(2027, 3, 2, 0, 0, 0)},       // masculine form
+	{"la seconde mars", u(2027, 3, 2, 0, 0, 0)},      // feminine form
+	{"second de mars", u(2027, 3, 2, 0, 0, 0)},       // UNIT MONTH
+	{"seconde de mars 2026", u(2026, 3, 2, 0, 0, 0)}, // UNIT MONTH YEAR
 
 	// --- Relative: future (PREP INTEGER UNIT) ---
 	{"dans 3 jours", u(2026, 3, 25, 10, 0, 0)},
@@ -75,6 +82,26 @@ var frenchCases = []struct {
 	{"il y a environ 3 jours", u(2026, 3, 19, 10, 0, 0)}, // "environ" as filler
 	{"après 3 jours", u(2026, 3, 25, 10, 0, 0)},          // "après" as future prep
 	{"lu prochain", u(2026, 3, 23, 0, 0, 0)},             // "lu" = lundi (Monday)
+}
+
+// frenchAmbiguousCases are inputs that are recognisably date-like but cannot be
+// resolved because "mar" abbreviates both mardi (Tuesday) and mars (March).
+var frenchAmbiguousCases = []string{
+	"mar 5",
+	"5 mar",
+	"mar 5 2026",
+	"5 mar 2026",
+}
+
+func TestFrenchAmbiguous(t *testing.T) {
+	for _, input := range frenchAmbiguousCases {
+		t.Run(input, func(t *testing.T) {
+			_, err := French.Parse(input)
+			if !errors.Is(err, ErrAmbiguous) {
+				t.Errorf("Parse(%q) error = %v, want ErrAmbiguous", input, err)
+			}
+		})
+	}
 }
 
 func TestFrench(t *testing.T) {

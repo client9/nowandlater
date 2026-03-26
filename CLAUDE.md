@@ -37,6 +37,7 @@ input string
     │   • lang.Handlers checked first (language-specific overrides)
     │   • global handlers map as fallback (language-neutral patterns)
     │   • No match → ErrUnknownSignature
+    │   • Known-ambiguous signature → ErrAmbiguous (registered as handleAmbiguous)
     │
     ▼ handler(tokens) → *ParsedDateSlots
     │
@@ -133,6 +134,11 @@ See `lang_en.go` / `lang_es.go` and their test files as reference implementation
    indicate a programming error (wrong handler wired to wrong signature), not user
    error.
 4. Register the signature string in `dispatch.go`'s `handlers` map.
+   - If a signature is recognisably date-like but genuinely ambiguous (e.g. a
+     weekday abbreviation that also abbreviates a month), register `handleAmbiguous`
+     in the language's `lang.Handlers` map instead of leaving the signature
+     unregistered. This gives callers `ErrAmbiguous` rather than the misleading
+     `ErrUnknownSignature`. See `lang_es.go` for an example.
 
 ## mustAtoi / mustParseTime
 

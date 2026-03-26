@@ -267,11 +267,22 @@ if errors.Is(err, nowandlater.ErrUnknownSignature) {
 }
 ```
 
+An input that is recognisably date-like but genuinely ambiguous returns `ErrAmbiguous`:
+
+```go
+t, err := p.Parse("mar 5") // Spanish: "mar" = martes (Tuesday) or marzo (March)?
+if errors.Is(err, nowandlater.ErrAmbiguous) {
+    // input looks like a date but has multiple valid interpretations;
+    // ask the user to be more specific
+}
+```
+
 ## Known limitations
 
-- **"second" ambiguity**: the ordinal "second" (2nd) conflicts with the time unit.
-  Use `"2nd"` instead of `"second"` when referring to the second day.
-- **Spanish "mar"**: resolves to Tuesday (martes), not March. Write "marzo" in full.
+- **Spanish "mar"**: works correctly as a weekday abbreviation in weekday contexts
+  (`"el mar pasado"` → last Tuesday). In numeric date position (`"mar 5"`,
+  `"5 de mar"`) it is genuinely ambiguous and returns `ErrAmbiguous`. Write
+  `"marzo"` to avoid ambiguity.
 - **2-digit years**: are partially currently supported.
 - **Unix timestamps**: 10-digit integers are not yet recognised.
 - **morning / afternoon / evening**: semantics undefined; not yet supported.

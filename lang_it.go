@@ -4,8 +4,7 @@ package nowandlater
 //
 // Italian uses standard whitespace tokenization, DMY date order, and the same
 // Romance-language patterns already handled globally (WEEKDAY DIRECTION,
-// UNIT DIRECTION, INTEGER UNIT MODIFIER, PREP INTEGER UNIT). No Handlers
-// overrides are required.
+// UNIT DIRECTION, INTEGER UNIT MODIFIER, PREP INTEGER UNIT).
 //
 // Elided article forms glued to the next word by an apostrophe become single
 // whitespace-split chunks. A small set of commonly elided forms is pre-mapped
@@ -15,9 +14,10 @@ package nowandlater
 //   - "l'altroieri" → TokenAnchor Anchor2DaysAgo
 //
 // Known limitations:
-//   - "mar" resolves to martedì (Tuesday); write "marzo" in full for March.
-//   - "secondo"/"seconda" conflict with TokenUnit PeriodSecond; use "2" for
-//     the 2nd day of the month.
+//   - "mar" resolves to martedì (Tuesday) in weekday contexts ("mar prossimo" =
+//     next Tuesday). In numeric date position ("mar 5", "5 mar 2026") the input
+//     is genuinely ambiguous and Parse returns [ErrAmbiguous]. Write "marzo" to
+//     avoid ambiguity.
 //   - "quest'anno" (this year) is a single elided chunk that cannot expand to
 //     two tokens; write "questo anno" (with a space) instead.
 //   - Single-char unit abbreviations "g" (giorno), "h" (ora), "s" (secondo)
@@ -28,6 +28,15 @@ var Italian = Lang{
 	Words:           italianWords,
 	OrdinalSuffixes: []string{"°", "º"}, // degree sign and ordinal indicator
 	DateOrder:       DMY,
+	Handlers: map[string]Handler{
+		// "mar" abbreviates both martedì (Tuesday) and marzo (March).
+		// These signatures are genuinely ambiguous; return ErrAmbiguous
+		// so callers can ask for clarification rather than getting a wrong date.
+		"WEEKDAY INTEGER":      handleAmbiguous,
+		"INTEGER WEEKDAY":      handleAmbiguous,
+		"WEEKDAY INTEGER YEAR": handleAmbiguous,
+		"INTEGER WEEKDAY YEAR": handleAmbiguous,
+	},
 }
 
 var italianWords = map[string]WordEntry{
@@ -138,8 +147,9 @@ var italianWords = map[string]WordEntry{
 	"d'":    {TokenFiller, nil},
 
 	// --- Units ---
-	// "secondo"/"seconda" → TokenUnit PeriodSecond; ordinal "secondo" (2nd) conflicts.
-	"secondo":    {TokenUnit, PeriodSecond},
+	// "secondo"/"seconda" are also ordinal "2nd"; replaceSecondUnit handles ordinal day-2.
+	"secondo":    {TokenUnit, PeriodSecond}, // masculine; also ordinal "2nd"
+	"seconda":    {TokenUnit, PeriodSecond}, // feminine; also ordinal "2nd" — handled by replaceSecondUnit
 	"secondi":    {TokenUnit, PeriodSecond},
 	"sec":        {TokenUnit, PeriodSecond}, // abbreviation: "3 sec fa"
 	"minuto":     {TokenUnit, PeriodMinute},

@@ -12,6 +12,14 @@ import (
 // positional indices align exactly with the signature string.
 // ---------------------------------------------------------------------------
 
+// handleAmbiguous is registered for signatures that are recognisable as
+// date-like but cannot be resolved to a single meaning without more context.
+// It returns ErrAmbiguous so callers can distinguish "I don't understand this"
+// from "this could mean multiple things".
+func handleAmbiguous(_ []Token) (*ParsedDateSlots, error) {
+	return nil, ErrAmbiguous
+}
+
 // handleAnchor handles: ANCHOR
 // Examples: "today", "tomorrow", "yesterday", "now"
 func handleAnchor(tokens []Token) (*ParsedDateSlots, error) {
@@ -917,6 +925,44 @@ func handleMonthIntegerYearTime(tokens []Token) (*ParsedDateSlots, error) {
 	slots.Second = sec
 	return slots, nil
 }
+
+// ---------------------------------------------------------------------------
+// "second" as ordinal (day 2) — unit/ordinal conflict resolution
+//
+// "second" is mapped to TokenUnit(PeriodSecond) in language Words maps so that
+// "in 5 seconds" works. This means "march second" produces MONTH UNIT instead
+// of MONTH INTEGER. The helpers below replace that unit token with INTEGER(2)
+// so the standard month/day handlers can be reused unchanged.
+// ---------------------------------------------------------------------------
+
+// replaceSecondUnit returns a copy of tokens with the first TokenUnit(PeriodSecond)
+// replaced by TokenInteger(2). Used to treat "second" as the ordinal "2nd".
+func replaceSecondUnit(tokens []Token) []Token {
+	out := make([]Token, len(tokens))
+	copy(out, tokens)
+	for i, t := range out {
+		if t.Type == TokenUnit && t.Value.(Period) == PeriodSecond {
+			out[i] = Token{Type: TokenInteger, Value: 2}
+			break
+		}
+	}
+	return out
+}
+
+// secondOrdinal wraps a handler so that a TokenUnit(PeriodSecond) in the token
+// list is treated as TokenInteger(2) before the base handler runs.
+func secondOrdinal(base Handler) Handler {
+	return func(tokens []Token) (*ParsedDateSlots, error) {
+		return base(replaceSecondUnit(tokens))
+	}
+}
+
+var (
+	handleMonthSecondDay     = secondOrdinal(handleMonthDay)
+	handleMonthSecondDayYear = secondOrdinal(handleMonthDayYear)
+	handleSecondDayMonth     = secondOrdinal(handleDayMonth)
+	handleSecondDayMonthYear = secondOrdinal(handleIntegerMonthYear)
+)
 
 // handleMonthIntegerYearTimeAMPM handles: MONTH INTEGER YEAR TIME AMPM
 // Example: "Dec 3 2026 9:30 AM"

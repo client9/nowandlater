@@ -7,13 +7,12 @@ package nowandlater
 // ("01.03.2026") are handled by splitCompoundDate in the tokenizer.
 //
 // Known limitations:
-//   - "Mai" is both a month (May) and an uncommon first name; month wins.
 //   - Case inflection for weekdays and months in prepositional phrases
 //     (e.g. "am Montag" → "Montag" correct, "eines Montags" → genitive not mapped).
-//   - "die" (abbreviation for Tuesday/Dienstag) is mapped to TokenFiller
-//     as a German article. Write "di" or "dienstag" for Tuesday.
-//   - "mit" (abbreviation for Wednesday/Mittwoch) is mapped to TokenPrep
-//     as the common German preposition "with". Write "mi" or "mittwoch" for Wednesday.
+//   - "die" (abbreviation for Tuesday/Dienstag) is mapped to TokenFiller because it
+//     is the most common German article. TokenFiller tokens are stripped from the
+//     signature before dispatch, making conflict resolution architecturally impossible:
+//     no handler can ever see "die" in a signature. Use "di" or "dienstag" instead.
 //   - Single-char unit abbreviations "h" (Stunde), "m" (Minute), "s" (Sekunde)
 //     are intentionally omitted to avoid false positives.
 var German = Lang{
@@ -28,8 +27,7 @@ var German = Lang{
 // without requiring separate handlers.
 var germanWords = map[string]WordEntry{
 	// --- Weekdays ---
-	// "die" (Tuesday abbrev) kept as filler (article); "mit" (Wednesday
-	// abbrev) kept as common preposition — see Known Limitations.
+	// "die" (Tuesday abbrev) is a TokenFiller (German article) — see Known Limitations.
 	"montag":     {TokenWeekday, WeekdayMonday},
 	"mo":         {TokenWeekday, WeekdayMonday},
 	"mon":        {TokenWeekday, WeekdayMonday},

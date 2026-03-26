@@ -10,6 +10,12 @@ type Handler func(tokens []Token) (*ParsedDateSlots, error)
 // ErrUnknownSignature is returned by Parse when no handler matches the input.
 var ErrUnknownSignature = errors.New("nowandlater: unknown date signature")
 
+// ErrAmbiguous is returned when the input matches a recognisable date pattern
+// but the meaning cannot be determined without additional context.
+// Example: "mar 5" in Spanish, where "mar" abbreviates both martes (Tuesday)
+// and marzo (March).
+var ErrAmbiguous = errors.New("nowandlater: ambiguous date expression")
+
 // handlers maps each signature string to its handler function.
 // The signature is produced by Signature(Tokenize(input)) — token type names
 // joined by spaces, with FILLER tokens excluded.
@@ -43,6 +49,20 @@ var handlers = map[string]Handler{
 	"ANCHOR PREP TIME AMPM":    handleAnchorPrepTimeAMPM,
 	"ANCHOR PREP INTEGER AMPM": handleAnchorPrepIntegerAMPM,
 	"ANCHOR PREP INTEGER":      handleAnchorPrepInteger,
+
+	// "second" as ordinal day-2 in month/day expressions ("march second", "second of march")
+	"MONTH UNIT":      handleMonthSecondDay,
+	"MONTH UNIT YEAR": handleMonthSecondDayYear,
+	"UNIT MONTH":      handleSecondDayMonth,
+	"UNIT MONTH YEAR": handleSecondDayMonthYear,
+
+	"MONTH UNIT PREP TIME":         withPrepTime(handleMonthSecondDay),
+	"MONTH UNIT PREP TIME AMPM":    withPrepTime(handleMonthSecondDay),
+	"MONTH UNIT PREP INTEGER AMPM": withPrepTime(handleMonthSecondDay),
+
+	"MONTH UNIT YEAR PREP TIME":         withPrepTime(handleMonthSecondDayYear),
+	"MONTH UNIT YEAR PREP TIME AMPM":    withPrepTime(handleMonthSecondDayYear),
+	"MONTH UNIT YEAR PREP INTEGER AMPM": withPrepTime(handleMonthSecondDayYear),
 
 	// Calendar date: month-name forms
 	"MONTH INTEGER":                      handleMonthDay,
