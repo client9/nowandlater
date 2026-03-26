@@ -118,6 +118,14 @@ var englishCases = []struct {
 	{"about 3 days ago", u(2026, 3, 19, 10, 0, 0)}, // "about" as filler
 	{"just now", u(2026, 3, 22, 10, 0, 0)},         // "just" as filler
 
+	// --- Time-first formats (TIME AMPM MONTH INTEGER YEAR) ---
+	{"8:25 a.m. Dec. 12, 2014", u(2014, 12, 12, 8, 25, 0)},
+	{"2:21 p.m., December 11, 2014", u(2014, 12, 11, 14, 21, 0)},
+	{"10:06am Dec 11, 2014", u(2014, 12, 11, 10, 6, 0)},
+
+	// --- RFC 2822 with AM/PM (WEEKDAY INTEGER MONTH YEAR TIME AMPM) ---
+	{"Wednesday, 22nd June, 2016, 12:16 pm", u(2016, 6, 22, 12, 16, 0)},
+
 	// --- Time only (applied to today) ---
 	{"at 9:30", u(2026, 3, 22, 9, 30, 0)},
 	{"at 9:30 AM", u(2026, 3, 22, 9, 30, 0)},

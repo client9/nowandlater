@@ -444,6 +444,27 @@ func handleWeekdayIntegerMonthYearTime(tokens []Token) (*ParsedDateSlots, error)
 	}, nil
 }
 
+// handleWeekdayIntegerMonthYearTimeAMPM handles: WEEKDAY INTEGER MONTH YEAR TIME AMPM
+// Example: "Wednesday, 22nd June, 2016, 12.16 pm."
+func handleWeekdayIntegerMonthYearTimeAMPM(tokens []Token) (*ParsedDateSlots, error) {
+	toks := filterFillers(tokens)
+	// [0]=WEEKDAY (ignored), [1]=INTEGER, [2]=MONTH, [3]=YEAR, [4]=TIME, [5]=AMPM
+	d := toks[1].Value.(int)
+	y := toks[3].Value.(int)
+	timeVal := toks[4].Value.(string)
+	h, m, s := mustParseTime(timeVal)
+	h = applyAMPM(h, toks[5].Value.(AMPM))
+	return &ParsedDateSlots{
+		Year:   y,
+		Month:  int(toks[2].Value.(Month)),
+		Day:    d,
+		Hour:   h,
+		Minute: m,
+		Second: s,
+		Period: timePeriod(timeVal),
+	}, nil
+}
+
 // handleIntegerMonthIntegerTime handles: INTEGER MONTH INTEGER TIME
 // Examples: "02 Jan 06 15:04 MST" (RFC822), "22 Mar 26 10:04 -0700" (RFC822Z)
 // The second INTEGER is a 2-digit year expanded via the RFC 2822 rule.
@@ -963,6 +984,26 @@ var (
 	handleSecondDayMonth     = secondOrdinal(handleDayMonth)
 	handleSecondDayMonthYear = secondOrdinal(handleIntegerMonthYear)
 )
+
+// handleTimeAMPMMonthIntegerYear handles: TIME AMPM MONTH INTEGER YEAR
+// Example: "8:25 a.m. Dec. 12, 2014" — time precedes date
+func handleTimeAMPMMonthIntegerYear(tokens []Token) (*ParsedDateSlots, error) {
+	toks := filterFillers(tokens)
+	// [0]=TIME, [1]=AMPM, [2]=MONTH, [3]=INTEGER (day), [4]=YEAR
+	timeVal := toks[0].Value.(string)
+	h, min, sec := mustParseTime(timeVal)
+	h = applyAMPM(h, toks[1].Value.(AMPM))
+	slots := &ParsedDateSlots{
+		Year:   toks[4].Value.(int),
+		Month:  int(toks[2].Value.(Month)),
+		Day:    toks[3].Value.(int),
+		Hour:   h,
+		Minute: min,
+		Period: timePeriod(timeVal),
+	}
+	slots.Second = sec
+	return slots, nil
+}
 
 // handleMonthIntegerYearTimeAMPM handles: MONTH INTEGER YEAR TIME AMPM
 // Example: "Dec 3 2026 9:30 AM"

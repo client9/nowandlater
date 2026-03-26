@@ -65,18 +65,19 @@ var handlers = map[string]Handler{
 	"MONTH UNIT YEAR PREP INTEGER AMPM": withPrepTime(handleMonthSecondDayYear),
 
 	// Calendar date: month-name forms
-	"MONTH INTEGER":                      handleMonthDay,
-	"MONTH INTEGER TIME":                 handleMonthIntegerTime, // Go Stamp format
-	"INTEGER MONTH":                      handleDayMonth,
-	"MONTH INTEGER YEAR":                 handleMonthDayYear,
-	"MONTH YEAR":                         handleMonthYear,
-	"YEAR MONTH":                         handleYearMonth,
-	"WEEKDAY INTEGER MONTH YEAR":         handleWeekdayIntegerMonthYear,        // RFC 2822 date-only
-	"WEEKDAY INTEGER MONTH YEAR TIME":    handleWeekdayIntegerMonthYearTime,    // RFC 2822 full
-	"WEEKDAY MONTH INTEGER YEAR":         handleWeekdayMonthIntegerYear,        // ANSIC date-only
-	"WEEKDAY MONTH INTEGER TIME YEAR":    handleWeekdayMonthIntegerTimeYear,    // ANSIC, UnixDate, RubyDate
-	"INTEGER MONTH INTEGER TIME":         handleIntegerMonthIntegerTime,        // RFC822, RFC822Z
-	"WEEKDAY INTEGER MONTH INTEGER TIME": handleWeekdayIntegerMonthIntegerTime, // RFC850
+	"MONTH INTEGER":                        handleMonthDay,
+	"MONTH INTEGER TIME":                   handleMonthIntegerTime, // Go Stamp format
+	"INTEGER MONTH":                        handleDayMonth,
+	"MONTH INTEGER YEAR":                   handleMonthDayYear,
+	"MONTH YEAR":                           handleMonthYear,
+	"YEAR MONTH":                           handleYearMonth,
+	"WEEKDAY INTEGER MONTH YEAR":           handleWeekdayIntegerMonthYear,         // RFC 2822 date-only
+	"WEEKDAY INTEGER MONTH YEAR TIME":      handleWeekdayIntegerMonthYearTime,     // RFC 2822 full
+	"WEEKDAY INTEGER MONTH YEAR TIME AMPM": handleWeekdayIntegerMonthYearTimeAMPM, // RFC 2822 with AM/PM
+	"WEEKDAY MONTH INTEGER YEAR":           handleWeekdayMonthIntegerYear,         // ANSIC date-only
+	"WEEKDAY MONTH INTEGER TIME YEAR":      handleWeekdayMonthIntegerTimeYear,     // ANSIC, UnixDate, RubyDate
+	"INTEGER MONTH INTEGER TIME":           handleIntegerMonthIntegerTime,         // RFC822, RFC822Z
+	"WEEKDAY INTEGER MONTH INTEGER TIME":   handleWeekdayIntegerMonthIntegerTime,  // RFC850
 
 	// Calendar date: numeric compound forms (all separators → same signature)
 	"YEAR INTEGER INTEGER": handleYearIntegerInteger,
@@ -123,6 +124,7 @@ var handlers = map[string]Handler{
 	"YEAR INTEGER INTEGER TIME AMPM": handleYearIntegerIntegerTimeAMPM,
 	"YEAR MONTH INTEGER TIME":        handleYearMonthIntegerTime,
 	"YEAR MONTH INTEGER TIME AMPM":   handleYearMonthIntegerTimeAMPM,
+	"TIME AMPM MONTH INTEGER YEAR":   handleTimeAMPMMonthIntegerYear,
 	"MONTH INTEGER YEAR TIME":        handleMonthIntegerYearTime,
 	"MONTH INTEGER YEAR TIME AMPM":   handleMonthIntegerYearTimeAMPM,
 
