@@ -55,50 +55,22 @@ func handleDirectionWeekday(tokens []Token) (*ParsedDateSlots, error) {
 	}, nil
 }
 
-// handleDirectionWeekdayTime handles: DIRECTION WEEKDAY PREP TIME
-// Example: "next Monday at 9:30" or "next Monday at 9:30:00"
-func handleDirectionWeekdayTime(tokens []Token) (*ParsedDateSlots, error) {
-	toks := filterFillers(tokens)
-	timeVal := toks[3].Value.(string)
-	h, m, sec := mustParseTime(timeVal)
-	slots := &ParsedDateSlots{
-		Weekday:   toks[1].Value.(Weekday),
-		Direction: toks[0].Value.(Direction),
-		Hour:      h,
-		Minute:    m,
-		Period:    timePeriod(timeVal),
+// validateAndApplyAMPM validates that h is in the 12-hour range and applies ampm.
+func validateAndApplyAMPM(h int, ampm AMPM) (int, error) {
+	if h < 1 || h > 12 {
+		return 0, fmt.Errorf("nowandlater: hour %d out of range for 12-hour clock", h)
 	}
-	slots.Second = sec
-	return slots, nil
-}
-
-// handleDirectionWeekdayTimeAMPM handles: DIRECTION WEEKDAY PREP TIME AMPM
-// Example: "next Monday at 9:30 AM"
-func handleDirectionWeekdayTimeAMPM(tokens []Token) (*ParsedDateSlots, error) {
-	toks := filterFillers(tokens)
-	timeVal := toks[3].Value.(string)
-	h, m, sec := mustParseTime(timeVal)
-	h = applyAMPM(h, toks[4].Value.(AMPM))
-	slots := &ParsedDateSlots{
-		Weekday:   toks[1].Value.(Weekday),
-		Direction: toks[0].Value.(Direction),
-		Hour:      h,
-		Minute:    m,
-		Period:    timePeriod(timeVal),
-	}
-	slots.Second = sec
-	return slots, nil
+	return applyAMPM(h, ampm), nil
 }
 
 // handleIntegerAMPM handles: INTEGER AMPM
 // Examples: "3pm", "11am"
 func handleIntegerAMPM(tokens []Token) (*ParsedDateSlots, error) {
 	toks := filterFillers(tokens)
-	h := toks[0].Value.(int)
-	if h < 1 || h > 12 {
-		return nil, fmt.Errorf("nowandlater: hour %d out of range for 12-hour clock", h)
+	h, err := validateAndApplyAMPM(toks[0].Value.(int), toks[1].Value.(AMPM))
+	if err != nil {
+		return nil, err
 	}
-	h = applyAMPM(h, toks[1].Value.(AMPM))
 	return &ParsedDateSlots{Hour: h, Period: PeriodHour}, nil
 }
 
@@ -655,11 +627,10 @@ func withTrailingTime(dateHandler Handler) Handler {
 // Example: "at 3 PM"
 func handlePrepIntegerAMPM(tokens []Token) (*ParsedDateSlots, error) {
 	toks := filterFillers(tokens)
-	h := toks[1].Value.(int)
-	if h < 1 || h > 12 {
-		return nil, fmt.Errorf("nowandlater: hour %d out of range for 12-hour clock", h)
+	h, err := validateAndApplyAMPM(toks[1].Value.(int), toks[2].Value.(AMPM))
+	if err != nil {
+		return nil, err
 	}
-	h = applyAMPM(h, toks[2].Value.(AMPM))
 	return &ParsedDateSlots{Hour: h, Period: PeriodHour}, nil
 }
 
@@ -716,81 +687,6 @@ func handleUnitDirection(tokens []Token) (*ParsedDateSlots, error) {
 		Direction: toks[1].Value.(Direction),
 		Anchor:    period,
 		Period:    period,
-	}, nil
-}
-
-// handleAnchorPrepTime handles: ANCHOR PREP TIME
-// Examples: "today at 9:30", "tomorrow at 09:30:00"
-func handleAnchorPrepTime(tokens []Token) (*ParsedDateSlots, error) {
-	toks := filterFillers(tokens)
-	aDelta := anchorToSeconds[toks[0].Value.(Anchor)]
-	timeVal := toks[2].Value.(string)
-	h, m, sec := mustParseTime(timeVal)
-	slots := &ParsedDateSlots{
-		DeltaSeconds: new(aDelta),
-		Hour:         h,
-		Minute:       m,
-		Period:       timePeriod(timeVal),
-	}
-	slots.Second = sec
-	return slots, nil
-}
-
-// handleAnchorPrepTimeAMPM handles: ANCHOR PREP TIME AMPM
-// Examples: "today at 9:30 AM", "tomorrow at 11:00 PM"
-func handleAnchorPrepTimeAMPM(tokens []Token) (*ParsedDateSlots, error) {
-	toks := filterFillers(tokens)
-	aDelta := anchorToSeconds[toks[0].Value.(Anchor)]
-	timeVal := toks[2].Value.(string)
-	h, m, sec := mustParseTime(timeVal)
-	h = applyAMPM(h, toks[3].Value.(AMPM))
-	slots := &ParsedDateSlots{
-		DeltaSeconds: new(aDelta),
-		Hour:         h,
-		Minute:       m,
-		Period:       timePeriod(timeVal),
-	}
-	slots.Second = sec
-	return slots, nil
-}
-
-// handleAnchorPrepIntegerAMPM handles: ANCHOR PREP INTEGER AMPM
-// Examples: "today at 3pm", "tomorrow at 11am"
-func handleAnchorPrepIntegerAMPM(tokens []Token) (*ParsedDateSlots, error) {
-	toks := filterFillers(tokens)
-	aDelta := anchorToSeconds[toks[0].Value.(Anchor)]
-	h := toks[2].Value.(int)
-	h = applyAMPM(h, toks[3].Value.(AMPM))
-	return &ParsedDateSlots{
-		DeltaSeconds: new(aDelta),
-		Hour:         h,
-		Period:       PeriodHour,
-	}, nil
-}
-
-// handleAnchorPrepInteger handles: ANCHOR PREP INTEGER
-// Example: "today at 3" — hour is ambiguous (no AM/PM); stored as-is.
-func handleAnchorPrepInteger(tokens []Token) (*ParsedDateSlots, error) {
-	toks := filterFillers(tokens)
-	aDelta := anchorToSeconds[toks[0].Value.(Anchor)]
-	h := toks[2].Value.(int)
-	return &ParsedDateSlots{
-		DeltaSeconds: new(aDelta),
-		Hour:         h,
-		Period:       PeriodHour,
-	}, nil
-}
-
-// handleDirectionWeekdayPrepInteger handles: DIRECTION WEEKDAY PREP INTEGER
-// Example: "next Tuesday at 3" — hour is ambiguous (no AM/PM).
-func handleDirectionWeekdayPrepInteger(tokens []Token) (*ParsedDateSlots, error) {
-	toks := filterFillers(tokens)
-	h := toks[3].Value.(int)
-	return &ParsedDateSlots{
-		Weekday:   toks[1].Value.(Weekday),
-		Direction: toks[0].Value.(Direction),
-		Hour:      h,
-		Period:    PeriodHour,
 	}, nil
 }
 
@@ -926,11 +822,10 @@ func makeIntegerAMPMDateFragmentHandler(order DateOrder) Handler {
 	return func(tokens []Token) (*ParsedDateSlots, error) {
 		toks := filterFillers(tokens)
 		// [0]=INTEGER (hour), [1]=AMPM, [2]=DATE_FRAGMENT
-		hr := toks[0].Value.(int)
-		if hr < 1 || hr > 12 {
-			return nil, fmt.Errorf("nowandlater: hour %d out of range for 12-hour clock", hr)
+		hr, err := validateAndApplyAMPM(toks[0].Value.(int), toks[1].Value.(AMPM))
+		if err != nil {
+			return nil, err
 		}
-		hr = applyAMPM(hr, toks[1].Value.(AMPM))
 		mo, d, y, err := parseDateFragment(toks[2].Value.(string), order)
 		if err != nil {
 			return nil, err
@@ -950,11 +845,10 @@ func makeIntegerAMPMIntegerIntegerYearHandler(order DateOrder) Handler {
 	return func(tokens []Token) (*ParsedDateSlots, error) {
 		toks := filterFillers(tokens)
 		// [0]=INTEGER (hour), [1]=AMPM, [2]=INTEGER (a), [3]=INTEGER (b), [4]=YEAR
-		hr := toks[0].Value.(int)
-		if hr < 1 || hr > 12 {
-			return nil, fmt.Errorf("nowandlater: hour %d out of range for 12-hour clock", hr)
+		hr, err := validateAndApplyAMPM(toks[0].Value.(int), toks[1].Value.(AMPM))
+		if err != nil {
+			return nil, err
 		}
-		hr = applyAMPM(hr, toks[1].Value.(AMPM))
 		a := toks[2].Value.(int)
 		b := toks[3].Value.(int)
 		y := toks[4].Value.(int)

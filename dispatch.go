@@ -29,9 +29,9 @@ var handlers = map[string]Handler{
 	// Weekday
 	"WEEKDAY":                          handleWeekday,
 	"DIRECTION WEEKDAY":                handleDirectionWeekday,
-	"DIRECTION WEEKDAY PREP TIME":      handleDirectionWeekdayTime,
-	"DIRECTION WEEKDAY PREP TIME AMPM": handleDirectionWeekdayTimeAMPM,
-	"DIRECTION WEEKDAY PREP INTEGER":   handleDirectionWeekdayPrepInteger,
+	"DIRECTION WEEKDAY PREP TIME":      withPrepTime(handleDirectionWeekday),
+	"DIRECTION WEEKDAY PREP TIME AMPM": withPrepTime(handleDirectionWeekday),
+	"DIRECTION WEEKDAY PREP INTEGER":   withPrepTime(handleDirectionWeekday),
 
 	// Direction + unit: "next week", "last month"
 	"DIRECTION UNIT": handleDirectionUnit,
@@ -45,10 +45,10 @@ var handlers = map[string]Handler{
 	"MODIFIER TIME AMPM": handlePrepTimeAMPM,
 
 	// Anchor + time: "today at 9:30", "tomorrow at 3pm"
-	"ANCHOR PREP TIME":         handleAnchorPrepTime,
-	"ANCHOR PREP TIME AMPM":    handleAnchorPrepTimeAMPM,
-	"ANCHOR PREP INTEGER AMPM": handleAnchorPrepIntegerAMPM,
-	"ANCHOR PREP INTEGER":      handleAnchorPrepInteger,
+	"ANCHOR PREP TIME":         withPrepTime(handleAnchor),
+	"ANCHOR PREP TIME AMPM":    withPrepTime(handleAnchor),
+	"ANCHOR PREP INTEGER AMPM": withPrepTime(handleAnchor),
+	"ANCHOR PREP INTEGER":      withPrepTime(handleAnchor),
 
 	// "second" as ordinal day-2 in month/day expressions ("march second", "second of march")
 	"MONTH UNIT":      handleMonthSecondDay,
