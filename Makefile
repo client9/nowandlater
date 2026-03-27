@@ -7,7 +7,7 @@ clean:
 fmt:
 	gofmt -w -s .
 
-lint:
+lint: fmt
 	go vet ./...
 	go fix -diff .
 	golangci-lint run ./...
