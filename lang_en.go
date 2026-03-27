@@ -70,6 +70,7 @@ var englishWords = map[string]WordEntry{
 	"ago":    {TokenModifier, ModifierPast},
 	"hence":  {TokenModifier, ModifierFuture},
 	"from":   {TokenModifier, ModifierFuture},
+	"later":  {TokenModifier, ModifierFuture},
 	"before": {TokenModifier, ModifierPast},
 	"after":  {TokenModifier, ModifierFuture},
 

@@ -26,6 +26,11 @@ var englishCases = []struct {
 	{"in 3 days", u(2026, 3, 25, 10, 0, 0)},
 	{"a week ago", u(2026, 3, 15, 10, 0, 0)},
 	{"2 weeks from now", u(2026, 4, 5, 10, 0, 0)},
+	{"2 hours later", u(2026, 3, 22, 12, 0, 0)},
+	{"3 days later", u(2026, 3, 25, 10, 0, 0)},
+	{"2.5 hours later", u(2026, 3, 22, 12, 30, 0)}, // DECIMAL UNIT MODIFIER
+	{"0.5 hours later", u(2026, 3, 22, 10, 30, 0)},
+	{"1.5 days later", u(2026, 3, 23, 22, 0, 0)},
 
 	// --- Anchor + time-of-day ---
 	{"today at 9:30", u(2026, 3, 22, 9, 30, 0)},
