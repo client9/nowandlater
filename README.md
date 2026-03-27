@@ -13,12 +13,12 @@ import "github.com/client9/nowandlater"
 
 ### What makes it different?
 
-* Simple to recognize new date, time, and duration expressions
-* Simple to add additional human languages
-* Simple to translate to other programming languages
-* No regular expressions
-* No parser/generator langauge (ANTLR, PEG, Bison)
 * Fast - 500ns per call
+* Only uses stdlib, no external dependencies
+* No regular expressions
+* No parser/generator langauge (e.g. ANTLR, PEG, Bison)
+* Extensible to add new date, time, and duration expressions - PRs welcome!
+* Extensible to add additional human languages - PRs welcome!
 * Scalable - adding languages or rules has no additional performance cost.
 * MIT License - do whatever you want with it!
 
@@ -29,8 +29,8 @@ Read the CLAUDE.md summary, but simply it:
 * Turns input into a list of tokens, e.g. "Monday" --> `{ WEEKDAY, Monday }`. This is 99% of variations between different human languages.
 * It's data driven -- the tokens are in a map (e.g. `lang_en.go`)
 * The list of tokens is a "signature" - across all langauges there under 100 signatures (see dispatch.go)
-* The signature is used to find a handler function using a map.
-* The handler converts the signature into a golang struct holding numeric values for day, month, hour, etc. The handler func is normally a few lines long.
+* The signature is used to find a handler function using a `map`.
+* The handler converts the signature into a golang struct holding numeric values for day, month, hour, etc. The handler `func` is normally a few lines long.
 * The struct is converted into go a `time.Time` object.
 
 ### Can I add another human languages?
@@ -45,7 +45,7 @@ It can parse a date and time snippet in about 500ns.
 
 Python's dateparser, takes about 1,000,000ns. That's 2000x faster.
 
-Go's native time parser on a fixed format in 20ns. That's 25x slower.
+Go's native time parser on a fixed format is 20ns. That's 25x slower.
 
 
 ### Can it be ported to another (computer) lanaguge?
@@ -289,7 +289,6 @@ if errors.Is(err, nowandlater.ErrAmbiguous) {
   (`"el mar pasado"` → last Tuesday). In numeric date position (`"mar 5"`,
   `"5 de mar"`) it is genuinely ambiguous and returns `ErrAmbiguous`. Write
   `"marzo"` to avoid ambiguity.
-- **2-digit years**: are partially currently supported.
 - **Unix timestamps**: 10-digit integers are not yet recognised.
 - **morning / afternoon / evening**: semantics undefined; not yet supported.
 
