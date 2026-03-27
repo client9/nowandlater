@@ -166,6 +166,18 @@ var englishCases = []struct {
 	{"3pm", u(2026, 3, 22, 15, 0, 0)},
 	{"noon", u(2026, 3, 22, 12, 0, 0)},
 	{"midnight", u(2026, 3, 22, 0, 0, 0)},
+
+	// --- applyAMPM edge cases: 12 AM = midnight, 12 PM = noon ---
+	{"12 am", u(2026, 3, 22, 0, 0, 0)},
+	{"12 pm", u(2026, 3, 22, 12, 0, 0)},
+
+	// --- INTEGER INTEGER YEAR + PREP time variants (dateOrderHandler coverage) ---
+	{"12/25/2020 at 13:12", u(2020, 12, 25, 13, 12, 0)},
+	{"12/25/2020 at 1:12 pm", u(2020, 12, 25, 13, 12, 0)},
+	{"12/25/2020 at 1 pm", u(2020, 12, 25, 13, 0, 0)},
+
+	// --- DATE_FRAGMENT + PREP INTEGER AMPM (dateOrderHandler coverage) ---
+	{"12/25/20 at 1 pm", u(2020, 12, 25, 13, 0, 0)},
 }
 
 func TestLangEn(t *testing.T) {
@@ -181,6 +193,28 @@ func TestLangEn(t *testing.T) {
 			}
 			if !got.Equal(tc.want) {
 				t.Errorf("Resolve(%q)\n  got  %v\n  want %v", tc.input, got, tc.want)
+			}
+		})
+	}
+}
+
+// TestEnglishErrors verifies that out-of-range 12-hour clock values return errors
+// across all handler paths that call validateAndApplyAMPM.
+var englishErrorCases = []string{
+	"0 pm",            // INTEGER AMPM: hour 0 out of range
+	"13 am",           // INTEGER AMPM: hour 13 out of range
+	"at 0 pm",         // PREP INTEGER AMPM: hour 0 out of range
+	"at 13 am",        // PREP INTEGER AMPM: hour 13 out of range
+	"0 am 20.07.21",   // INTEGER AMPM DATE_FRAGMENT: hour 0 out of range
+	"0 am 20.07.2021", // INTEGER AMPM INTEGER INTEGER YEAR: hour 0 out of range
+}
+
+func TestEnglishErrors(t *testing.T) {
+	for _, input := range englishErrorCases {
+		t.Run(input, func(t *testing.T) {
+			_, err := LangEn.Parse(input)
+			if err == nil {
+				t.Errorf("Parse(%q) expected error, got nil", input)
 			}
 		})
 	}

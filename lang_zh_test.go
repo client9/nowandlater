@@ -82,6 +82,10 @@ var chineseCases = []struct {
 	{"刚刚", u(2026, 3, 22, 10, 0, 0)},   // just now → AnchorNow
 	{"此时", u(2026, 3, 22, 10, 0, 0)},   // at this moment → AnchorNow
 	{"2個月后", u(2026, 5, 21, 10, 0, 0)}, // traditional 個月 (2×30 days = 60 days)
+
+	// --- Time with seconds (covers zhParseTime seconds branch) ---
+	{"下午3点15分30秒", u(2026, 3, 22, 15, 15, 30)}, // 3:15:30 PM
+	{"上午9点30分45秒", u(2026, 3, 22, 9, 30, 45)},  // 9:30:45 AM
 }
 
 func TestLangZh(t *testing.T) {

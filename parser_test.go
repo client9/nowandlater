@@ -113,6 +113,54 @@ func TestParserParseInterval(t *testing.T) {
 		t.Errorf("end:   got %v, want %v", end, wantEnd)
 	}
 
+	// "in a fortnight" → [2026-04-05, 2026-04-19) — covers EndOf PeriodFortnight
+	start, end, err = p.ParseInterval("in a fortnight")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if !start.Equal(u(2026, 4, 5, 0, 0, 0)) {
+		t.Errorf("fortnight start: got %v, want %v", start, u(2026, 4, 5, 0, 0, 0))
+	}
+	if !end.Equal(u(2026, 4, 19, 0, 0, 0)) {
+		t.Errorf("fortnight end:   got %v, want %v", end, u(2026, 4, 19, 0, 0, 0))
+	}
+
+	// "in 3 hours" → [13:00, 14:00) — covers startOfPeriod/EndOf PeriodHour
+	start, end, err = p.ParseInterval("in 3 hours")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if !start.Equal(u(2026, 3, 22, 13, 0, 0)) {
+		t.Errorf("hours start: got %v, want %v", start, u(2026, 3, 22, 13, 0, 0))
+	}
+	if !end.Equal(u(2026, 3, 22, 14, 0, 0)) {
+		t.Errorf("hours end:   got %v, want %v", end, u(2026, 3, 22, 14, 0, 0))
+	}
+
+	// "in 30 minutes" → [10:30, 10:31) — covers startOfPeriod/EndOf PeriodMinute
+	start, end, err = p.ParseInterval("in 30 minutes")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if !start.Equal(u(2026, 3, 22, 10, 30, 0)) {
+		t.Errorf("minutes start: got %v, want %v", start, u(2026, 3, 22, 10, 30, 0))
+	}
+	if !end.Equal(u(2026, 3, 22, 10, 31, 0)) {
+		t.Errorf("minutes end:   got %v, want %v", end, u(2026, 3, 22, 10, 31, 0))
+	}
+
+	// "in 30 seconds" → [10:00:30, 10:00:31) — covers startOfPeriod/EndOf PeriodSecond
+	start, end, err = p.ParseInterval("in 30 seconds")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if !start.Equal(u(2026, 3, 22, 10, 0, 30)) {
+		t.Errorf("seconds start: got %v, want %v", start, u(2026, 3, 22, 10, 0, 30))
+	}
+	if !end.Equal(u(2026, 3, 22, 10, 0, 31)) {
+		t.Errorf("seconds end:   got %v, want %v", end, u(2026, 3, 22, 10, 0, 31))
+	}
+
 	// Error propagation: unknown input returns ErrUnknownSignature.
 	_, _, err = p.ParseInterval("xyzzy frobozz")
 	if err == nil {

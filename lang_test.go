@@ -467,3 +467,147 @@ func TestLangNDayAnchors(t *testing.T) {
 		})
 	}
 }
+
+func TestLookupLang(t *testing.T) {
+	cases := []struct {
+		code string
+		want *Lang
+	}{
+		{"en", &LangEn},
+		{"es", &LangEs},
+		{"fr", &LangFr},
+		{"de", &LangDe},
+		{"it", &LangIt},
+		{"pt", &LangPt},
+		{"ru", &LangRu},
+		{"ja", &LangJa},
+		{"zh", &LangZh},
+		// Region suffixes stripped
+		{"en_US", &LangEn},
+		{"zh-CN", &LangZh},
+		{"fr-FR", &LangFr},
+		// Case normalised
+		{"EN", &LangEn},
+		{"FR", &LangFr},
+		// Unknown / empty
+		{"xx", nil},
+		{"", nil},
+	}
+	for _, tc := range cases {
+		t.Run(tc.code, func(t *testing.T) {
+			got := LookupLang(tc.code)
+			if got != tc.want {
+				t.Errorf("LookupLang(%q) = %p, want %p", tc.code, got, tc.want)
+			}
+		})
+	}
+}
+
+func TestStringMethods(t *testing.T) {
+	// Period
+	for _, tc := range []struct {
+		p    Period
+		want string
+	}{
+		{PeriodSecond, "second"}, {PeriodMinute, "minute"}, {PeriodHour, "hour"},
+		{PeriodDay, "day"}, {PeriodFortnight, "fortnight"}, {PeriodWeek, "week"},
+		{PeriodMonth, "month"}, {PeriodYear, "year"},
+	} {
+		if got := tc.p.String(); got != tc.want {
+			t.Errorf("Period(%d).String() = %q, want %q", int(tc.p), got, tc.want)
+		}
+	}
+
+	// Weekday
+	for _, tc := range []struct {
+		w    Weekday
+		want string
+	}{
+		{WeekdayMonday, "monday"}, {WeekdayTuesday, "tuesday"}, {WeekdayWednesday, "wednesday"},
+		{WeekdayThursday, "thursday"}, {WeekdayFriday, "friday"}, {WeekdaySaturday, "saturday"},
+		{WeekdaySunday, "sunday"},
+	} {
+		if got := tc.w.String(); got != tc.want {
+			t.Errorf("Weekday(%d).String() = %q, want %q", int(tc.w), got, tc.want)
+		}
+	}
+
+	// Month
+	for _, tc := range []struct {
+		m    Month
+		want string
+	}{
+		{MonthJanuary, "january"}, {MonthFebruary, "february"}, {MonthMarch, "march"},
+		{MonthApril, "april"}, {MonthMay, "may"}, {MonthJune, "june"},
+		{MonthJuly, "july"}, {MonthAugust, "august"}, {MonthSeptember, "september"},
+		{MonthOctober, "october"}, {MonthNovember, "november"}, {MonthDecember, "december"},
+	} {
+		if got := tc.m.String(); got != tc.want {
+			t.Errorf("Month(%d).String() = %q, want %q", int(tc.m), got, tc.want)
+		}
+	}
+
+	// AMPM
+	for _, tc := range []struct {
+		a    AMPM
+		want string
+	}{
+		{AMPMAm, "am"}, {AMPMPm, "pm"},
+	} {
+		if got := tc.a.String(); got != tc.want {
+			t.Errorf("AMPM(%d).String() = %q, want %q", int(tc.a), got, tc.want)
+		}
+	}
+
+	// Anchor
+	for _, tc := range []struct {
+		a    Anchor
+		want string
+	}{
+		{AnchorNow, "now"}, {AnchorToday, "today"}, {AnchorTomorrow, "tomorrow"},
+		{AnchorYesterday, "yesterday"}, {Anchor2DaysAgo, "2daysago"},
+		{Anchor2DaysFromNow, "2daysfromnow"}, {Anchor3DaysAgo, "3daysago"},
+		{Anchor3DaysFromNow, "3daysfromnow"},
+	} {
+		if got := tc.a.String(); got != tc.want {
+			t.Errorf("Anchor(%d).String() = %q, want %q", int(tc.a), got, tc.want)
+		}
+	}
+
+	// Modifier
+	for _, tc := range []struct {
+		m    Modifier
+		want string
+	}{
+		{ModifierFuture, "future"}, {ModifierPast, "past"},
+	} {
+		if got := tc.m.String(); got != tc.want {
+			t.Errorf("Modifier(%d).String() = %q, want %q", int(tc.m), got, tc.want)
+		}
+	}
+
+	// Direction
+	for _, tc := range []struct {
+		d    Direction
+		want string
+	}{
+		{DirectionFuture, "future"}, {DirectionPast, "past"}, {DirectionNearest, "nearest"},
+	} {
+		if got := tc.d.String(); got != tc.want {
+			t.Errorf("Direction(%d).String() = %q, want %q", int(tc.d), got, tc.want)
+		}
+	}
+}
+
+// TestExpand2DigitYear covers all three branches of the RFC 2822 year expansion rule.
+func TestExpand2DigitYear(t *testing.T) {
+	for _, tc := range []struct{ y, want int }{
+		{0, 2000}, {20, 2020}, {49, 2049}, // < 50 → 2000+y
+		{50, 1950}, {75, 1975}, {99, 1999}, // 50–99 → 1900+y
+		{100, 100}, {2026, 2026}, {999, 999}, // ≥ 100 → passthrough
+	} {
+		if got := expand2DigitYear(tc.y); got != tc.want {
+			t.Errorf("expand2DigitYear(%d) = %d, want %d", tc.y, got, tc.want)
+		}
+	}
+}
