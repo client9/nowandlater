@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-// zhNow is the fixed reference time for Chinese resolver tests.
+// zhNow is the fixed reference time for LangZh resolver tests.
 // Same date as resolveNow (2026-03-22 10:00:00 UTC, a Sunday).
 var zhNow = time.Date(2026, 3, 22, 10, 0, 0, 0, time.UTC)
 
@@ -84,10 +84,10 @@ var chineseCases = []struct {
 	{"2個月后", u(2026, 5, 21, 10, 0, 0)}, // traditional 個月 (2×30 days = 60 days)
 }
 
-func TestChinese(t *testing.T) {
+func TestLangZh(t *testing.T) {
 	for _, tc := range chineseCases {
 		t.Run(tc.input, func(t *testing.T) {
-			slots, err := Chinese.Parse(tc.input)
+			slots, err := LangZh.Parse(tc.input)
 			if err != nil {
 				t.Fatalf("Parse(%q) error: %v", tc.input, err)
 			}

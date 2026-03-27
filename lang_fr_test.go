@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// frNow is the fixed reference time for French resolver tests.
+// frNow is the fixed reference time for LangFr resolver tests.
 // Same date as resolveNow (2026-03-22 10:00:00 UTC, a Sunday).
 var frNow = time.Date(2026, 3, 22, 10, 0, 0, 0, time.UTC)
 
@@ -93,10 +93,10 @@ var frenchAmbiguousCases = []string{
 	"5 mar 2026",
 }
 
-func TestFrenchAmbiguous(t *testing.T) {
+func TestLangFrAmbiguous(t *testing.T) {
 	for _, input := range frenchAmbiguousCases {
 		t.Run(input, func(t *testing.T) {
-			_, err := French.Parse(input)
+			_, err := LangFr.Parse(input)
 			if !errors.Is(err, ErrAmbiguous) {
 				t.Errorf("Parse(%q) error = %v, want ErrAmbiguous", input, err)
 			}
@@ -104,10 +104,10 @@ func TestFrenchAmbiguous(t *testing.T) {
 	}
 }
 
-func TestFrench(t *testing.T) {
+func TestLangFr(t *testing.T) {
 	for _, tc := range frenchCases {
 		t.Run(tc.input, func(t *testing.T) {
-			slots, err := French.Parse(tc.input)
+			slots, err := LangFr.Parse(tc.input)
 			if err != nil {
 				t.Fatalf("Parse(%q) error: %v", tc.input, err)
 			}

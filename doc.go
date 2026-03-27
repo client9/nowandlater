@@ -41,7 +41,7 @@
 //
 // # Multi-language support
 //
-// Built-in languages: [English], [Spanish].
+// Built-in languages: [LangEn], [LangEs], [LangFr], [LangDe], [LangIt], [LangPt], [LangRu], [LangJa], [LangZh].
 //
 // Custom languages can be added by constructing a [Lang] with a [Lang.Words]
 // map, [Lang.OrdinalSuffixes], and optional [Lang.DateOrder] and

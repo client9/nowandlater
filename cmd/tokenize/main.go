@@ -24,33 +24,11 @@ import (
 	"github.com/client9/nowandlater"
 )
 
-// langByCode maps ISO 639-1 codes and common locale prefixes to a Lang pointer.
-var langByCode = map[string]*nowandlater.Lang{
-	"en": &nowandlater.English,
-	"es": &nowandlater.Spanish,
-	"fr": &nowandlater.French,
-	"de": &nowandlater.German,
-	"it": &nowandlater.Italian,
-	"pt": &nowandlater.Portuguese,
-	"ru": &nowandlater.Russian,
-	"ja": &nowandlater.Japanese,
-	"zh": &nowandlater.Chinese,
-}
-
 func lookupLang(code string) (*nowandlater.Lang, error) {
-	// Normalise: lowercase, strip region suffix (e.g. "en_US" → "en", "zh-CN" → "zh").
-	code = strings.ToLower(strings.TrimSpace(code))
-	if i := strings.IndexAny(code, "-_"); i >= 0 {
-		code = code[:i]
-	}
-	if l, ok := langByCode[code]; ok {
+	if l := nowandlater.LookupLang(code); l != nil {
 		return l, nil
 	}
-	codes := make([]string, 0, len(langByCode))
-	for k := range langByCode {
-		codes = append(codes, k)
-	}
-	return nil, fmt.Errorf("unknown language %q; supported: %s", code, strings.Join(codes, ", "))
+	return nil, fmt.Errorf("unknown language %q; supported: en, es, fr, de, it, pt, ru, ja, zh", code)
 }
 
 func main() {

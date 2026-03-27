@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// spNow is the fixed reference time for Spanish resolver tests.
+// spNow is the fixed reference time for LangEs resolver tests.
 // Same date as resolveNow (2026-03-22 10:00:00 UTC, a Sunday) for easy comparison.
 var spNow = time.Date(2026, 3, 22, 10, 0, 0, 0, time.UTC)
 
@@ -59,7 +59,7 @@ var spanishCases = []struct {
 	{"el próximo lunes", u(2026, 3, 23, 0, 0, 0)},
 	{"el lunes pasado", u(2026, 3, 16, 0, 0, 0)},
 
-	// --- Weekday + direction (Spanish word order) ---
+	// --- Weekday + direction (LangEs word order) ---
 	{"lunes próximo", u(2026, 3, 23, 0, 0, 0)},
 	{"lunes pasado", u(2026, 3, 16, 0, 0, 0)},
 
@@ -121,10 +121,10 @@ var spanishAmbiguousCases = []string{
 	"5 de mar 2027",
 }
 
-func TestSpanishAmbiguous(t *testing.T) {
+func TestLangEsAmbiguous(t *testing.T) {
 	for _, input := range spanishAmbiguousCases {
 		t.Run(input, func(t *testing.T) {
-			_, err := Spanish.Parse(input)
+			_, err := LangEs.Parse(input)
 			if !errors.Is(err, ErrAmbiguous) {
 				t.Errorf("Parse(%q) error = %v, want ErrAmbiguous", input, err)
 			}
@@ -132,10 +132,10 @@ func TestSpanishAmbiguous(t *testing.T) {
 	}
 }
 
-func TestSpanish(t *testing.T) {
+func TestLangEs(t *testing.T) {
 	for _, tc := range spanishCases {
 		t.Run(tc.input, func(t *testing.T) {
-			slots, err := Spanish.Parse(tc.input)
+			slots, err := LangEs.Parse(tc.input)
 			if err != nil {
 				t.Fatalf("Parse(%q) error: %v", tc.input, err)
 			}

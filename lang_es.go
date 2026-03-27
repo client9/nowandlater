@@ -1,6 +1,6 @@
 package nowandlater
 
-// Spanish is the built-in Spanish Lang.
+// LangEs is the built-in Spanish Lang.
 //
 // Known limitations:
 //   - "mar" resolves to Tuesday (martes) in weekday contexts ("el mar pasado" = last
@@ -11,7 +11,7 @@ package nowandlater
 //     "a" would also shadow the preposition entry.
 //   - "mi" (Wednesday abbreviation from supplementary data) also means the
 //     possessive pronoun "my" in Spanish; it maps to Wednesday in date context.
-var Spanish = Lang{
+var LangEs = Lang{
 	Words:           spanishWords,
 	OrdinalSuffixes: []string{},
 	DateOrder:       DMY,

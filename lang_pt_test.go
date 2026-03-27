@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// ptNow is the fixed reference time for Portuguese resolver tests.
+// ptNow is the fixed reference time for LangPt resolver tests.
 // Same date as resolveNow (2026-03-22 10:00:00 UTC, a Sunday).
 var ptNow = time.Date(2026, 3, 22, 10, 0, 0, 0, time.UTC)
 
@@ -87,7 +87,7 @@ var portugueseCases = []struct {
 }
 
 // portugueseAmbiguousCases are inputs that are recognisably date-like but cannot
-// be resolved because weekday names double as feminine ordinals in Portuguese:
+// be resolved because weekday names double as feminine ordinals in LangPt:
 // "segunda" (Monday / 2nd), "quarta" (Wednesday / 4th), "quinta" (Thursday / 5th),
 // "sexta" (Friday / 6th).
 var portugueseAmbiguousCases = []string{
@@ -99,10 +99,10 @@ var portugueseAmbiguousCases = []string{
 	"quinta de março 2026",
 }
 
-func TestPortugueseAmbiguous(t *testing.T) {
+func TestLangPtAmbiguous(t *testing.T) {
 	for _, input := range portugueseAmbiguousCases {
 		t.Run(input, func(t *testing.T) {
-			_, err := Portuguese.Parse(input)
+			_, err := LangPt.Parse(input)
 			if !errors.Is(err, ErrAmbiguous) {
 				t.Errorf("Parse(%q) error = %v, want ErrAmbiguous", input, err)
 			}
@@ -110,10 +110,10 @@ func TestPortugueseAmbiguous(t *testing.T) {
 	}
 }
 
-func TestPortuguese(t *testing.T) {
+func TestLangPt(t *testing.T) {
 	for _, tc := range portugueseCases {
 		t.Run(tc.input, func(t *testing.T) {
-			slots, err := Portuguese.Parse(tc.input)
+			slots, err := LangPt.Parse(tc.input)
 			if err != nil {
 				t.Fatalf("Parse(%q) error: %v", tc.input, err)
 			}

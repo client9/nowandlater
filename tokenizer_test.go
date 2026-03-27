@@ -266,7 +266,7 @@ var tokenizerCases = []struct {
 func TestTokenize(t *testing.T) {
 	for _, tc := range tokenizerCases {
 		t.Run(tc.input, func(t *testing.T) {
-			got := English.Tokenize(tc.input)
+			got := LangEn.Tokenize(tc.input)
 			if len(got) != len(tc.tokens) {
 				t.Fatalf("Tokenize(%q)\n  got  %v\n  want %v", tc.input, got, tc.tokens)
 			}
@@ -286,7 +286,7 @@ func TestSignature(t *testing.T) {
 			continue
 		}
 		t.Run(tc.input, func(t *testing.T) {
-			tokens := English.Tokenize(tc.input)
+			tokens := LangEn.Tokenize(tc.input)
 			got := Signature(tokens)
 			if got != tc.sig {
 				t.Errorf("Signature(%q)\n  got  %q\n  want %q", tc.input, got, tc.sig)

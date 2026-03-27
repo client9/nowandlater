@@ -49,7 +49,7 @@ input string
 
 **`Parser`** (`parser.go`) — the primary high-level entry point. Configure once,
 call `Parse` or `ParseInterval` repeatedly. Zero value is valid.
-- `Lang *Lang` — language to use; nil → `&English`
+- `Lang *Lang` — language to use; nil → `&LangEn`
 - `Location *time.Location` — default timezone when input has none; nil → `time.Local`
 - `Now func() time.Time` — clock source for relative expressions; nil → `time.Now`
 - `Parse(input string) (time.Time, error)` — single-call parse + resolve

@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// itNow is the fixed reference time for Italian resolver tests.
+// itNow is the fixed reference time for LangIt resolver tests.
 // Same date as resolveNow (2026-03-22 10:00:00 UTC, a Sunday).
 var itNow = time.Date(2026, 3, 22, 10, 0, 0, 0, time.UTC)
 
@@ -93,10 +93,10 @@ var italianAmbiguousCases = []string{
 	"5 mar 2026",
 }
 
-func TestItalianAmbiguous(t *testing.T) {
+func TestLangItAmbiguous(t *testing.T) {
 	for _, input := range italianAmbiguousCases {
 		t.Run(input, func(t *testing.T) {
-			_, err := Italian.Parse(input)
+			_, err := LangIt.Parse(input)
 			if !errors.Is(err, ErrAmbiguous) {
 				t.Errorf("Parse(%q) error = %v, want ErrAmbiguous", input, err)
 			}
@@ -104,10 +104,10 @@ func TestItalianAmbiguous(t *testing.T) {
 	}
 }
 
-func TestItalian(t *testing.T) {
+func TestLangIt(t *testing.T) {
 	for _, tc := range italianCases {
 		t.Run(tc.input, func(t *testing.T) {
-			slots, err := Italian.Parse(tc.input)
+			slots, err := LangIt.Parse(tc.input)
 			if err != nil {
 				t.Fatalf("Parse(%q) error: %v", tc.input, err)
 			}

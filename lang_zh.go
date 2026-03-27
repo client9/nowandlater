@@ -6,7 +6,7 @@ import (
 	"unicode/utf8"
 )
 
-// Chinese is the built-in Simplified Chinese Lang.
+// LangZh is the built-in Simplified Chinese Lang.
 //
 // Like Japanese, Mandarin Chinese uses no word-separating spaces, so a
 // custom character-level tokenizer is required. The tokenizer shares the
@@ -18,7 +18,7 @@ import (
 //     個月 (traditional "month" measure word) is the only exception.
 //   - Character ordinal day numbers (二十四日) are not supported; use digits (24日).
 //   - Full-width digits are not normalised (use ASCII digits).
-var Chinese = Lang{
+var LangZh = Lang{
 	Words:         chineseWords,
 	Handlers:      chineseHandlers,
 	TokenizerFunc: chineseTokenize,

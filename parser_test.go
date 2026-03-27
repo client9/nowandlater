@@ -26,7 +26,7 @@ func TestParserZeroValue(t *testing.T) {
 
 func TestParserNowFunc(t *testing.T) {
 	p := Parser{
-		Lang: &English,
+		Lang: &LangEn,
 		Now:  fixedNow(parserNow),
 	}
 	got, err := p.Parse("tomorrow")
@@ -45,7 +45,7 @@ func TestParserLocation(t *testing.T) {
 		t.Skip("America/New_York not available:", err)
 	}
 	p := Parser{
-		Lang:     &English,
+		Lang:     &LangEn,
 		Location: nyc,
 		Now:      fixedNow(parserNow),
 	}
@@ -65,7 +65,7 @@ func TestParserInputTzOverridesLocation(t *testing.T) {
 		t.Skip("America/New_York not available:", err)
 	}
 	p := Parser{
-		Lang:     &English,
+		Lang:     &LangEn,
 		Location: nyc,
 		Now:      fixedNow(parserNow),
 	}
@@ -78,9 +78,9 @@ func TestParserInputTzOverridesLocation(t *testing.T) {
 	}
 }
 
-func TestParserSpanish(t *testing.T) {
+func TestParserLangEs(t *testing.T) {
 	p := Parser{
-		Lang: &Spanish,
+		Lang: &LangEs,
 		Now:  fixedNow(spNow),
 	}
 	got, err := p.Parse("mañana")
@@ -95,7 +95,7 @@ func TestParserSpanish(t *testing.T) {
 
 func TestParserParseInterval(t *testing.T) {
 	p := Parser{
-		Lang: &English,
+		Lang: &LangEn,
 		Now:  fixedNow(parserNow), // 2026-03-22 10:00:00 UTC, Sunday
 	}
 

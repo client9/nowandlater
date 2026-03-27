@@ -1,6 +1,6 @@
 package nowandlater
 
-// French is the built-in French Lang.
+// LangFr is the built-in French Lang.
 //
 // Known limitations:
 //   - "mar" resolves to Tuesday (mardi) in weekday contexts ("mar prochain" = next Tuesday).
@@ -23,7 +23,7 @@ package nowandlater
 //     conflict with common French words: "ma" (my), "me" (me), "je" (I), "sa"
 //     (his/her). These are mapped to weekdays; inputs containing these words in a
 //     non-weekday role will produce unexpected signatures.
-var French = Lang{
+var LangFr = Lang{
 	Words:           frenchWords,
 	OrdinalSuffixes: []string{"ière", "iere", "ère", "ere", "er", "ième", "ieme", "ème", "eme"},
 	DateOrder:       DMY,

@@ -1,6 +1,6 @@
 package nowandlater
 
-// German is the built-in German Lang.
+// LangDe is the built-in German Lang.
 //
 // Ordinal dots ("1. März 2026") are handled globally in classifyNumber, so no
 // special OrdinalSuffixes entry is required. Compound numeric dates
@@ -15,7 +15,7 @@ package nowandlater
 //     no handler can ever see "die" in a signature. Use "di" or "dienstag" instead.
 //   - Single-char unit abbreviations "h" (Stunde), "m" (Minute), "s" (Sekunde)
 //     are intentionally omitted to avoid false positives.
-var German = Lang{
+var LangDe = Lang{
 	Words:     germanWords,
 	DateOrder: DMY,
 }

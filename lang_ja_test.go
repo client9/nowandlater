@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-// jaNow is the fixed reference time for Japanese resolver tests.
+// jaNow is the fixed reference time for LangJa resolver tests.
 // Same date as resolveNow (2026-03-22 10:00:00 UTC, a Sunday).
 var jaNow = time.Date(2026, 3, 22, 10, 0, 0, 0, time.UTC)
 
@@ -96,10 +96,10 @@ var japaneseCases = []struct {
 	{"令和7年3月24日", u(2025, 3, 24, 0, 0, 0)}, // era + full date
 }
 
-func TestJapanese(t *testing.T) {
+func TestLangJa(t *testing.T) {
 	for _, tc := range japaneseCases {
 		t.Run(tc.input, func(t *testing.T) {
-			slots, err := Japanese.Parse(tc.input)
+			slots, err := LangJa.Parse(tc.input)
 			if err != nil {
 				t.Fatalf("Parse(%q) error: %v", tc.input, err)
 			}

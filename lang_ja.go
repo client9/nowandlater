@@ -6,14 +6,14 @@ import (
 	"unicode/utf8"
 )
 
-// Japanese is the built-in Japanese Lang.
+// LangJa is the built-in Japanese Lang.
 //
 // Known limitations:
 //   - Kanji day numbers (二十四日) are not supported; use Arabic numerals (24日).
 //   - Kanji year numbers (二〇二六年) are not supported; use Arabic numerals (2026年).
 //   - Irregular day-of-month readings (ついたち, ふつか, etc.) are not supported.
 //   - Full-width numerals (３月２４日) are normalized to ASCII automatically.
-var Japanese = Lang{
+var LangJa = Lang{
 	Words:         japaneseWords,
 	Handlers:      japaneseHandlers,
 	TokenizerFunc: japaneseTokenize,

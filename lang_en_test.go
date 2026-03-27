@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-// enNow is the fixed reference time for English resolver tests.
+// enNow is the fixed reference time for LangEn resolver tests.
 // Same date as resolveNow (2026-03-22 10:00:00 UTC, a Sunday).
 var enNow = time.Date(2026, 3, 22, 10, 0, 0, 0, time.UTC)
 
@@ -168,10 +168,10 @@ var englishCases = []struct {
 	{"midnight", u(2026, 3, 22, 0, 0, 0)},
 }
 
-func TestEnglish(t *testing.T) {
+func TestLangEn(t *testing.T) {
 	for _, tc := range englishCases {
 		t.Run(tc.input, func(t *testing.T) {
-			slots, err := English.Parse(tc.input)
+			slots, err := LangEn.Parse(tc.input)
 			if err != nil {
 				t.Fatalf("Parse(%q) error: %v", tc.input, err)
 			}

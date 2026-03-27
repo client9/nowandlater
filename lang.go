@@ -1,6 +1,7 @@
 package nowandlater
 
 import (
+	"strings"
 	"sync"
 	"time"
 )
@@ -100,4 +101,28 @@ type Lang struct {
 	// Lang must not be copied after first use (same restriction as sync.Mutex).
 	phraseOnce     sync.Once
 	maxPhraseWords int
+}
+
+// langRegistry maps ISO 639-1 codes to the built-in Lang pointers.
+var langRegistry = map[string]*Lang{
+	"en": &LangEn,
+	"es": &LangEs,
+	"fr": &LangFr,
+	"de": &LangDe,
+	"it": &LangIt,
+	"pt": &LangPt,
+	"ru": &LangRu,
+	"ja": &LangJa,
+	"zh": &LangZh,
+}
+
+// LookupLang returns the built-in Lang for the given ISO 639-1 code, or nil if
+// the code is not recognised. The lookup is case-insensitive and region suffixes
+// are ignored ("en_US" and "en-GB" both return &LangEn).
+func LookupLang(code string) *Lang {
+	code = strings.ToLower(strings.TrimSpace(code))
+	if i := strings.IndexAny(code, "-_"); i >= 0 {
+		code = code[:i]
+	}
+	return langRegistry[code]
 }

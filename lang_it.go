@@ -1,6 +1,6 @@
 package nowandlater
 
-// Italian is the built-in Italian Lang.
+// LangIt is the built-in Italian Lang.
 //
 // Italian uses standard whitespace tokenization, DMY date order, and the same
 // Romance-language patterns already handled globally (WEEKDAY DIRECTION,
@@ -24,7 +24,7 @@ package nowandlater
 //     are intentionally omitted to avoid false positives.
 //   - Elided contractions beyond the pre-mapped set become TokenUnknown
 //     and are silently dropped from the signature.
-var Italian = Lang{
+var LangIt = Lang{
 	Words:           italianWords,
 	OrdinalSuffixes: []string{"°", "º"}, // degree sign and ordinal indicator
 	DateOrder:       DMY,

@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-// deNow is the fixed reference time for German resolver tests.
+// deNow is the fixed reference time for LangDe resolver tests.
 // Same date as resolveNow (2026-03-22 10:00:00 UTC, a Sunday).
 var deNow = time.Date(2026, 3, 22, 10, 0, 0, 0, time.UTC)
 
@@ -70,10 +70,10 @@ var germanCases = []struct {
 	{"nächsten Mon", u(2026, 3, 23, 0, 0, 0)},      // "Mon" = Montag
 }
 
-func TestGerman(t *testing.T) {
+func TestLangDe(t *testing.T) {
 	for _, tc := range germanCases {
 		t.Run(tc.input, func(t *testing.T) {
-			slots, err := German.Parse(tc.input)
+			slots, err := LangDe.Parse(tc.input)
 			if err != nil {
 				t.Fatalf("Parse(%q) error: %v", tc.input, err)
 			}

@@ -5,10 +5,10 @@ import "time"
 // Parser wraps a Lang with runtime defaults, providing a single-call
 // Parse method that combines tokenization and resolution.
 //
-// The zero value is valid: it uses English, time.Local, and time.Now.
+// The zero value is valid: it uses LangEn, time.Local, and time.Now.
 type Parser struct {
 	// Lang is the language configuration to use for parsing.
-	// If nil, English is used.
+	// If nil, LangEn is used.
 	Lang *Lang
 
 	// Location is the default timezone for the returned time when the
@@ -27,7 +27,7 @@ type Parser struct {
 func (p Parser) Parse(input string) (time.Time, error) {
 	lang := p.Lang
 	if lang == nil {
-		lang = &English
+		lang = &LangEn
 	}
 	now := time.Now()
 	if p.Now != nil {
@@ -52,7 +52,7 @@ func (p Parser) Parse(input string) (time.Time, error) {
 func (p Parser) ParseInterval(input string) (start, end time.Time, err error) {
 	lang := p.Lang
 	if lang == nil {
-		lang = &English
+		lang = &LangEn
 	}
 	now := time.Now()
 	if p.Now != nil {

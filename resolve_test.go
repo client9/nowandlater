@@ -44,7 +44,7 @@ func TestResolveTimezone(t *testing.T) {
 
 	for _, tc := range cases {
 		t.Run(tc.input, func(t *testing.T) {
-			slots, err := English.Parse(tc.input)
+			slots, err := LangEn.Parse(tc.input)
 			if err != nil {
 				t.Fatalf("Parse(%q) error: %v", tc.input, err)
 			}
@@ -200,7 +200,7 @@ func TestResolveInterval(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(c.input, func(t *testing.T) {
-			slots, err := English.Parse(c.input)
+			slots, err := LangEn.Parse(c.input)
 			if err != nil {
 				t.Fatalf("Parse error: %v", err)
 			}

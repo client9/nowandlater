@@ -7,8 +7,8 @@ import (
 )
 
 // miniLang is a tiny custom language used to verify that the Lang architecture
-// works end-to-end without depending on English words. It uses invented words
-// that don't appear in English so there's no ambiguity.
+// works end-to-end without depending on LangEn words. It uses invented words
+// that don't appear in LangEn so there's no ambiguity.
 //
 // Vocabulary:
 //
@@ -108,7 +108,7 @@ func TestLangTokenize(t *testing.T) {
 }
 
 // TestLangParse verifies that a custom Lang can parse date expressions end-to-end.
-// Because Token.Value stores canonical English keys, the existing handlers and
+// Because Token.Value stores canonical LangEn keys, the existing handlers and
 // lookup tables work unchanged.
 func TestLangParse(t *testing.T) {
 	cases := []struct {
@@ -158,10 +158,10 @@ func TestLangParse(t *testing.T) {
 
 // TestLangHandlerOverride verifies that lang.Handlers takes priority over the
 // global handlers map. This enables languages with different word order to
-// supply their own handlers for signatures that don't exist in English.
+// supply their own handlers for signatures that don't exist in LangEn.
 //
 // Example: French "lundi prochain" (Monday next) produces WEEKDAY DIRECTION —
-// the reverse of English DIRECTION WEEKDAY. The lang can supply a handler for
+// the reverse of LangEn DIRECTION WEEKDAY. The lang can supply a handler for
 // "WEEKDAY DIRECTION" that reads tokens in the correct order.
 func TestLangHandlerOverride(t *testing.T) {
 	// frenchLike extends miniLang with a WEEKDAY DIRECTION handler.
@@ -174,7 +174,7 @@ func TestLangHandlerOverride(t *testing.T) {
 		Handlers: map[string]Handler{
 			"WEEKDAY DIRECTION": func(tokens []Token) (*ParsedDateSlots, error) {
 				toks := filterFillers(tokens)
-				// toks[0]=WEEKDAY, toks[1]=DIRECTION (reversed from English)
+				// toks[0]=WEEKDAY, toks[1]=DIRECTION (reversed from LangEn)
 				dir := toks[1].Value.(Direction)
 				wd := toks[0].Value.(Weekday)
 				return &ParsedDateSlots{
@@ -293,8 +293,8 @@ func TestLangOrdinalSuffixes(t *testing.T) {
 		t.Errorf("token[0].Type = %v, want UNKNOWN (no ordinal stripping in miniLang)", toks[0].Type)
 	}
 
-	// English strips "rd" → "3" → INTEGER
-	engToks := English.Tokenize("3rd of January")
+	// LangEn strips "rd" → "3" → INTEGER
+	engToks := LangEn.Tokenize("3rd of January")
 	// Expected: INTEGER "3", FILLER "of", MONTH "january"
 	found := false
 	for _, tok := range engToks {
@@ -303,7 +303,7 @@ func TestLangOrdinalSuffixes(t *testing.T) {
 		}
 	}
 	if !found {
-		t.Errorf("English.Tokenize(\"3rd of January\") did not strip ordinal; tokens: %v", engToks)
+		t.Errorf("LangEn.Tokenize(\"3rd of January\") did not strip ordinal; tokens: %v", engToks)
 	}
 }
 

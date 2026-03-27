@@ -1,6 +1,6 @@
 package nowandlater
 
-// Russian is the built-in Russian Lang.
+// LangRu is the built-in Russian Lang.
 //
 // Russian uses standard whitespace tokenization but has significant case
 // inflection: weekdays, months, and units each appear in multiple grammatical
@@ -19,7 +19,7 @@ package nowandlater
 //   - Compound relative expressions ("позавчера вечером") are not supported.
 //   - Single-char unit abbreviations "г" (год), "ч" (час), "д" (день), "с" (секунда)
 //     are intentionally omitted to avoid false positives.
-var Russian = Lang{
+var LangRu = Lang{
 	Words:     russianWords,
 	DateOrder: DMY,
 }

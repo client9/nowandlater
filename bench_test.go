@@ -10,7 +10,7 @@ import (
 var fixedBenchNow = time.Date(2026, 3, 22, 10, 0, 0, 0, time.UTC)
 
 var benchParser = Parser{
-	Lang: &English,
+	Lang: &LangEn,
 	Now:  func() time.Time { return fixedBenchNow },
 }
 

@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-// ruNow is the fixed reference time for Russian resolver tests.
+// ruNow is the fixed reference time for LangRu resolver tests.
 // Same date as resolveNow (2026-03-22 10:00:00 UTC, a Sunday).
 var ruNow = time.Date(2026, 3, 22, 10, 0, 0, 0, time.UTC)
 
@@ -82,10 +82,10 @@ var russianCases = []struct {
 	{"через пятнадцать дней", u(2026, 4, 6, 10, 0, 0)},  // number word 15
 }
 
-func TestRussian(t *testing.T) {
+func TestLangRu(t *testing.T) {
 	for _, tc := range russianCases {
 		t.Run(tc.input, func(t *testing.T) {
-			slots, err := Russian.Parse(tc.input)
+			slots, err := LangRu.Parse(tc.input)
 			if err != nil {
 				t.Fatalf("Parse(%q) error: %v", tc.input, err)
 			}

@@ -99,7 +99,7 @@ var parseCases = []parseCase{
 	{input: "2026-dec-04", year: 2026, month: 12, day: 4, period: PeriodDay},
 	{input: "04-dec-2026", year: 2026, month: 12, day: 4, period: PeriodDay},
 
-	// --- Calendar: MM/DD/YYYY (English MDY default) ---
+	// --- Calendar: MM/DD/YYYY (LangEn MDY default) ---
 	{input: "12/04/2026", year: 2026, month: 12, day: 4, period: PeriodDay},
 	{input: "1/5/2026", year: 2026, month: 1, day: 5, period: PeriodDay},
 	{input: "02/03/2016", year: 2016, month: 2, day: 3, period: PeriodDay},  // MDY: Feb 3 (ambiguous)
@@ -237,14 +237,14 @@ func FuzzParse(f *testing.F) {
 		f.Add(tc.input)
 	}
 	f.Fuzz(func(t *testing.T, orig string) {
-		English.Parse(orig)
+		LangEn.Parse(orig)
 	})
 }
 
 func TestParse(t *testing.T) {
 	for _, tc := range parseCases {
 		t.Run(tc.input, func(t *testing.T) {
-			got, err := English.Parse(tc.input)
+			got, err := LangEn.Parse(tc.input)
 			if err != nil {
 				t.Fatalf("Parse(%q) error: %v", tc.input, err)
 			}
@@ -276,7 +276,7 @@ func TestParse(t *testing.T) {
 // TestDateOrder verifies that Lang.DateOrder controls MM/DD vs DD/MM interpretation
 // for the ambiguous INTEGER INTEGER YEAR signature.
 func TestDateOrder(t *testing.T) {
-	dmyLang := Lang{Words: englishWords, OrdinalSuffixes: English.OrdinalSuffixes, DateOrder: DMY}
+	dmyLang := Lang{Words: englishWords, OrdinalSuffixes: LangEn.OrdinalSuffixes, DateOrder: DMY}
 
 	cases := []struct {
 		lang  *Lang
@@ -284,15 +284,15 @@ func TestDateOrder(t *testing.T) {
 		month int
 		day   int
 	}{
-		// MDY (English default): 02/03/2016 → Feb 3
-		{&English, "02/03/2016", 2, 3},
-		{&English, "12-04-2026", 12, 4},
+		// MDY (LangEn default): 02/03/2016 → Feb 3
+		{&LangEn, "02/03/2016", 2, 3},
+		{&LangEn, "12-04-2026", 12, 4},
 		// DMY: 02/03/2016 → Mar 2
 		{&dmyLang, "02/03/2016", 3, 2},
 		{&dmyLang, "04-12-2026", 12, 4},
-		// DMY: Spanish
-		{&Spanish, "02/03/2016", 3, 2},
-		{&Spanish, "04/12/2026", 12, 4},
+		// DMY: LangEs
+		{&LangEs, "02/03/2016", 3, 2},
+		{&LangEs, "04/12/2026", 12, 4},
 	}
 	for _, tc := range cases {
 		t.Run(tc.input, func(t *testing.T) {
@@ -317,7 +317,7 @@ func TestParseInvalidDate(t *testing.T) {
 	}
 	for _, input := range cases {
 		t.Run(input, func(t *testing.T) {
-			_, err := English.Parse(input)
+			_, err := LangEn.Parse(input)
 			if err == nil {
 				t.Errorf("Parse(%q) expected error, got nil", input)
 			}
@@ -336,7 +336,7 @@ func TestParseUnknownSignature(t *testing.T) {
 	}
 	for _, input := range cases {
 		t.Run(input, func(t *testing.T) {
-			_, err := English.Parse(input)
+			_, err := LangEn.Parse(input)
 			if !errors.Is(err, ErrUnknownSignature) {
 				t.Errorf("Parse(%q) error = %v, want ErrUnknownSignature", input, err)
 			}

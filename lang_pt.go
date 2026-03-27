@@ -1,6 +1,6 @@
 package nowandlater
 
-// Portuguese is the built-in Portuguese Lang (covers both European and
+// LangPt is the built-in Portuguese Lang (covers both European and
 // Brazilian Portuguese).
 //
 // Key differences from Spanish:
@@ -25,7 +25,7 @@ package nowandlater
 //     full for the second time unit. CLDR lists "seg" as a second abbreviation too.
 //   - Single-char unit abbreviations "h" (hora), "m" (minuto), "s" (segundo)
 //     are intentionally omitted to avoid false positives.
-var Portuguese = Lang{
+var LangPt = Lang{
 	Words:           portugueseWords,
 	OrdinalSuffixes: []string{"º", "ª"},
 	DateOrder:       DMY,

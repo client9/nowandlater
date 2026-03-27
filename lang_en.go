@@ -1,7 +1,7 @@
 package nowandlater
 
-// English is the built-in English Lang.
-var English = Lang{
+// LangEn is the built-in English Lang.
+var LangEn = Lang{
 	Words:           englishWords,
 	OrdinalSuffixes: []string{"st", "nd", "rd", "th"},
 }
