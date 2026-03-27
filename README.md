@@ -173,6 +173,7 @@ next Monday at 9:30 AM
 2026-12-04T09:30:00Z              (ISO 8601 / RFC 3339)
 Mon, 02 Jan 2006 15:04:05 -0700   (RFC 2822)
 Mon Jan  2 15:04:05 MST 2006      (ANSI C / Go reference time)
+1774711545                        (Unix timestamp, seconds since epoch; ≥ 5 digits)
 ```
 
 ### Relative expressions
@@ -292,7 +293,6 @@ if errors.Is(err, nowandlater.ErrAmbiguous) {
   (`"el mar pasado"` → last Tuesday). In numeric date position (`"mar 5"`,
   `"5 de mar"`) it is genuinely ambiguous and returns `ErrAmbiguous`. Write
   `"marzo"` to avoid ambiguity.
-- **Unix timestamps**: 10-digit integers are not yet recognised.
 - **morning / afternoon / evening**: semantics undefined; not yet supported.
 
 ## Development tool

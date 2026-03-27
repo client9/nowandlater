@@ -525,6 +525,19 @@ func handleYear(tokens []Token) (*ParsedDateSlots, error) {
 	return &ParsedDateSlots{Year: y, Period: PeriodYear}, nil
 }
 
+// handleUnixTimestamp handles a bare integer as a Unix timestamp (seconds since
+// 1970-01-01 00:00:00 UTC). Only integers with 5+ digits (≥ 10000) are accepted;
+// 1–3 digit integers are rejected as ambiguous, and 4-digit integers are already
+// routed to handleYear via TokenYear.
+func handleUnixTimestamp(tokens []Token) (*ParsedDateSlots, error) {
+	toks := filterFillers(tokens)
+	ts := int64(toks[0].Value.(int))
+	if ts < 10000 {
+		return nil, ErrUnknownSignature
+	}
+	return &ParsedDateSlots{UnixTime: ts, Period: PeriodSecond}, nil
+}
+
 // prepDelegate strips a leading PREP token and delegates to the base handler.
 // Used for PREP YEAR ... signatures that are identical to their YEAR ... counterparts.
 func prepDelegate(h Handler) Handler {

@@ -25,6 +25,11 @@ func Resolve(slots *ParsedDateSlots, now time.Time) (time.Time, error) {
 
 	switch {
 
+	// --- Unix timestamp: absolute seconds since 1970-01-01 UTC ---
+	// Produced by: handleUnixTimestamp.
+	case slots.UnixTime != 0:
+		return time.Unix(slots.UnixTime, 0).In(loc), nil
+
 	// --- Delta (relative offset), optionally with a time-of-day ---
 	// Produced by: handleAnchor, handleRelativeDelta, handlePrepIntegerUnit,
 	// handlePrepUnit, handleUnitModifier, handleAnchorPrep* variants.

@@ -20,6 +20,9 @@ var ErrAmbiguous = errors.New("nowandlater: ambiguous date expression")
 // The signature is produced by Signature(Tokenize(input)) — token type names
 // joined by spaces, with FILLER tokens excluded.
 var handlers = map[string]Handler{
+	// Unix timestamp: bare integer interpreted as seconds since 1970-01-01 UTC.
+	"INTEGER": handleUnixTimestamp,
+
 	// Stand-alone anchors
 	"ANCHOR": handleAnchor,
 

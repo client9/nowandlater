@@ -243,6 +243,11 @@ type ParsedDateSlots struct {
 	// nil means no relative delta was expressed.
 	DeltaSeconds *int
 
+	// UnixTime holds an absolute Unix timestamp (seconds since 1970-01-01 UTC).
+	// When set, all other fields are ignored by Resolve.
+	// Zero means no Unix timestamp was expressed (timestamps < 10000 are rejected).
+	UnixTime int64
+
 	// Direction qualifies weekday/month resolution.
 	// Zero value means no direction was expressed.
 	Direction Direction

@@ -172,6 +172,10 @@ var englishCases = []struct {
 	{"noon", u(2026, 3, 22, 12, 0, 0)},
 	{"midnight", u(2026, 3, 22, 0, 0, 0)},
 
+	// --- Unix timestamps (bare integer ≥ 10000 → seconds since 1970-01-01 UTC) ---
+	{"10000", u(1970, 1, 1, 2, 46, 40)},        // 5-digit boundary
+	{"1774711545", u(2026, 3, 28, 15, 25, 45)}, // a recent timestamp
+
 	// --- applyAMPM edge cases: 12 AM = midnight, 12 PM = noon ---
 	{"12 am", u(2026, 3, 22, 0, 0, 0)},
 	{"12 pm", u(2026, 3, 22, 12, 0, 0)},
@@ -212,6 +216,8 @@ var englishErrorCases = []string{
 	"at 13 am",        // PREP INTEGER AMPM: hour 13 out of range
 	"0 am 20.07.21",   // INTEGER AMPM DATE_FRAGMENT: hour 0 out of range
 	"0 am 20.07.2021", // INTEGER AMPM INTEGER INTEGER YEAR: hour 0 out of range
+	"42",              // bare integer < 10000: not a valid Unix timestamp
+	"999",             // bare integer < 10000: not a valid Unix timestamp
 }
 
 func TestEnglishErrors(t *testing.T) {

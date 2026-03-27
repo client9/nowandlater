@@ -33,11 +33,12 @@
 //	next Monday at 9:30 AM
 //	2026-12-04T09:30:00Z
 //
-// Machine formats (RFC 3339, RFC 2822, ANSI C, Unix, Ruby):
+// Machine formats (RFC 3339, RFC 2822, ANSI C, Unix, Ruby, timestamp):
 //
 //	2026-03-22T10:00:00-07:00
 //	Mon, 02 Jan 2006 15:04:05 -0700
 //	Mon Jan  2 15:04:05 2006
+//	1774711545                      (Unix timestamp, seconds since epoch; ≥ 5 digits)
 //
 // # Multi-language support
 //
