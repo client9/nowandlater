@@ -110,6 +110,11 @@ var spanishCases = []struct {
 	{"hace cerca de 3 días", u(2026, 3, 19, 10, 0, 0)}, // "cerca" as filler
 	{"lu próximo", u(2026, 3, 23, 0, 0, 0)},            // "lu" = lunes
 	{"vi pasado", u(2026, 3, 20, 0, 0, 0)},             // "vi" = viernes (last Friday)
+
+	// --- "después" as ModifierFuture (INTEGER UNIT MODIFIER) ---
+	{"2 horas después", u(2026, 3, 22, 12, 0, 0)}, // 2 hours later
+	{"3 días después", u(2026, 3, 25, 10, 0, 0)},  // 3 days later
+	{"2 horas despues", u(2026, 3, 22, 12, 0, 0)}, // unaccented variant
 }
 
 // spanishAmbiguousCases are inputs that are recognisably date-like but cannot be

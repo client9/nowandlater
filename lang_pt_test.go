@@ -84,6 +84,10 @@ var portugueseCases = []struct {
 	// --- Supplementary data ---
 	{"10 septembro 2026", u(2026, 9, 10, 0, 0, 0)},   // alternate September spelling
 	{"há cerca de 3 dias", u(2026, 3, 19, 10, 0, 0)}, // "cerca" as filler
+
+	// --- "depois" as ModifierFuture (INTEGER UNIT MODIFIER) ---
+	{"2 horas depois", u(2026, 3, 22, 12, 0, 0)}, // 2 hours later
+	{"3 dias depois", u(2026, 3, 25, 10, 0, 0)},  // 3 days later
 }
 
 // portugueseAmbiguousCases are inputs that are recognisably date-like but cannot

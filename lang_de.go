@@ -124,7 +124,10 @@ var germanWords = map[string]WordEntry{
 
 	// --- Modifiers ---
 	// "vor" means "before/ago": "vor 3 Tagen" = 3 days ago → MODIFIER INTEGER UNIT
-	"vor": {TokenModifier, ModifierPast},
+	// "später" means "later": "2 Stunden später" = 2 hours later → INTEGER UNIT MODIFIER
+	"vor":    {TokenModifier, ModifierPast},
+	"später": {TokenModifier, ModifierFuture},
+	"spater": {TokenModifier, ModifierFuture},
 
 	// --- Prepositions ---
 	"in": {TokenPrep, nil},

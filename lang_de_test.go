@@ -68,6 +68,11 @@ var germanCases = []struct {
 	{"vor etwa 3 Tagen", u(2026, 3, 19, 10, 0, 0)}, // "etwa" as filler
 	{"im nächsten Monat", u(2026, 4, 1, 0, 0, 0)},  // "im" as filler → DIRECTION UNIT
 	{"nächsten Mon", u(2026, 3, 23, 0, 0, 0)},      // "Mon" = Montag
+
+	// --- "später" as ModifierFuture (INTEGER UNIT MODIFIER) ---
+	{"2 Stunden später", u(2026, 3, 22, 12, 0, 0)}, // 2 hours later
+	{"3 Tage später", u(2026, 3, 25, 10, 0, 0)},    // 3 days later
+	{"2 Stunden spater", u(2026, 3, 22, 12, 0, 0)}, // unaccented variant
 }
 
 func TestLangDe(t *testing.T) {

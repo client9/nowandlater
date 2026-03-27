@@ -82,6 +82,10 @@ var italianCases = []struct {
 	// --- Supplementary data ---
 	{"altro ieri", u(2026, 3, 20, 10, 0, 0)},        // bare form (no elided article)
 	{"circa 3 giorni fa", u(2026, 3, 19, 10, 0, 0)}, // "circa" as filler
+
+	// --- "dopo" as ModifierFuture (INTEGER UNIT MODIFIER) ---
+	{"3 ore dopo", u(2026, 3, 22, 13, 0, 0)},    // 3 hours later
+	{"2 giorni dopo", u(2026, 3, 24, 10, 0, 0)}, // 2 days later
 }
 
 // italianAmbiguousCases are inputs that are recognisably date-like but cannot be
