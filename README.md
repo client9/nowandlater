@@ -195,12 +195,18 @@ are also supported.
 
 | Variable | Language |
 |---|---|
-| `nowandlater.English` | English (default) |
-| `nowandlater.Spanish` | Spanish / Español |
-| `nowandlater.Japanese` | Japanese / 日本語 |
+| `nowandlater.LangEn` | English (default) |
+| `nowandlater.LangEs` | Spanish / Español |
+| `nowandlater.LangFr` | French / Français |
+| `nowandlater.LangDe` | German / Deutsch |
+| `nowandlater.LangIt` | Italian / Italiano |
+| `nowandlater.LangPt` | Portuguese / Português |
+| `nowandlater.LangRu` | Russian / Русский |
+| `nowandlater.LangJa` | Japanese / 日本語 |
+| `nowandlater.LangZh` | Chinese / 中文 |
 
 ```go
-p := nowandlater.Parser{Lang: &nowandlater.Spanish}
+p := nowandlater.Parser{Lang: &nowandlater.LangEs}
 t, err := p.Parse("próximo lunes")   // next Monday
 t, err := p.Parse("hace 3 días")     // 3 days ago
 ```
@@ -289,15 +295,17 @@ if errors.Is(err, nowandlater.ErrAmbiguous) {
 
 ## Development tool
 
-`cmd/tokenize` is a CLI for inspecting the parse pipeline interactively:
+`cmd/nldate` is a CLI for parsing natural-language dates and inspecting the parse pipeline:
 
 ```
-go run ./cmd/tokenize "next Monday at 9:30 AM"
-go run ./cmd/tokenize -now 2026-03-22 -interval "this week"
-echo "in 2 days" | go run ./cmd/tokenize
+go run ./cmd/nldate "next Monday at 9:30 AM"
+go run ./cmd/nldate -now 2026-03-22 -interval "this week"
+go run ./cmd/nldate -unix "in 2 days"
+echo "in 2 days" | go run ./cmd/nldate
 ```
 
 Output shows the token list, signature, parsed period, and resolved time.
+Use `-unix` to print only the resolved Unix timestamp (useful for scripting).
 
 ## Running tests
 

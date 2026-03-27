@@ -1,10 +1,11 @@
-// tokenize is a CLI for ad hoc testing of the nowandlater tokenizer and resolver.
+// nldate is a CLI for parsing and inspecting natural-language date/time strings
+// using the nowandlater library.
 //
 // Usage:
 //
-//	tokenize [-now TIME] [-interval] "next Monday at 9:30 AM"   # single input from args
-//	echo "in 2 days" | tokenize [-now TIME] [-interval]         # read from stdin
-//	tokenize [-now TIME] [-interval]                            # interactive: one line per prompt
+//	nldate [-now TIME] [-interval] "next Monday at 9:30 AM"   # single input from args
+//	echo "in 2 days" | nldate [-now TIME] [-interval]         # read from stdin
+//	nldate [-now TIME] [-interval]                            # interactive: one line per prompt
 //
 // Flags:
 //

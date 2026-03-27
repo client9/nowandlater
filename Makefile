@@ -1,6 +1,6 @@
 
 clean:
-	rm -f tokenize
+	rm -f nldate
 	rm -f cover.out
 	rm -rf testdata
 
