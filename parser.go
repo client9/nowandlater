@@ -1,6 +1,11 @@
 package nowandlater
 
-import "time"
+import (
+	"time"
+
+	"github.com/client9/nowandlater/internal/engine"
+	"github.com/client9/nowandlater/languages"
+)
 
 // Parser wraps a Lang with runtime defaults, providing a single-call
 // Parse method that combines tokenization and resolution.
@@ -27,7 +32,7 @@ type Parser struct {
 func (p Parser) Parse(input string) (time.Time, error) {
 	lang := p.Lang
 	if lang == nil {
-		lang = &LangEn
+		lang = &languages.LangEn
 	}
 	now := time.Now()
 	if p.Now != nil {
@@ -40,7 +45,7 @@ func (p Parser) Parse(input string) (time.Time, error) {
 	if err != nil {
 		return time.Time{}, err
 	}
-	return Resolve(slots, now)
+	return engine.Resolve(slots, now)
 }
 
 // ParseInterval converts a natural-language date/time string into a
@@ -52,7 +57,7 @@ func (p Parser) Parse(input string) (time.Time, error) {
 func (p Parser) ParseInterval(input string) (start, end time.Time, err error) {
 	lang := p.Lang
 	if lang == nil {
-		lang = &LangEn
+		lang = &languages.LangEn
 	}
 	now := time.Now()
 	if p.Now != nil {
@@ -65,5 +70,5 @@ func (p Parser) ParseInterval(input string) (start, end time.Time, err error) {
 	if err != nil {
 		return
 	}
-	return ResolveInterval(slots, now)
+	return engine.ResolveInterval(slots, now)
 }

@@ -3,11 +3,16 @@ package nowandlater
 import (
 	"testing"
 	"time"
+
+	"github.com/client9/nowandlater/languages"
 )
 
 // parserNow is the fixed reference time for Parser tests.
 var parserNow = time.Date(2026, 3, 22, 10, 0, 0, 0, time.UTC)
 
+func u(year, month, day, hour, min, sec int) time.Time {
+	return time.Date(year, time.Month(month), day, hour, min, sec, 0, time.UTC)
+}
 func fixedNow(t time.Time) func() time.Time {
 	return func() time.Time { return t }
 }
@@ -26,7 +31,7 @@ func TestParserZeroValue(t *testing.T) {
 
 func TestParserNowFunc(t *testing.T) {
 	p := Parser{
-		Lang: &LangEn,
+		Lang: &languages.LangEn,
 		Now:  fixedNow(parserNow),
 	}
 	got, err := p.Parse("tomorrow")
@@ -45,7 +50,7 @@ func TestParserLocation(t *testing.T) {
 		t.Skip("America/New_York not available:", err)
 	}
 	p := Parser{
-		Lang:     &LangEn,
+		Lang:     &languages.LangEn,
 		Location: nyc,
 		Now:      fixedNow(parserNow),
 	}
@@ -65,7 +70,7 @@ func TestParserInputTzOverridesLocation(t *testing.T) {
 		t.Skip("America/New_York not available:", err)
 	}
 	p := Parser{
-		Lang:     &LangEn,
+		Lang:     &languages.LangEn,
 		Location: nyc,
 		Now:      fixedNow(parserNow),
 	}
@@ -78,9 +83,13 @@ func TestParserInputTzOverridesLocation(t *testing.T) {
 	}
 }
 
+// spNow is the fixed reference time for LangEs resolver tests.
+// Same date as resolveNow (2026-03-22 10:00:00 UTC, a Sunday) for easy comparison.
+var spNow = time.Date(2026, 3, 22, 10, 0, 0, 0, time.UTC)
+
 func TestParserLangEs(t *testing.T) {
 	p := Parser{
-		Lang: &LangEs,
+		Lang: &languages.LangEs,
 		Now:  fixedNow(spNow),
 	}
 	got, err := p.Parse("mañana")
@@ -95,7 +104,7 @@ func TestParserLangEs(t *testing.T) {
 
 func TestParserParseInterval(t *testing.T) {
 	p := Parser{
-		Lang: &LangEn,
+		Lang: &languages.LangEn,
 		Now:  fixedNow(parserNow), // 2026-03-22 10:00:00 UTC, Sunday
 	}
 

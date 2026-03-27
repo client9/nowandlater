@@ -24,9 +24,10 @@ import (
 	"time"
 
 	"github.com/client9/nowandlater"
+	"github.com/client9/nowandlater/internal/engine"
 )
 
-func lookupLang(code string) (*nowandlater.Lang, error) {
+func lookupLang(code string) (*engine.Lang, error) {
 	if l := nowandlater.LookupLang(code); l != nil {
 		return l, nil
 	}
@@ -88,13 +89,13 @@ func main() {
 	}
 }
 
-func printUnix(input string, now time.Time, lang *nowandlater.Lang) {
+func printUnix(input string, now time.Time, lang *engine.Lang) {
 	slots, err := lang.Parse(input)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)
 	}
-	result, err := nowandlater.Resolve(slots, now)
+	result, err := engine.Resolve(slots, now)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)
@@ -102,9 +103,9 @@ func printUnix(input string, now time.Time, lang *nowandlater.Lang) {
 	fmt.Println(result.Unix())
 }
 
-func printTokens(input string, now time.Time, showInterval bool, lang *nowandlater.Lang) {
+func printTokens(input string, now time.Time, showInterval bool, lang *engine.Lang) {
 	tokens := lang.Tokenize(input)
-	sig := nowandlater.Signature(tokens)
+	sig := engine.Signature(tokens)
 
 	fmt.Printf("input:     %q\n", input)
 	fmt.Printf("signature: %q\n", sig)
@@ -120,7 +121,7 @@ func printTokens(input string, now time.Time, showInterval bool, lang *nowandlat
 	}
 	fmt.Printf("period:    %s\n", slots.Period)
 
-	result, err := nowandlater.Resolve(slots, now)
+	result, err := engine.Resolve(slots, now)
 	if err != nil {
 		fmt.Printf("resolve:   error: %v\n", err)
 		return
@@ -129,7 +130,7 @@ func printTokens(input string, now time.Time, showInterval bool, lang *nowandlat
 	fmt.Printf("resolved:  %s\n", result.Format(time.RFC3339))
 
 	if showInterval {
-		start, end, err := nowandlater.ResolveInterval(slots, now)
+		start, end, err := engine.ResolveInterval(slots, now)
 		if err != nil {
 			fmt.Printf("interval:  error: %v\n", err)
 		} else {

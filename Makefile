@@ -1,8 +1,9 @@
 
 clean:
 	rm -f nldate
-	rm -f cover.out
+	rm -f cover.out coverage.html coverage.out 
 	rm -rf testdata
+	rm -f nowandlater.test
 
 fmt:
 	gofmt -w -s .
