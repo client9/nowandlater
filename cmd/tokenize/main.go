@@ -11,6 +11,7 @@
 //	-now TIME      reference time in RFC3339 (2026-03-22T10:00:00Z) or date-only
 //	               (2026-03-22, midnight local) format; defaults to time.Now()
 //	-interval      also show the resolved calendar interval [start, end)
+//	-unix          print only the resolved Unix timestamp (seconds); suppress all other output
 package main
 
 import (
@@ -35,6 +36,7 @@ func main() {
 	nowFlag := flag.String("now", "", "reference time (RFC3339 or YYYY-MM-DD); default: time.Now()")
 	intervalFlag := flag.Bool("interval", false, "show resolved interval [start, end)")
 	langFlag := flag.String("lang", "en", "language code or locale (e.g. en, es, fr, de, it, pt, ru, ja, zh, en_US, zh-CN)")
+	unixFlag := flag.Bool("unix", false, "print only the resolved Unix timestamp; suppress all other output")
 	flag.Parse()
 
 	lang, err := lookupLang(*langFlag)
@@ -52,13 +54,17 @@ func main() {
 	// Args mode: join non-flag arguments as one input string.
 	if flag.NArg() > 0 {
 		input := strings.Join(flag.Args(), " ")
-		printTokens(input, now, *intervalFlag, lang)
+		if *unixFlag {
+			printUnix(input, now, lang)
+		} else {
+			printTokens(input, now, *intervalFlag, lang)
+		}
 		return
 	}
 
 	// Stdin mode: process one line at a time.
 	scanner := bufio.NewScanner(os.Stdin)
-	interactive := isTerminal()
+	interactive := isTerminal() && !*unixFlag
 	for {
 		if interactive {
 			fmt.Print("> ")
@@ -70,11 +76,29 @@ func main() {
 		if line == "" {
 			continue
 		}
-		printTokens(line, now, *intervalFlag, lang)
+		if *unixFlag {
+			printUnix(line, now, lang)
+		} else {
+			printTokens(line, now, *intervalFlag, lang)
+		}
 		if interactive {
 			fmt.Println()
 		}
 	}
+}
+
+func printUnix(input string, now time.Time, lang *nowandlater.Lang) {
+	slots, err := lang.Parse(input)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		os.Exit(1)
+	}
+	result, err := nowandlater.Resolve(slots, now)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		os.Exit(1)
+	}
+	fmt.Println(result.Unix())
 }
 
 func printTokens(input string, now time.Time, showInterval bool, lang *nowandlater.Lang) {
