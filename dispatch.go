@@ -66,24 +66,26 @@ var handlers = map[string]Handler{
 
 	// Calendar date: month-name forms
 	"MONTH INTEGER":                        handleMonthDay,
-	"MONTH INTEGER TIME":                   handleMonthIntegerTime, // Go Stamp format
+	"MONTH INTEGER TIME":                   withTrailingTime(handleMonthDay), // Go Stamp format
 	"INTEGER MONTH":                        handleDayMonth,
 	"MONTH INTEGER YEAR":                   handleMonthDayYear,
 	"MONTH YEAR":                           handleMonthYear,
 	"YEAR MONTH":                           handleYearMonth,
-	"WEEKDAY INTEGER MONTH YEAR":           handleWeekdayIntegerMonthYear,         // RFC 2822 date-only
-	"WEEKDAY INTEGER MONTH YEAR TIME":      handleWeekdayIntegerMonthYearTime,     // RFC 2822 full
-	"WEEKDAY INTEGER MONTH YEAR TIME AMPM": handleWeekdayIntegerMonthYearTimeAMPM, // RFC 2822 with AM/PM
-	"WEEKDAY MONTH INTEGER YEAR":           handleWeekdayMonthIntegerYear,         // ANSIC date-only
-	"WEEKDAY MONTH INTEGER TIME YEAR":      handleWeekdayMonthIntegerTimeYear,     // ANSIC, UnixDate, RubyDate
-	"INTEGER MONTH INTEGER TIME":           handleIntegerMonthIntegerTime,         // RFC822, RFC822Z
-	"WEEKDAY INTEGER MONTH INTEGER TIME":   handleWeekdayIntegerMonthIntegerTime,  // RFC850
+	"WEEKDAY INTEGER MONTH YEAR":           handleWeekdayIntegerMonthYear,                   // RFC 2822 date-only
+	"WEEKDAY INTEGER MONTH YEAR TIME":      withTrailingTime(handleWeekdayIntegerMonthYear), // RFC 2822 full
+	"WEEKDAY INTEGER MONTH YEAR TIME AMPM": withTrailingTime(handleWeekdayIntegerMonthYear), // RFC 2822 with AM/PM
+	"WEEKDAY MONTH INTEGER YEAR":           handleWeekdayMonthIntegerYear,                   // ANSIC date-only
+	"WEEKDAY MONTH INTEGER TIME YEAR":      handleWeekdayMonthIntegerTimeYear,               // ANSIC, UnixDate, RubyDate
+	"INTEGER MONTH INTEGER TIME":           handleIntegerMonthIntegerTime,                   // RFC822, RFC822Z
+	"WEEKDAY INTEGER MONTH INTEGER TIME":   handleWeekdayIntegerMonthIntegerTime,            // RFC850
 
 	// Calendar date: numeric compound forms (all separators → same signature)
-	"YEAR INTEGER INTEGER": handleYearIntegerInteger,
-	"YEAR MONTH INTEGER":   handleYearMonthInteger,
-	"INTEGER MONTH YEAR":   handleIntegerMonthYear,
-	"INTEGER INTEGER YEAR": handleIntegerIntegerYear, // MM/DD/YYYY — American default
+	"YEAR INTEGER INTEGER":         handleYearIntegerInteger,
+	"YEAR MONTH INTEGER":           handleYearMonthInteger,
+	"INTEGER MONTH YEAR":           handleIntegerMonthYear,
+	"INTEGER MONTH YEAR TIME":      withTrailingTime(handleIntegerMonthYear),
+	"INTEGER MONTH YEAR TIME AMPM": withTrailingTime(handleIntegerMonthYear),
+	"INTEGER INTEGER YEAR":         handleIntegerIntegerYear, // MM/DD/YYYY — American default
 
 	// Calendar date: compound forms with leading preposition
 	"PREP YEAR INTEGER INTEGER": prepDelegate(handleYearIntegerInteger),
@@ -120,13 +122,13 @@ var handlers = map[string]Handler{
 	"DIRECTION UNIT WEEKDAY": handleDirectionUnitWeekday,
 
 	// Combined date + time
-	"YEAR INTEGER INTEGER TIME":      handleYearIntegerIntegerTime,
-	"YEAR INTEGER INTEGER TIME AMPM": handleYearIntegerIntegerTimeAMPM,
-	"YEAR MONTH INTEGER TIME":        handleYearMonthIntegerTime,
-	"YEAR MONTH INTEGER TIME AMPM":   handleYearMonthIntegerTimeAMPM,
+	"YEAR INTEGER INTEGER TIME":      withTrailingTime(handleYearIntegerInteger),
+	"YEAR INTEGER INTEGER TIME AMPM": withTrailingTime(handleYearIntegerInteger),
+	"YEAR MONTH INTEGER TIME":        withTrailingTime(handleYearMonthInteger),
+	"YEAR MONTH INTEGER TIME AMPM":   withTrailingTime(handleYearMonthInteger),
 	"TIME AMPM MONTH INTEGER YEAR":   handleTimeAMPMMonthIntegerYear,
-	"MONTH INTEGER YEAR TIME":        handleMonthIntegerYearTime,
-	"MONTH INTEGER YEAR TIME AMPM":   handleMonthIntegerYearTimeAMPM,
+	"MONTH INTEGER YEAR TIME":        withTrailingTime(handleMonthDayYear),
+	"MONTH INTEGER YEAR TIME AMPM":   withTrailingTime(handleMonthDayYear),
 
 	// Time-only: PREP INTEGER AMPM ("at 3 PM")
 	"PREP INTEGER AMPM": handlePrepIntegerAMPM,
@@ -187,12 +189,32 @@ func (lang *Lang) dateOrderHandler(sig string) Handler {
 	switch sig {
 	case "INTEGER INTEGER YEAR":
 		return base
+	case "INTEGER INTEGER YEAR TIME", "INTEGER INTEGER YEAR TIME AMPM":
+		return withTrailingTime(makeIntegerIntegerYearHandler(lang.DateOrder))
 	case "INTEGER INTEGER YEAR PREP TIME":
 		return withPrepTime(base)
 	case "INTEGER INTEGER YEAR PREP TIME AMPM":
 		return withPrepTime(base)
 	case "INTEGER INTEGER YEAR PREP INTEGER AMPM":
 		return withPrepTime(base)
+	case "DATE_FRAGMENT":
+		return makeDateFragmentHandler(lang.DateOrder)
+	case "DATE_FRAGMENT TIME", "DATE_FRAGMENT TIME AMPM":
+		return withTrailingTime(makeDateFragmentHandler(lang.DateOrder))
+	case "DATE_FRAGMENT PREP TIME":
+		return withPrepTime(makeDateFragmentHandler(lang.DateOrder))
+	case "DATE_FRAGMENT PREP TIME AMPM":
+		return withPrepTime(makeDateFragmentHandler(lang.DateOrder))
+	case "DATE_FRAGMENT PREP INTEGER AMPM":
+		return withPrepTime(makeDateFragmentHandler(lang.DateOrder))
+	case "INTEGER AMPM INTEGER INTEGER YEAR":
+		return makeIntegerAMPMIntegerIntegerYearHandler(lang.DateOrder)
+	case "INTEGER AMPM DATE_FRAGMENT":
+		return makeIntegerAMPMDateFragmentHandler(lang.DateOrder)
+	case "TIME AMPM DATE_FRAGMENT":
+		return makeTimeAMPMDateFragmentHandler(lang.DateOrder)
+	case "TIME AMPM PREP DATE_FRAGMENT":
+		return makeTimeAMPMDateFragmentHandler(lang.DateOrder)
 	}
 	return nil
 }

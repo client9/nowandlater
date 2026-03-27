@@ -3,6 +3,7 @@ package nowandlater
 import (
 	"fmt"
 	"math"
+	"strings"
 )
 
 // ---------------------------------------------------------------------------
@@ -139,20 +140,6 @@ func handleMonthDay(tokens []Token) (*ParsedDateSlots, error) {
 // handleMonthIntegerTime handles: MONTH INTEGER TIME
 // Example: "Mar  2 15:04:05" (Go Stamp format)
 // No year present; resolver uses the current year.
-func handleMonthIntegerTime(tokens []Token) (*ParsedDateSlots, error) {
-	toks := filterFillers(tokens)
-	// [0]=MONTH, [1]=INTEGER (day), [2]=TIME
-	h, m, s := mustParseTime(toks[2].Value.(string))
-	return &ParsedDateSlots{
-		Month:  int(toks[0].Value.(Month)),
-		Day:    toks[1].Value.(int),
-		Hour:   h,
-		Minute: m,
-		Second: s,
-		Period: timePeriod(toks[2].Value.(string)),
-	}, nil
-}
-
 // handleDayMonth handles: INTEGER MONTH
 // Example: "3rd of January" (fillers already dropped in signature)
 func handleDayMonth(tokens []Token) (*ParsedDateSlots, error) {
@@ -409,6 +396,69 @@ func handleIntegerMonthYear(tokens []Token) (*ParsedDateSlots, error) {
 	}, nil
 }
 
+// parseDateFragment splits a DATE_FRAGMENT raw string (e.g. "29/02/20") into
+// month, day, and year applying DateOrder and expand2DigitYear.
+func parseDateFragment(raw string, order DateOrder) (mo, d, y int, err error) {
+	var sep byte
+	for i := 0; i < len(raw); i++ {
+		c := raw[i]
+		if c == '-' || c == '/' || c == '.' {
+			sep = c
+			break
+		}
+	}
+	if sep == 0 {
+		return 0, 0, 0, fmt.Errorf("nowandlater: DATE_FRAGMENT has no separator: %q", raw)
+	}
+	parts := strings.Split(raw, string(sep))
+	if len(parts) != 3 {
+		return 0, 0, 0, ErrUnknownSignature
+	}
+	a, b, c := mustAtoi(parts[0]), mustAtoi(parts[1]), mustAtoi(parts[2])
+	mo, d = swapDateOrder(a, b, order)
+	y = expand2DigitYear(c)
+	if mo < 1 || mo > 12 || d < 1 || d > 31 {
+		return 0, 0, 0, fmt.Errorf("nowandlater: invalid date in %q", raw)
+	}
+	return mo, d, y, nil
+}
+
+// makeTimeAMPMDateFragmentHandler returns a Handler for TIME AMPM DATE_FRAGMENT
+// and TIME AMPM PREP DATE_FRAGMENT (time precedes date, 2-digit year).
+// DATE_FRAGMENT is always the last token; any intervening PREP is ignored.
+// Examples: "1:30am 29/02/20", "1:30am at 29/02/20"
+func makeTimeAMPMDateFragmentHandler(order DateOrder) Handler {
+	return func(tokens []Token) (*ParsedDateSlots, error) {
+		toks := filterFillers(tokens)
+		// [0]=TIME, [1]=AMPM, [last]=DATE_FRAGMENT (PREP, if present, is in between)
+		timeVal := toks[0].Value.(string)
+		h, m, s := mustParseTime(timeVal)
+		h = applyAMPM(h, toks[1].Value.(AMPM))
+		mo, d, y, err := parseDateFragment(toks[len(toks)-1].Value.(string), order)
+		if err != nil {
+			return nil, err
+		}
+		return &ParsedDateSlots{
+			Year: y, Month: mo, Day: d,
+			Hour: h, Minute: m, Second: s,
+			Period: timePeriod(timeVal),
+		}, nil
+	}
+}
+
+// makeDateFragmentHandler returns a Handler for DATE_FRAGMENT (date only).
+// Used as the base for withPrepTime variants.
+func makeDateFragmentHandler(order DateOrder) Handler {
+	return func(tokens []Token) (*ParsedDateSlots, error) {
+		toks := filterFillers(tokens)
+		mo, d, y, err := parseDateFragment(toks[0].Value.(string), order)
+		if err != nil {
+			return nil, err
+		}
+		return &ParsedDateSlots{Year: y, Month: mo, Day: d, Period: PeriodDay}, nil
+	}
+}
+
 // handleWeekdayIntegerMonthYear handles: WEEKDAY INTEGER MONTH YEAR
 // The weekday is informational (derivable from the date) and is ignored.
 // Example: "Mon, 02 Jan 2006" (RFC 2822 date portion)
@@ -422,46 +472,6 @@ func handleWeekdayIntegerMonthYear(tokens []Token) (*ParsedDateSlots, error) {
 		Month:  int(toks[2].Value.(Month)),
 		Day:    d,
 		Period: PeriodDay,
-	}, nil
-}
-
-// handleWeekdayIntegerMonthYearTime handles: WEEKDAY INTEGER MONTH YEAR TIME
-// Example: "Mon, 02 Jan 2006 15:04:05" (RFC 2822 without timezone)
-func handleWeekdayIntegerMonthYearTime(tokens []Token) (*ParsedDateSlots, error) {
-	toks := filterFillers(tokens)
-	// [0]=WEEKDAY (ignored), [1]=INTEGER, [2]=MONTH, [3]=YEAR, [4]=TIME
-	d := toks[1].Value.(int)
-	y := toks[3].Value.(int)
-	h, m, s := mustParseTime(toks[4].Value.(string))
-	return &ParsedDateSlots{
-		Year:   y,
-		Month:  int(toks[2].Value.(Month)),
-		Day:    d,
-		Hour:   h,
-		Minute: m,
-		Second: s,
-		Period: PeriodSecond,
-	}, nil
-}
-
-// handleWeekdayIntegerMonthYearTimeAMPM handles: WEEKDAY INTEGER MONTH YEAR TIME AMPM
-// Example: "Wednesday, 22nd June, 2016, 12.16 pm."
-func handleWeekdayIntegerMonthYearTimeAMPM(tokens []Token) (*ParsedDateSlots, error) {
-	toks := filterFillers(tokens)
-	// [0]=WEEKDAY (ignored), [1]=INTEGER, [2]=MONTH, [3]=YEAR, [4]=TIME, [5]=AMPM
-	d := toks[1].Value.(int)
-	y := toks[3].Value.(int)
-	timeVal := toks[4].Value.(string)
-	h, m, s := mustParseTime(timeVal)
-	h = applyAMPM(h, toks[5].Value.(AMPM))
-	return &ParsedDateSlots{
-		Year:   y,
-		Month:  int(toks[2].Value.(Month)),
-		Day:    d,
-		Hour:   h,
-		Minute: m,
-		Second: s,
-		Period: timePeriod(timeVal),
 	}, nil
 }
 
@@ -615,6 +625,29 @@ func withPrepTime(dateHandler Handler) Handler {
 			return nil, err
 		}
 		return applyTimeToks(slots, toks[prepIdx+1:])
+	}
+}
+
+// withTrailingTime wraps a date-only handler to also accept a trailing TIME
+// or TIME AMPM suffix (no preposition required). Mirrors withPrepTime.
+func withTrailingTime(dateHandler Handler) Handler {
+	return func(tokens []Token) (*ParsedDateSlots, error) {
+		toks := filterFillers(tokens)
+		timeIdx := -1
+		for i, t := range toks {
+			if t.Type == TokenTime {
+				timeIdx = i
+				break
+			}
+		}
+		if timeIdx < 0 {
+			return nil, fmt.Errorf("nowandlater: withTrailingTime: no TIME token found")
+		}
+		slots, err := dateHandler(toks[:timeIdx])
+		if err != nil {
+			return nil, err
+		}
+		return applyTimeToks(slots, toks[timeIdx:])
 	}
 }
 
@@ -806,6 +839,23 @@ func handleUnitModifier(tokens []Token) (*ParsedDateSlots, error) {
 	return &ParsedDateSlots{DeltaSeconds: new(secs * sign), Period: period}, nil
 }
 
+// swapDateOrder assigns a and b to month and day according to order, then
+// swaps if the configured assignment produces an impossible month (> 12).
+// Any value > 12 can only be a day: "30-01-2016" with MDY → month=30 impossible
+// → swap → Jan 30, 2016.
+func swapDateOrder(a, b int, order DateOrder) (month, day int) {
+	switch order {
+	case DMY:
+		day, month = a, b
+	default: // MDY (zero value — US English default)
+		month, day = a, b
+	}
+	if month > 12 && day <= 12 {
+		month, day = day, month
+	}
+	return month, day
+}
+
 // makeIntegerIntegerYearHandler returns a Handler for the INTEGER INTEGER YEAR
 // signature that interprets the two leading integers according to order:
 //   - MDY: first=month, second=day  ("12/04/2026" → Dec 4)
@@ -818,20 +868,7 @@ func makeIntegerIntegerYearHandler(order DateOrder) Handler {
 		a := toks[0].Value.(int)
 		b := toks[1].Value.(int)
 		y := toks[2].Value.(int)
-		var m, d int
-		switch order {
-		case DMY:
-			d, m = a, b
-		default: // MDY (zero value — US English default)
-			m, d = a, b
-		}
-		// If the configured order produces an impossible month but the other
-		// assignment is valid, swap. Any value > 12 can only be a day, so the
-		// result is unambiguous: "30-01-2016" with MDY → month=30 impossible
-		// → swap → Jan 30, 2016.
-		if m > 12 && d <= 12 {
-			m, d = d, m
-		}
+		m, d := swapDateOrder(a, b, order)
 		if m < 1 || m > 12 || d < 1 || d > 31 {
 			return nil, fmt.Errorf("nowandlater: invalid date %d/%d/%d", a, b, y)
 		}
@@ -842,110 +879,6 @@ func makeIntegerIntegerYearHandler(order DateOrder) Handler {
 // handleIntegerIntegerYear is the MDY fallback used by the global handlers map.
 // Lang-specific dispatch calls makeIntegerIntegerYearHandler(lang.DateOrder) instead.
 var handleIntegerIntegerYear = makeIntegerIntegerYearHandler(MDY)
-
-// handleYearIntegerIntegerTime handles: YEAR INTEGER INTEGER TIME
-// Examples: "2026-12-04 09:30", "2026-12-04T09:30:00" (T preprocessed to space)
-func handleYearIntegerIntegerTime(tokens []Token) (*ParsedDateSlots, error) {
-	toks := filterFillers(tokens)
-	y := toks[0].Value.(int)
-	m := toks[1].Value.(int)
-	d := toks[2].Value.(int)
-	timeVal := toks[3].Value.(string)
-	h, min, sec := mustParseTime(timeVal)
-	slots := &ParsedDateSlots{
-		Year:   y,
-		Month:  m,
-		Day:    d,
-		Hour:   h,
-		Minute: min,
-		Period: timePeriod(timeVal),
-	}
-	slots.Second = sec
-	return slots, nil
-}
-
-// handleYearIntegerIntegerTimeAMPM handles: YEAR INTEGER INTEGER TIME AMPM
-// Example: "2026-12-04 9:30 AM"
-func handleYearIntegerIntegerTimeAMPM(tokens []Token) (*ParsedDateSlots, error) {
-	toks := filterFillers(tokens)
-	y := toks[0].Value.(int)
-	m := toks[1].Value.(int)
-	d := toks[2].Value.(int)
-	timeVal := toks[3].Value.(string)
-	h, min, sec := mustParseTime(timeVal)
-	h = applyAMPM(h, toks[4].Value.(AMPM))
-	slots := &ParsedDateSlots{
-		Year:   y,
-		Month:  m,
-		Day:    d,
-		Hour:   h,
-		Minute: min,
-		Period: timePeriod(timeVal),
-	}
-	slots.Second = sec
-	return slots, nil
-}
-
-// handleYearMonthIntegerTime handles: YEAR MONTH INTEGER TIME
-// Example: "2026-dec-04 09:30"
-func handleYearMonthIntegerTime(tokens []Token) (*ParsedDateSlots, error) {
-	toks := filterFillers(tokens)
-	y := toks[0].Value.(int)
-	d := toks[2].Value.(int)
-	timeVal := toks[3].Value.(string)
-	h, min, sec := mustParseTime(timeVal)
-	slots := &ParsedDateSlots{
-		Year:   y,
-		Month:  int(toks[1].Value.(Month)),
-		Day:    d,
-		Hour:   h,
-		Minute: min,
-		Period: timePeriod(timeVal),
-	}
-	slots.Second = sec
-	return slots, nil
-}
-
-// handleYearMonthIntegerTimeAMPM handles: YEAR MONTH INTEGER TIME AMPM
-// Example: "2026-dec-04 9:30 AM"
-func handleYearMonthIntegerTimeAMPM(tokens []Token) (*ParsedDateSlots, error) {
-	toks := filterFillers(tokens)
-	y := toks[0].Value.(int)
-	d := toks[2].Value.(int)
-	timeVal := toks[3].Value.(string)
-	h, min, sec := mustParseTime(timeVal)
-	h = applyAMPM(h, toks[4].Value.(AMPM))
-	slots := &ParsedDateSlots{
-		Year:   y,
-		Month:  int(toks[1].Value.(Month)),
-		Day:    d,
-		Hour:   h,
-		Minute: min,
-		Period: timePeriod(timeVal),
-	}
-	slots.Second = sec
-	return slots, nil
-}
-
-// handleMonthIntegerYearTime handles: MONTH INTEGER YEAR TIME
-// Example: "Dec 3 2026 09:30"
-func handleMonthIntegerYearTime(tokens []Token) (*ParsedDateSlots, error) {
-	toks := filterFillers(tokens)
-	d := toks[1].Value.(int)
-	y := toks[2].Value.(int)
-	timeVal := toks[3].Value.(string)
-	h, min, sec := mustParseTime(timeVal)
-	slots := &ParsedDateSlots{
-		Year:   y,
-		Month:  int(toks[0].Value.(Month)),
-		Day:    d,
-		Hour:   h,
-		Minute: min,
-		Period: timePeriod(timeVal),
-	}
-	slots.Second = sec
-	return slots, nil
-}
 
 // ---------------------------------------------------------------------------
 // "second" as ordinal (day 2) — unit/ordinal conflict resolution
@@ -985,6 +918,57 @@ var (
 	handleSecondDayMonthYear = secondOrdinal(handleIntegerMonthYear)
 )
 
+// makeIntegerAMPMDateFragmentHandler returns a Handler for INTEGER AMPM DATE_FRAGMENT.
+// DATE_FRAGMENT arises when a compound date has a 2-digit year (e.g. "20.07.21").
+// The raw string is re-parsed applying DateOrder and expand2DigitYear.
+// Example: "1 a.m 20.07.21"
+func makeIntegerAMPMDateFragmentHandler(order DateOrder) Handler {
+	return func(tokens []Token) (*ParsedDateSlots, error) {
+		toks := filterFillers(tokens)
+		// [0]=INTEGER (hour), [1]=AMPM, [2]=DATE_FRAGMENT
+		hr := toks[0].Value.(int)
+		if hr < 1 || hr > 12 {
+			return nil, fmt.Errorf("nowandlater: hour %d out of range for 12-hour clock", hr)
+		}
+		hr = applyAMPM(hr, toks[1].Value.(AMPM))
+		mo, d, y, err := parseDateFragment(toks[2].Value.(string), order)
+		if err != nil {
+			return nil, err
+		}
+		return &ParsedDateSlots{
+			Year: y, Month: mo, Day: d,
+			Hour: hr, Period: PeriodHour,
+		}, nil
+	}
+}
+
+// makeIntegerAMPMIntegerIntegerYearHandler returns a Handler for INTEGER AMPM INTEGER INTEGER YEAR.
+// The leading INTEGER+AMPM is a 12-hour time; the trailing INTEGER INTEGER YEAR is a date
+// interpreted according to order (MDY or DMY), identical to makeIntegerIntegerYearHandler.
+// Example: "1 a.m 20.07.2021"
+func makeIntegerAMPMIntegerIntegerYearHandler(order DateOrder) Handler {
+	return func(tokens []Token) (*ParsedDateSlots, error) {
+		toks := filterFillers(tokens)
+		// [0]=INTEGER (hour), [1]=AMPM, [2]=INTEGER (a), [3]=INTEGER (b), [4]=YEAR
+		hr := toks[0].Value.(int)
+		if hr < 1 || hr > 12 {
+			return nil, fmt.Errorf("nowandlater: hour %d out of range for 12-hour clock", hr)
+		}
+		hr = applyAMPM(hr, toks[1].Value.(AMPM))
+		a := toks[2].Value.(int)
+		b := toks[3].Value.(int)
+		y := toks[4].Value.(int)
+		mo, d := swapDateOrder(a, b, order)
+		if mo < 1 || mo > 12 || d < 1 || d > 31 {
+			return nil, fmt.Errorf("nowandlater: invalid date %d/%d/%d", a, b, y)
+		}
+		return &ParsedDateSlots{
+			Year: y, Month: mo, Day: d,
+			Hour: hr, Period: PeriodHour,
+		}, nil
+	}
+}
+
 // handleTimeAMPMMonthIntegerYear handles: TIME AMPM MONTH INTEGER YEAR
 // Example: "8:25 a.m. Dec. 12, 2014" — time precedes date
 func handleTimeAMPMMonthIntegerYear(tokens []Token) (*ParsedDateSlots, error) {
@@ -997,27 +981,6 @@ func handleTimeAMPMMonthIntegerYear(tokens []Token) (*ParsedDateSlots, error) {
 		Year:   toks[4].Value.(int),
 		Month:  int(toks[2].Value.(Month)),
 		Day:    toks[3].Value.(int),
-		Hour:   h,
-		Minute: min,
-		Period: timePeriod(timeVal),
-	}
-	slots.Second = sec
-	return slots, nil
-}
-
-// handleMonthIntegerYearTimeAMPM handles: MONTH INTEGER YEAR TIME AMPM
-// Example: "Dec 3 2026 9:30 AM"
-func handleMonthIntegerYearTimeAMPM(tokens []Token) (*ParsedDateSlots, error) {
-	toks := filterFillers(tokens)
-	d := toks[1].Value.(int)
-	y := toks[2].Value.(int)
-	timeVal := toks[3].Value.(string)
-	h, min, sec := mustParseTime(timeVal)
-	h = applyAMPM(h, toks[4].Value.(AMPM))
-	slots := &ParsedDateSlots{
-		Year:   y,
-		Month:  int(toks[0].Value.(Month)),
-		Day:    d,
 		Hour:   h,
 		Minute: min,
 		Period: timePeriod(timeVal),

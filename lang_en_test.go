@@ -126,6 +126,39 @@ var englishCases = []struct {
 	// --- RFC 2822 with AM/PM (WEEKDAY INTEGER MONTH YEAR TIME AMPM) ---
 	{"Wednesday, 22nd June, 2016, 12:16 pm", u(2016, 6, 22, 12, 16, 0)},
 
+	// --- INTEGER MONTH YEAR TIME (day-monthname-year with time) ---
+	{"21 January 2012 13:11:23", u(2012, 1, 21, 13, 11, 23)},
+	{"4 July 2026 08:00:00", u(2026, 7, 4, 8, 0, 0)},
+	{"21 January 2012 1:11:23 pm", u(2012, 1, 21, 13, 11, 23)},
+
+	// --- INTEGER INTEGER YEAR TIME (numeric date + time, no preposition) ---
+	{"29/02/2020 13:12", u(2020, 2, 29, 13, 12, 0)},
+	{"12/25/2024 9:30", u(2024, 12, 25, 9, 30, 0)},
+	{"29/02/2020 1:12 pm", u(2020, 2, 29, 13, 12, 0)},
+
+	// --- INTEGER AMPM INTEGER INTEGER YEAR (time-first, numeric date, 4-digit year) ---
+	{"1 a.m 20.07.2021", u(2021, 7, 20, 1, 0, 0)},
+	{"3 pm 12/25/2024", u(2024, 12, 25, 15, 0, 0)},
+
+	// --- INTEGER AMPM DATE_FRAGMENT (time-first, numeric date, 2-digit year) ---
+	{"1 a.m 20.07.21", u(2021, 7, 20, 1, 0, 0)},
+	{"3 pm 12/25/25", u(2025, 12, 25, 15, 0, 0)},
+
+	// --- DATE_FRAGMENT standalone (2-digit year) ---
+	{"29/02/20", u(2020, 2, 29, 0, 0, 0)},
+
+	// --- TIME AMPM DATE_FRAGMENT (time-first, 2-digit year) ---
+	{"1:30am 29/02/20", u(2020, 2, 29, 1, 30, 0)},
+	{"1:30am at 29/02/20", u(2020, 2, 29, 1, 30, 0)},
+
+	// --- DATE_FRAGMENT TIME / TIME AMPM / PREP TIME AMPM (2-digit year) ---
+	{"1/1/16 9:02:43", u(2016, 1, 1, 9, 2, 43)},
+	{"3/15/99 14:30:00", u(1999, 3, 15, 14, 30, 0)},
+	{"12/25/25 0:00:00", u(2025, 12, 25, 0, 0, 0)},
+	{"29/02/20 1:12 pm", u(2020, 2, 29, 13, 12, 0)},
+	{"29/02/20 at 1:12 pm", u(2020, 2, 29, 13, 12, 0)},
+	{"29/02/20 at 13:12", u(2020, 2, 29, 13, 12, 0)},
+
 	// --- Time only (applied to today) ---
 	{"at 9:30", u(2026, 3, 22, 9, 30, 0)},
 	{"at 9:30 AM", u(2026, 3, 22, 9, 30, 0)},
