@@ -7,6 +7,7 @@ date and time strings into `time.Time` values.
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/client9/nowandlater.svg)](https://pkg.go.dev/github.com/client9/nowandlater)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+🇬🇧🇪🇸🇩🇪🇫🇷🇮🇹🇵🇹🇷🇺🇯🇵🇨🇳
 
 ```go
 import "github.com/client9/nowandlater"
