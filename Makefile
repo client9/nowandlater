@@ -24,7 +24,7 @@ cover:
 	go tool cover -func=cover.out
 
 fuzz:
-	go test -fuzz=.
+	cd tests && go test -fuzz=.
 
 bench:
 	go test -bench=. -benchmem -benchtime=3s ./...

@@ -820,9 +820,17 @@ func replaceSecondUnit(tokens []Token) []Token {
 
 // secondOrdinal wraps a handler so that a TokenUnit(PeriodSecond) in the token
 // list is treated as TokenInteger(2) before the base handler runs.
+// If no PeriodSecond token is present, the UNIT cannot be treated as an ordinal
+// and ErrUnknownSignature is returned.
 func secondOrdinal(base Handler) Handler {
 	return func(tokens []Token) (*ParsedDateSlots, error) {
-		return base(replaceSecondUnit(tokens))
+		replaced := replaceSecondUnit(tokens)
+		for _, t := range replaced {
+			if t.Type == TokenUnit {
+				return nil, ErrUnknownSignature
+			}
+		}
+		return base(replaced)
 	}
 }
 

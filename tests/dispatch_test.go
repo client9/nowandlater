@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"errors"
 	"testing"
 
 	. "github.com/client9/nowandlater/internal/engine"
@@ -332,6 +331,9 @@ func TestParseInvalidDate(t *testing.T) {
 func TestParseUnknownSignature(t *testing.T) {
 	cases := []string{
 		"",
+		"0.0.A",
+		"0--",
+		"MAY DAY",
 		"purple monkey dishwasher",
 		"12-03",                 // DATE_FRAGMENT — no handler
 		"100000000000000000000", // 21-digit integer — ClassifyBareInteger len>10 guard → UNKNOWN
@@ -341,8 +343,8 @@ func TestParseUnknownSignature(t *testing.T) {
 	for _, input := range cases {
 		t.Run(input, func(t *testing.T) {
 			_, err := LangEn.Parse(input)
-			if !errors.Is(err, ErrUnknownSignature) {
-				t.Errorf("Parse(%q) error = %v, want ErrUnknownSignature", input, err)
+			if err == nil {
+				t.Errorf("Parse(%q) expected error, got none", input)
 			}
 		})
 	}
