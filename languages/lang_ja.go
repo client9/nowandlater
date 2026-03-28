@@ -456,16 +456,3 @@ func handleYearMonthIntegerAMPMTime(tokens []Token) (*ParsedDateSlots, error) {
 	slots.Second = sec
 	return slots, nil
 }
-
-// handleDirectionUnitWeekday handles: DIRECTION UNIT WEEKDAY
-// Example: 来週の月曜日 → next Monday
-// The UNIT (e.g. PeriodWeek from 来週) provides context but is redundant for
-// resolution; weekday + direction is sufficient.
-func handleDirectionUnitWeekday(tokens []Token) (*ParsedDateSlots, error) {
-	toks := FilterFillers(tokens) // [DIRECTION, UNIT, WEEKDAY]
-	return &ParsedDateSlots{
-		Weekday:   toks[2].Value.(Weekday),
-		Direction: toks[0].Value.(Direction),
-		Period:    PeriodDay,
-	}, nil
-}
