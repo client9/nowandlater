@@ -1,7 +1,7 @@
 package tests
 
 import (
-	//"maps"
+	"maps"
 	"strings"
 	"testing"
 	"time"
@@ -237,8 +237,6 @@ func TestLangHandlerFallthrough(t *testing.T) {
 	}
 }
 
-/* TODO
-
 // TestLangTimezones verifies that Lang.Timezones overrides defaultTimezones and
 // that custom abbreviations can be added alongside the built-in table.
 func TestLangTimezones(t *testing.T) {
@@ -247,9 +245,9 @@ func TestLangTimezones(t *testing.T) {
 	irish := time.FixedZone("IST", 1*3600)
 	nzst := time.FixedZone("NZST", 12*3600)
 
-	// englishWords doesn't include NZST, so add it alongside the override.
-	customWords := make(map[string]WordEntry, len(englishWords)+1)
-	maps.Copy(customWords, englishWords)
+	// LangEn.Words doesn't include NZST, so add it alongside the override.
+	customWords := make(map[string]WordEntry, len(LangEn.Words)+1)
+	maps.Copy(customWords, LangEn.Words)
 	customWords["nzst"] = WordEntry{Type: TokenTimezone, Value: "nzst"}
 
 	customLang := Lang{
@@ -286,7 +284,6 @@ func TestLangTimezones(t *testing.T) {
 		t.Errorf("NZST offset = %d, want %d (UTC+12)", offset2, 12*3600)
 	}
 }
-*/
 
 // TestLangOrdinalSuffixes verifies that OrdinalSuffixes are applied correctly
 // and that a lang with no suffixes leaves numbers unmodified.
