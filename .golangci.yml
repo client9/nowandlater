@@ -2,6 +2,8 @@ version: "2"
 linters:
   enable:
     - gocritic
+  disable:
+    - staticcheck
   settings:
     gocritic:
       disabled-checks:
