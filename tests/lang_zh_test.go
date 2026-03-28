@@ -88,6 +88,25 @@ var chineseCases = []struct {
 	// --- Time with seconds (covers zhParseTime seconds branch) ---
 	{"下午3点15分30秒", u(2026, 3, 22, 15, 15, 30)}, // 3:15:30 PM
 	{"上午9点30分45秒", u(2026, 3, 22, 9, 30, 45)},  // 9:30:45 AM
+
+	// --- zhParseTime: 时 o'clock variant (covers time-suffix branch) ---
+	{"上午9时30分", u(2026, 3, 22, 9, 30, 0)}, // 9:30 AM using 时 instead of 点
+
+	// --- zhParseNumber: additional unit suffixes ---
+	{"2星期后", u(2026, 4, 5, 10, 0, 0)}, // 2 weeks later using 星期 suffix
+	{"2周后", u(2026, 4, 5, 10, 0, 0)},  // 2 weeks later using 周 suffix
+	{"3日后", u(2026, 3, 25, 10, 0, 0)}, // 3 days later using 日 with 后 (vs 天)
+	{"5分后", u(2026, 3, 22, 10, 5, 0)}, // 5 minutes later using bare 分
+	{"5秒后", u(2026, 3, 22, 10, 0, 5)}, // 5 seconds later using bare 秒
+
+	// --- Additional macros not covered by existing tests ---
+	{"这周", u(2026, 3, 16, 0, 0, 0)},   // this week (DirectionNearest + Week)
+	{"这个月", u(2026, 3, 1, 0, 0, 0)},   // this month
+	{"下个星期", u(2026, 3, 23, 0, 0, 0)}, // next week (long form)
+	{"上个星期", u(2026, 3, 9, 0, 0, 0)},  // last week (long form)
+
+	// --- Skip unknown rune ---
+	{"X3天后", u(2026, 3, 25, 10, 0, 0)}, // ASCII X is not in the word map and is skipped
 }
 
 func TestLangZh(t *testing.T) {

@@ -2,9 +2,11 @@ package languages
 
 import (
 	"fmt"
-	. "github.com/client9/nowandlater/internal/engine"
+	"strconv"
 	"strings"
 	"unicode/utf8"
+
+	. "github.com/client9/nowandlater/internal/engine"
 )
 
 // LangJa is the built-in Japanese Lang.
@@ -198,7 +200,10 @@ func jaParseNumber(input string, start int) ([]Token, int) {
 		i++
 	}
 	digits := input[start:i]
-	n := MustAtoi(digits)
+	n, err := strconv.Atoi(digits)
+	if err != nil {
+		return nil, i - start // skip the digit run, emit no token
+	}
 	rest := input[i:]
 
 	switch {
@@ -302,18 +307,22 @@ func jaParseTime(input string, start, hour int) ([]Token, int) {
 			j++
 		}
 		if strings.HasPrefix(input[j:], "分") {
-			minute = MustAtoi(input[i:j])
-			i = j + len("分")
+			if m, err := strconv.Atoi(input[i:j]); err == nil {
+				minute = m
+				i = j + len("分")
 
-			// Optional: digit run + 秒
-			if i < len(input) && IsDigitByte(input[i]) {
-				k := i
-				for k < len(input) && IsDigitByte(input[k]) {
-					k++
-				}
-				if strings.HasPrefix(input[k:], "秒") {
-					second = MustAtoi(input[i:k])
-					i = k + len("秒")
+				// Optional: digit run + 秒
+				if i < len(input) && IsDigitByte(input[i]) {
+					k := i
+					for k < len(input) && IsDigitByte(input[k]) {
+						k++
+					}
+					if strings.HasPrefix(input[k:], "秒") {
+						if sec, err := strconv.Atoi(input[i:k]); err == nil {
+							second = sec
+							i = k + len("秒")
+						}
+					}
 				}
 			}
 		}
@@ -394,7 +403,10 @@ func jaEraMatch(s string) ([]Token, int, bool) {
 				j++
 			}
 			if strings.HasPrefix(rest[j:], "年") {
-				eraYear := MustAtoi(rest[:j])
+				eraYear, err := strconv.Atoi(rest[:j])
+				if err != nil {
+					return nil, 0, false
+				}
 				return []Token{{Type: TokenYear, Value: era.baseYear + eraYear - 1}},
 					len(era.name) + j + len("年"), true
 			}

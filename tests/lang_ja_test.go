@@ -80,10 +80,23 @@ var japaneseCases = []struct {
 	// --- 日間 / 分間 / 秒間 duration variants ---
 	{"3日間後", u(2026, 3, 25, 10, 0, 0)},
 	{"30分間前", u(2026, 3, 22, 9, 30, 0)},
+	{"5秒後", u(2026, 3, 22, 10, 0, 5)},    // bare 秒 duration
+	{"10秒間後", u(2026, 3, 22, 10, 0, 10)}, // 秒間 variant
 
 	// --- カ月 (katakana variant) ---
 	// Month deltas use the 30-day approximation from periodToSeconds (3×30d = 90d).
 	{"3カ月後", u(2026, 6, 20, 10, 0, 0)},
+
+	// --- Direction+unit macros not covered by existing tests ---
+	{"先週", u(2026, 3, 9, 0, 0, 0)}, // last week (Monday of previous week)
+	{"来月", u(2026, 4, 1, 0, 0, 0)}, // next month
+	{"今月", u(2026, 3, 1, 0, 0, 0)}, // this month
+	{"去年", u(2025, 1, 1, 0, 0, 0)}, // last year
+	{"昨年", u(2025, 1, 1, 0, 0, 0)}, // last year (formal synonym)
+	{"今年", u(2026, 1, 1, 0, 0, 0)}, // this year
+
+	// --- Skip unknown rune ---
+	{"テスト3日後", u(2026, 3, 25, 10, 0, 0)}, // テスト chars are not in the word map and are skipped
 
 	// --- Combined absolute date + AMPM time ---
 	{"2026年3月24日の午後3時", u(2026, 3, 24, 15, 0, 0)},
@@ -96,6 +109,8 @@ var japaneseCases = []struct {
 	{"平成31年4月", u(2019, 4, 1, 0, 0, 0)},    // 1989 + 31 - 1 = 2019
 	{"昭和64年1月", u(1989, 1, 1, 0, 0, 0)},    // 1926 + 64 - 1 = 1989
 	{"令和7年3月24日", u(2025, 3, 24, 0, 0, 0)}, // era + full date
+	{"大正元年", u(1912, 1, 1, 0, 0, 0)},       // Taisho era year 1 = 1912
+	{"明治40年3月", u(1907, 3, 1, 0, 0, 0)},    // Meiji year 40: 1868 + 40 - 1 = 1907
 }
 
 func TestLangJa(t *testing.T) {

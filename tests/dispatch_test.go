@@ -238,8 +238,16 @@ func FuzzParse(f *testing.F) {
 	for _, tc := range parseCases {
 		f.Add(tc.input)
 	}
+	for _, tc := range japaneseCases {
+		f.Add(tc.input)
+	}
+	for _, tc := range chineseCases {
+		f.Add(tc.input)
+	}
 	f.Fuzz(func(t *testing.T, orig string) {
 		LangEn.Parse(orig)
+		LangZh.Parse(orig)
+		LangJa.Parse(orig)
 	})
 }
 
