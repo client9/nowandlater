@@ -1,7 +1,10 @@
 
+test: lint
+	go test ./...
+
 clean:
 	rm -f nldate
-	rm -f cover.out coverage.html coverage.out 
+	rm -f cover.out coverage.html coverage.out cover.out.tmp
 	rm -rf testdata
 	rm -f nowandlater.test
 
@@ -13,14 +16,11 @@ lint: fmt
 	go fix -diff .
 	golangci-lint run ./...
 
-test:
-	go vet
-	go test ./...
-
 # test but ignore any fuzz stuff
 cover:
 	rm -f cover.out
-	go test -run='^Test' -coverprofile=cover.out
+	go test -run='^Test' -coverprofile=cover.out -coverpkg=./... ./...
+	grep -v '/cmd/' cover.out > cover.out.tmp && mv cover.out.tmp cover.out
 	go tool cover -func=cover.out
 
 fuzz:
