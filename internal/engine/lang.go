@@ -105,5 +105,4 @@ type Lang struct {
 	//   "WEEKDAY DIRECTION" → handleWeekdayDirection  (French "lundi prochain")
 	// Leave nil to use only the global handlers (correct for English).
 	Handlers map[string]Handler
-
 }
