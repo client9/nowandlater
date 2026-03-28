@@ -1,7 +1,6 @@
 package engine
 
 import (
-	"sync"
 	"time"
 )
 
@@ -20,6 +19,17 @@ const (
 	DMY                  // day-month-year  (most of Europe, Latin America, e.g. 04/12/2026 = Dec 4)
 	YMD                  // year-month-day  (ISO 8601 — only meaningful when year is two digits)
 )
+
+// MaxPhraseWords is the maximum number of space-separated words in any phrase
+// key across all built-in languages. The tokenizer tries phrase matches up to
+// this span before falling back to single-word lookup.
+//
+// Verified by TestMaxPhraseWords: English "day after tomorrow", Spanish
+// "de la manana", French "vingt et une", and Portuguese "trinta e uma" all
+// reach 3 words; no built-in language exceeds that.
+// Update this constant and rerun TestMaxPhraseWords when adding a new language
+// whose phrases exceed 3 words.
+const MaxPhraseWords = 3
 
 // WordEntry is the classification for a single recognized word.
 // Value is the typed semantic value stored in Token.Value.
@@ -96,8 +106,4 @@ type Lang struct {
 	// Leave nil to use only the global handlers (correct for English).
 	Handlers map[string]Handler
 
-	// phraseOnce guards one-time computation of maxPhraseWords.
-	// Lang must not be copied after first use (same restriction as sync.Mutex).
-	phraseOnce     sync.Once
-	maxPhraseWords int
 }

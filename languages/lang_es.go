@@ -37,191 +37,191 @@ var spanishWords = map[string]WordEntry{
 	// --- Weekdays ---
 	// 2-letter forms from supplementary data. Note: "mi" also means the possessive
 	// pronoun "my" in Spanish — see Known Limitations.
-	"lunes":     {TokenWeekday, WeekdayMonday},
-	"lun":       {TokenWeekday, WeekdayMonday},
-	"lu":        {TokenWeekday, WeekdayMonday},
-	"martes":    {TokenWeekday, WeekdayTuesday},
-	"mar":       {TokenWeekday, WeekdayTuesday}, // ambiguous: also marzo abbrev; weekday wins
-	"miércoles": {TokenWeekday, WeekdayWednesday},
-	"miercoles": {TokenWeekday, WeekdayWednesday},
-	"mié":       {TokenWeekday, WeekdayWednesday},
-	"mie":       {TokenWeekday, WeekdayWednesday},
-	"mi":        {TokenWeekday, WeekdayWednesday},
-	"jueves":    {TokenWeekday, WeekdayThursday},
-	"jue":       {TokenWeekday, WeekdayThursday},
-	"ju":        {TokenWeekday, WeekdayThursday},
-	"viernes":   {TokenWeekday, WeekdayFriday},
-	"vie":       {TokenWeekday, WeekdayFriday},
-	"vi":        {TokenWeekday, WeekdayFriday},
-	"sábado":    {TokenWeekday, WeekdaySaturday},
-	"sabado":    {TokenWeekday, WeekdaySaturday},
-	"sáb":       {TokenWeekday, WeekdaySaturday},
-	"sab":       {TokenWeekday, WeekdaySaturday},
-	"sa":        {TokenWeekday, WeekdaySaturday},
-	"domingo":   {TokenWeekday, WeekdaySunday},
-	"dom":       {TokenWeekday, WeekdaySunday},
-	"do":        {TokenWeekday, WeekdaySunday},
+	"lunes":     {Type: TokenWeekday, Value: WeekdayMonday},
+	"lun":       {Type: TokenWeekday, Value: WeekdayMonday},
+	"lu":        {Type: TokenWeekday, Value: WeekdayMonday},
+	"martes":    {Type: TokenWeekday, Value: WeekdayTuesday},
+	"mar":       {Type: TokenWeekday, Value: WeekdayTuesday}, // ambiguous: also marzo abbrev; weekday wins
+	"miércoles": {Type: TokenWeekday, Value: WeekdayWednesday},
+	"miercoles": {Type: TokenWeekday, Value: WeekdayWednesday},
+	"mié":       {Type: TokenWeekday, Value: WeekdayWednesday},
+	"mie":       {Type: TokenWeekday, Value: WeekdayWednesday},
+	"mi":        {Type: TokenWeekday, Value: WeekdayWednesday},
+	"jueves":    {Type: TokenWeekday, Value: WeekdayThursday},
+	"jue":       {Type: TokenWeekday, Value: WeekdayThursday},
+	"ju":        {Type: TokenWeekday, Value: WeekdayThursday},
+	"viernes":   {Type: TokenWeekday, Value: WeekdayFriday},
+	"vie":       {Type: TokenWeekday, Value: WeekdayFriday},
+	"vi":        {Type: TokenWeekday, Value: WeekdayFriday},
+	"sábado":    {Type: TokenWeekday, Value: WeekdaySaturday},
+	"sabado":    {Type: TokenWeekday, Value: WeekdaySaturday},
+	"sáb":       {Type: TokenWeekday, Value: WeekdaySaturday},
+	"sab":       {Type: TokenWeekday, Value: WeekdaySaturday},
+	"sa":        {Type: TokenWeekday, Value: WeekdaySaturday},
+	"domingo":   {Type: TokenWeekday, Value: WeekdaySunday},
+	"dom":       {Type: TokenWeekday, Value: WeekdaySunday},
+	"do":        {Type: TokenWeekday, Value: WeekdaySunday},
 
 	// --- Months ---
-	"enero":   {TokenMonth, MonthJanuary},
-	"ene":     {TokenMonth, MonthJanuary},
-	"febrero": {TokenMonth, MonthFebruary},
-	"feb":     {TokenMonth, MonthFebruary},
-	"marzo":   {TokenMonth, MonthMarch},
+	"enero":   {Type: TokenMonth, Value: MonthJanuary},
+	"ene":     {Type: TokenMonth, Value: MonthJanuary},
+	"febrero": {Type: TokenMonth, Value: MonthFebruary},
+	"feb":     {Type: TokenMonth, Value: MonthFebruary},
+	"marzo":   {Type: TokenMonth, Value: MonthMarch},
 	// "mar" → tuesday (see above)
-	"abril":      {TokenMonth, MonthApril},
-	"abr":        {TokenMonth, MonthApril},
-	"mayo":       {TokenMonth, MonthMay},
-	"may":        {TokenMonth, MonthMay}, // CLDR standard abbreviation
-	"junio":      {TokenMonth, MonthJune},
-	"jun":        {TokenMonth, MonthJune},
-	"julio":      {TokenMonth, MonthJuly},
-	"jul":        {TokenMonth, MonthJuly},
-	"agosto":     {TokenMonth, MonthAugust},
-	"ago":        {TokenMonth, MonthAugust},
-	"septiembre": {TokenMonth, MonthSeptember},
-	"setiembre":  {TokenMonth, MonthSeptember},
-	"sept":       {TokenMonth, MonthSeptember}, // CLDR base es standard abbreviation
-	"sep":        {TokenMonth, MonthSeptember}, // Latin America (es-419 and most locales)
-	"set":        {TokenMonth, MonthSeptember}, // es-PE, es-UY
-	"octubre":    {TokenMonth, MonthOctober},
-	"oct":        {TokenMonth, MonthOctober},
-	"noviembre":  {TokenMonth, MonthNovember},
-	"nov":        {TokenMonth, MonthNovember},
-	"diciembre":  {TokenMonth, MonthDecember},
-	"dic":        {TokenMonth, MonthDecember},
+	"abril":      {Type: TokenMonth, Value: MonthApril},
+	"abr":        {Type: TokenMonth, Value: MonthApril},
+	"mayo":       {Type: TokenMonth, Value: MonthMay},
+	"may":        {Type: TokenMonth, Value: MonthMay}, // CLDR standard abbreviation
+	"junio":      {Type: TokenMonth, Value: MonthJune},
+	"jun":        {Type: TokenMonth, Value: MonthJune},
+	"julio":      {Type: TokenMonth, Value: MonthJuly},
+	"jul":        {Type: TokenMonth, Value: MonthJuly},
+	"agosto":     {Type: TokenMonth, Value: MonthAugust},
+	"ago":        {Type: TokenMonth, Value: MonthAugust},
+	"septiembre": {Type: TokenMonth, Value: MonthSeptember},
+	"setiembre":  {Type: TokenMonth, Value: MonthSeptember},
+	"sept":       {Type: TokenMonth, Value: MonthSeptember}, // CLDR base es standard abbreviation
+	"sep":        {Type: TokenMonth, Value: MonthSeptember}, // Latin America (es-419 and most locales)
+	"set":        {Type: TokenMonth, Value: MonthSeptember}, // es-PE, es-UY
+	"octubre":    {Type: TokenMonth, Value: MonthOctober},
+	"oct":        {Type: TokenMonth, Value: MonthOctober},
+	"noviembre":  {Type: TokenMonth, Value: MonthNovember},
+	"nov":        {Type: TokenMonth, Value: MonthNovember},
+	"diciembre":  {Type: TokenMonth, Value: MonthDecember},
+	"dic":        {Type: TokenMonth, Value: MonthDecember},
 
 	// --- Direction ---
-	"próximo":   {TokenDirection, DirectionFuture},
-	"proximo":   {TokenDirection, DirectionFuture},
-	"próxima":   {TokenDirection, DirectionFuture},
-	"proxima":   {TokenDirection, DirectionFuture},
-	"siguiente": {TokenDirection, DirectionFuture},
-	"pasado":    {TokenDirection, DirectionPast}, // "pasado mañana" handled by multi-word key below
-	"pasada":    {TokenDirection, DirectionPast},
-	"último":    {TokenDirection, DirectionPast},
-	"ultimo":    {TokenDirection, DirectionPast},
-	"última":    {TokenDirection, DirectionPast},
-	"ultima":    {TokenDirection, DirectionPast},
-	"anterior":  {TokenDirection, DirectionPast},
-	"este":      {TokenDirection, DirectionNearest},
-	"esta":      {TokenDirection, DirectionNearest},
+	"próximo":   {Type: TokenDirection, Value: DirectionFuture},
+	"proximo":   {Type: TokenDirection, Value: DirectionFuture},
+	"próxima":   {Type: TokenDirection, Value: DirectionFuture},
+	"proxima":   {Type: TokenDirection, Value: DirectionFuture},
+	"siguiente": {Type: TokenDirection, Value: DirectionFuture},
+	"pasado":    {Type: TokenDirection, Value: DirectionPast}, // "pasado mañana" handled by multi-word key below
+	"pasada":    {Type: TokenDirection, Value: DirectionPast},
+	"último":    {Type: TokenDirection, Value: DirectionPast},
+	"ultimo":    {Type: TokenDirection, Value: DirectionPast},
+	"última":    {Type: TokenDirection, Value: DirectionPast},
+	"ultima":    {Type: TokenDirection, Value: DirectionPast},
+	"anterior":  {Type: TokenDirection, Value: DirectionPast},
+	"este":      {Type: TokenDirection, Value: DirectionNearest},
+	"esta":      {Type: TokenDirection, Value: DirectionNearest},
 
 	// --- Anchors ---
-	"ahora":    {TokenAnchor, AnchorNow},
-	"hoy":      {TokenAnchor, AnchorToday},
-	"mañana":   {TokenAnchor, AnchorTomorrow},
-	"manana":   {TokenAnchor, AnchorTomorrow},
-	"ayer":     {TokenAnchor, AnchorYesterday},
-	"anteayer": {TokenAnchor, Anchor2DaysAgo},
-	"antier":   {TokenAnchor, Anchor2DaysAgo}, // colloquial variant
+	"ahora":    {Type: TokenAnchor, Value: AnchorNow},
+	"hoy":      {Type: TokenAnchor, Value: AnchorToday},
+	"mañana":   {Type: TokenAnchor, Value: AnchorTomorrow},
+	"manana":   {Type: TokenAnchor, Value: AnchorTomorrow},
+	"ayer":     {Type: TokenAnchor, Value: AnchorYesterday},
+	"anteayer": {Type: TokenAnchor, Value: Anchor2DaysAgo},
+	"antier":   {Type: TokenAnchor, Value: Anchor2DaysAgo}, // colloquial variant
 
 	// --- Modifiers ---
-	"hace":    {TokenModifier, ModifierPast},
-	"atrás":   {TokenModifier, ModifierPast},
-	"atras":   {TokenModifier, ModifierPast},
-	"después": {TokenModifier, ModifierFuture}, // "X días después" = X days from now
-	"despues": {TokenModifier, ModifierFuture},
-	"antes":   {TokenModifier, ModifierPast},
+	"hace":    {Type: TokenModifier, Value: ModifierPast},
+	"atrás":   {Type: TokenModifier, Value: ModifierPast},
+	"atras":   {Type: TokenModifier, Value: ModifierPast},
+	"después": {Type: TokenModifier, Value: ModifierFuture}, // "X días después" = X days from now
+	"despues": {Type: TokenModifier, Value: ModifierFuture},
+	"antes":   {Type: TokenModifier, Value: ModifierPast},
 
 	// --- Prepositions (value not consumed semantically) ---
-	"en": {TokenPrep, nil},
-	"a":  {TokenPrep, nil}, // "a las" handled by multi-word key below
+	"en": {Type: TokenPrep, Value: nil},
+	"a":  {Type: TokenPrep, Value: nil}, // "a las" handled by multi-word key below
 
 	// --- Fillers (value not consumed semantically) ---
-	"el":    {TokenFiller, nil},
-	"la":    {TokenFiller, nil},
-	"lo":    {TokenFiller, nil},
-	"los":   {TokenFiller, nil},
-	"las":   {TokenFiller, nil},
-	"de":    {TokenFiller, nil},
-	"del":   {TokenFiller, nil},
-	"al":    {TokenFiller, nil},
-	"y":     {TokenFiller, nil}, // "treinta y uno" — "y" consumed as filler (but see multi-word number below)
-	"cerca": {TokenFiller, nil}, // "hace cerca de 3 días" = approximately 3 days ago
+	"el":    {Type: TokenFiller, Value: nil},
+	"la":    {Type: TokenFiller, Value: nil},
+	"lo":    {Type: TokenFiller, Value: nil},
+	"los":   {Type: TokenFiller, Value: nil},
+	"las":   {Type: TokenFiller, Value: nil},
+	"de":    {Type: TokenFiller, Value: nil},
+	"del":   {Type: TokenFiller, Value: nil},
+	"al":    {Type: TokenFiller, Value: nil},
+	"y":     {Type: TokenFiller, Value: nil}, // "treinta y uno" — "y" consumed as filler (but see multi-word number below)
+	"cerca": {Type: TokenFiller, Value: nil}, // "hace cerca de 3 días" = approximately 3 days ago
 
 	// --- Units (singular and plural — all variants carry the same Period constant) ---
-	"segundo":   {TokenUnit, PeriodSecond},
-	"segunda":   {TokenUnit, PeriodSecond}, // feminine; also ordinal "2nd" — handled by replaceSecondUnit
-	"segundos":  {TokenUnit, PeriodSecond},
-	"seg":       {TokenUnit, PeriodSecond}, // es-AR, es-PY abbreviation
-	"minuto":    {TokenUnit, PeriodMinute},
-	"minutos":   {TokenUnit, PeriodMinute},
-	"min":       {TokenUnit, PeriodMinute}, // CLDR abbreviation
-	"hora":      {TokenUnit, PeriodHour},
-	"horas":     {TokenUnit, PeriodHour},
-	"día":       {TokenUnit, PeriodDay},
-	"dia":       {TokenUnit, PeriodDay},
-	"días":      {TokenUnit, PeriodDay},
-	"dias":      {TokenUnit, PeriodDay},
-	"semana":    {TokenUnit, PeriodWeek},
-	"semanas":   {TokenUnit, PeriodWeek},
-	"sem":       {TokenUnit, PeriodWeek},      // CLDR abbreviation
-	"quincena":  {TokenUnit, PeriodFortnight}, // 14-day period; "quincena" is literally 15 days but used colloquially for a fortnight
-	"quincenas": {TokenUnit, PeriodFortnight},
-	"mes":       {TokenUnit, PeriodMonth},
-	"meses":     {TokenUnit, PeriodMonth},
-	"año":       {TokenUnit, PeriodYear},
-	"ano":       {TokenUnit, PeriodYear},
-	"años":      {TokenUnit, PeriodYear},
-	"anos":      {TokenUnit, PeriodYear},
+	"segundo":   {Type: TokenUnit, Value: PeriodSecond},
+	"segunda":   {Type: TokenUnit, Value: PeriodSecond}, // feminine; also ordinal "2nd" — handled by replaceSecondUnit
+	"segundos":  {Type: TokenUnit, Value: PeriodSecond},
+	"seg":       {Type: TokenUnit, Value: PeriodSecond}, // es-AR, es-PY abbreviation
+	"minuto":    {Type: TokenUnit, Value: PeriodMinute},
+	"minutos":   {Type: TokenUnit, Value: PeriodMinute},
+	"min":       {Type: TokenUnit, Value: PeriodMinute}, // CLDR abbreviation
+	"hora":      {Type: TokenUnit, Value: PeriodHour},
+	"horas":     {Type: TokenUnit, Value: PeriodHour},
+	"día":       {Type: TokenUnit, Value: PeriodDay},
+	"dia":       {Type: TokenUnit, Value: PeriodDay},
+	"días":      {Type: TokenUnit, Value: PeriodDay},
+	"dias":      {Type: TokenUnit, Value: PeriodDay},
+	"semana":    {Type: TokenUnit, Value: PeriodWeek},
+	"semanas":   {Type: TokenUnit, Value: PeriodWeek},
+	"sem":       {Type: TokenUnit, Value: PeriodWeek},      // CLDR abbreviation
+	"quincena":  {Type: TokenUnit, Value: PeriodFortnight}, // 14-day period; "quincena" is literally 15 days but used colloquially for a fortnight
+	"quincenas": {Type: TokenUnit, Value: PeriodFortnight},
+	"mes":       {Type: TokenUnit, Value: PeriodMonth},
+	"meses":     {Type: TokenUnit, Value: PeriodMonth},
+	"año":       {Type: TokenUnit, Value: PeriodYear},
+	"ano":       {Type: TokenUnit, Value: PeriodYear},
+	"años":      {Type: TokenUnit, Value: PeriodYear},
+	"anos":      {Type: TokenUnit, Value: PeriodYear},
 
 	// --- AM/PM ---
-	"am": {TokenAMPM, AMPMAm},
-	"pm": {TokenAMPM, AMPMPm},
+	"am": {Type: TokenAMPM, Value: AMPMAm},
+	"pm": {Type: TokenAMPM, Value: AMPMPm},
 
 	// --- Time-word substitutions — produce TokenTime directly ---
-	"mediodía":   {TokenTime, "12:00"},
-	"mediodia":   {TokenTime, "12:00"},
-	"medianoche": {TokenTime, "0:00"},
+	"mediodía":   {Type: TokenTime, Value: "12:00"},
+	"mediodia":   {Type: TokenTime, Value: "12:00"},
+	"medianoche": {Type: TokenTime, Value: "0:00"},
 
 	// --- Multi-word phrases (space-containing keys; matched longest-first) ---
 
 	// Anchors
-	"pasado mañana": {TokenAnchor, Anchor2DaysFromNow},
-	"pasado manana": {TokenAnchor, Anchor2DaysFromNow},
+	"pasado mañana": {Type: TokenAnchor, Value: Anchor2DaysFromNow},
+	"pasado manana": {Type: TokenAnchor, Value: Anchor2DaysFromNow},
 
 	// Prepositions / compound preps
-	"dentro de": {TokenPrep, nil}, // "dentro de 3 días" → "in 3 days"
-	"a las":     {TokenPrep, nil}, // "a las 9:30" → "at 9:30"
+	"dentro de": {Type: TokenPrep, Value: nil}, // "dentro de 3 días" → "in 3 days"
+	"a las":     {Type: TokenPrep, Value: nil}, // "a las 9:30" → "at 9:30"
 
 	// AM/PM expressed as time-of-day phrases
-	"de la mañana": {TokenAMPM, AMPMAm}, // "a las 9 de la mañana" → 9 AM
-	"de la manana": {TokenAMPM, AMPMAm},
-	"de la tarde":  {TokenAMPM, AMPMPm}, // "a las 3 de la tarde" → 3 PM
-	"de la noche":  {TokenAMPM, AMPMPm}, // "a las 10 de la noche" → 10 PM
+	"de la mañana": {Type: TokenAMPM, Value: AMPMAm}, // "a las 9 de la mañana" → 9 AM
+	"de la manana": {Type: TokenAMPM, Value: AMPMAm},
+	"de la tarde":  {Type: TokenAMPM, Value: AMPMPm}, // "a las 3 de la tarde" → 3 PM
+	"de la noche":  {Type: TokenAMPM, Value: AMPMPm}, // "a las 10 de la noche" → 10 PM
 
 	// --- Number words — Cardinals ---
 	// "segundo"/"segunda" are mapped to TokenUnit above; replaceSecondUnit handles them as ordinal day-2.
-	"uno": {TokenInteger, 1}, "un": {TokenInteger, 1}, "una": {TokenInteger, 1},
-	"dos": {TokenInteger, 2}, "tres": {TokenInteger, 3}, "cuatro": {TokenInteger, 4},
-	"cinco": {TokenInteger, 5}, "seis": {TokenInteger, 6}, "siete": {TokenInteger, 7},
-	"ocho": {TokenInteger, 8}, "nueve": {TokenInteger, 9}, "diez": {TokenInteger, 10},
-	"once": {TokenInteger, 11}, "doce": {TokenInteger, 12}, "trece": {TokenInteger, 13},
-	"catorce": {TokenInteger, 14}, "quince": {TokenInteger, 15},
-	"dieciséis": {TokenInteger, 16}, "dieciseis": {TokenInteger, 16},
-	"diecisiete": {TokenInteger, 17}, "dieciocho": {TokenInteger, 18}, "diecinueve": {TokenInteger, 19},
-	"veinte": {TokenInteger, 20},
+	"uno": {Type: TokenInteger, Value: 1}, "un": {Type: TokenInteger, Value: 1}, "una": {Type: TokenInteger, Value: 1},
+	"dos": {Type: TokenInteger, Value: 2}, "tres": {Type: TokenInteger, Value: 3}, "cuatro": {Type: TokenInteger, Value: 4},
+	"cinco": {Type: TokenInteger, Value: 5}, "seis": {Type: TokenInteger, Value: 6}, "siete": {Type: TokenInteger, Value: 7},
+	"ocho": {Type: TokenInteger, Value: 8}, "nueve": {Type: TokenInteger, Value: 9}, "diez": {Type: TokenInteger, Value: 10},
+	"once": {Type: TokenInteger, Value: 11}, "doce": {Type: TokenInteger, Value: 12}, "trece": {Type: TokenInteger, Value: 13},
+	"catorce": {Type: TokenInteger, Value: 14}, "quince": {Type: TokenInteger, Value: 15},
+	"dieciséis": {Type: TokenInteger, Value: 16}, "dieciseis": {Type: TokenInteger, Value: 16},
+	"diecisiete": {Type: TokenInteger, Value: 17}, "dieciocho": {Type: TokenInteger, Value: 18}, "diecinueve": {Type: TokenInteger, Value: 19},
+	"veinte": {Type: TokenInteger, Value: 20},
 	// 21–29 are single compound words in Spanish
-	"veintiuno": {TokenInteger, 21}, "veintiuna": {TokenInteger, 21},
-	"veintidós": {TokenInteger, 22}, "veintidos": {TokenInteger, 22},
-	"veintitrés": {TokenInteger, 23}, "veintitres": {TokenInteger, 23},
-	"veinticuatro": {TokenInteger, 24}, "veinticinco": {TokenInteger, 25},
-	"veintiséis": {TokenInteger, 26}, "veintiseis": {TokenInteger, 26},
-	"veintisiete": {TokenInteger, 27}, "veintiocho": {TokenInteger, 28}, "veintinueve": {TokenInteger, 29},
-	"treinta": {TokenInteger, 30},
+	"veintiuno": {Type: TokenInteger, Value: 21}, "veintiuna": {Type: TokenInteger, Value: 21},
+	"veintidós": {Type: TokenInteger, Value: 22}, "veintidos": {Type: TokenInteger, Value: 22},
+	"veintitrés": {Type: TokenInteger, Value: 23}, "veintitres": {Type: TokenInteger, Value: 23},
+	"veinticuatro": {Type: TokenInteger, Value: 24}, "veinticinco": {Type: TokenInteger, Value: 25},
+	"veintiséis": {Type: TokenInteger, Value: 26}, "veintiseis": {Type: TokenInteger, Value: 26},
+	"veintisiete": {Type: TokenInteger, Value: 27}, "veintiocho": {Type: TokenInteger, Value: 28}, "veintinueve": {Type: TokenInteger, Value: 29},
+	"treinta": {Type: TokenInteger, Value: 30},
 
 	// --- Number words — Ordinals ---
-	"primero": {TokenInteger, 1}, "primera": {TokenInteger, 1},
-	"tercero": {TokenInteger, 3}, "tercera": {TokenInteger, 3},
-	"cuarto": {TokenInteger, 4}, "cuarta": {TokenInteger, 4},
-	"quinto": {TokenInteger, 5}, "quinta": {TokenInteger, 5},
-	"sexto": {TokenInteger, 6}, "sexta": {TokenInteger, 6},
-	"séptimo": {TokenInteger, 7}, "septimo": {TokenInteger, 7}, "séptima": {TokenInteger, 7}, "septima": {TokenInteger, 7},
-	"octavo": {TokenInteger, 8}, "octava": {TokenInteger, 8},
-	"noveno": {TokenInteger, 9}, "novena": {TokenInteger, 9},
-	"décimo": {TokenInteger, 10}, "decimo": {TokenInteger, 10}, "décima": {TokenInteger, 10}, "decima": {TokenInteger, 10},
+	"primero": {Type: TokenInteger, Value: 1}, "primera": {Type: TokenInteger, Value: 1},
+	"tercero": {Type: TokenInteger, Value: 3}, "tercera": {Type: TokenInteger, Value: 3},
+	"cuarto": {Type: TokenInteger, Value: 4}, "cuarta": {Type: TokenInteger, Value: 4},
+	"quinto": {Type: TokenInteger, Value: 5}, "quinta": {Type: TokenInteger, Value: 5},
+	"sexto": {Type: TokenInteger, Value: 6}, "sexta": {Type: TokenInteger, Value: 6},
+	"séptimo": {Type: TokenInteger, Value: 7}, "septimo": {Type: TokenInteger, Value: 7}, "séptima": {Type: TokenInteger, Value: 7}, "septima": {Type: TokenInteger, Value: 7},
+	"octavo": {Type: TokenInteger, Value: 8}, "octava": {Type: TokenInteger, Value: 8},
+	"noveno": {Type: TokenInteger, Value: 9}, "novena": {Type: TokenInteger, Value: 9},
+	"décimo": {Type: TokenInteger, Value: 10}, "decimo": {Type: TokenInteger, Value: 10}, "décima": {Type: TokenInteger, Value: 10}, "decima": {Type: TokenInteger, Value: 10},
 
 	// Multi-word number: "treinta y uno" = 31 (matched before "treinta" alone)
-	"treinta y uno": {TokenInteger, 31}, "treinta y un": {TokenInteger, 31}, "treinta y una": {TokenInteger, 31},
+	"treinta y uno": {Type: TokenInteger, Value: 31}, "treinta y un": {Type: TokenInteger, Value: 31}, "treinta y una": {Type: TokenInteger, Value: 31},
 }

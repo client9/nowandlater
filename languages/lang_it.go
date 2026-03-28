@@ -46,204 +46,204 @@ var LangIt = Lang{
 var italianWords = map[string]WordEntry{
 	// --- Weekdays ---
 	// Accented and unaccented forms both common in typed text.
-	"lunedì":    {TokenWeekday, WeekdayMonday},
-	"lunedi":    {TokenWeekday, WeekdayMonday},
-	"lun":       {TokenWeekday, WeekdayMonday},
-	"martedì":   {TokenWeekday, WeekdayTuesday},
-	"martedi":   {TokenWeekday, WeekdayTuesday},
-	"mar":       {TokenWeekday, WeekdayTuesday}, // ambiguous: also marzo abbrev; weekday wins
-	"mercoledì": {TokenWeekday, WeekdayWednesday},
-	"mercoledi": {TokenWeekday, WeekdayWednesday},
-	"mer":       {TokenWeekday, WeekdayWednesday},
-	"giovedì":   {TokenWeekday, WeekdayThursday},
-	"giovedi":   {TokenWeekday, WeekdayThursday},
-	"gio":       {TokenWeekday, WeekdayThursday},
-	"venerdì":   {TokenWeekday, WeekdayFriday},
-	"venerdi":   {TokenWeekday, WeekdayFriday},
-	"ven":       {TokenWeekday, WeekdayFriday},
-	"sabato":    {TokenWeekday, WeekdaySaturday},
-	"sab":       {TokenWeekday, WeekdaySaturday},
-	"domenica":  {TokenWeekday, WeekdaySunday},
-	"dom":       {TokenWeekday, WeekdaySunday},
+	"lunedì":    {Type: TokenWeekday, Value: WeekdayMonday},
+	"lunedi":    {Type: TokenWeekday, Value: WeekdayMonday},
+	"lun":       {Type: TokenWeekday, Value: WeekdayMonday},
+	"martedì":   {Type: TokenWeekday, Value: WeekdayTuesday},
+	"martedi":   {Type: TokenWeekday, Value: WeekdayTuesday},
+	"mar":       {Type: TokenWeekday, Value: WeekdayTuesday}, // ambiguous: also marzo abbrev; weekday wins
+	"mercoledì": {Type: TokenWeekday, Value: WeekdayWednesday},
+	"mercoledi": {Type: TokenWeekday, Value: WeekdayWednesday},
+	"mer":       {Type: TokenWeekday, Value: WeekdayWednesday},
+	"giovedì":   {Type: TokenWeekday, Value: WeekdayThursday},
+	"giovedi":   {Type: TokenWeekday, Value: WeekdayThursday},
+	"gio":       {Type: TokenWeekday, Value: WeekdayThursday},
+	"venerdì":   {Type: TokenWeekday, Value: WeekdayFriday},
+	"venerdi":   {Type: TokenWeekday, Value: WeekdayFriday},
+	"ven":       {Type: TokenWeekday, Value: WeekdayFriday},
+	"sabato":    {Type: TokenWeekday, Value: WeekdaySaturday},
+	"sab":       {Type: TokenWeekday, Value: WeekdaySaturday},
+	"domenica":  {Type: TokenWeekday, Value: WeekdaySunday},
+	"dom":       {Type: TokenWeekday, Value: WeekdaySunday},
 
 	// --- Months ---
 	// "mar" omitted — maps to Tuesday above; write "marzo" in full.
-	"gennaio":   {TokenMonth, MonthJanuary},
-	"gen":       {TokenMonth, MonthJanuary},
-	"febbraio":  {TokenMonth, MonthFebruary},
-	"feb":       {TokenMonth, MonthFebruary},
-	"marzo":     {TokenMonth, MonthMarch},
-	"aprile":    {TokenMonth, MonthApril},
-	"apr":       {TokenMonth, MonthApril},
-	"maggio":    {TokenMonth, MonthMay},
-	"mag":       {TokenMonth, MonthMay},
-	"giugno":    {TokenMonth, MonthJune},
-	"giu":       {TokenMonth, MonthJune},
-	"luglio":    {TokenMonth, MonthJuly},
-	"lug":       {TokenMonth, MonthJuly},
-	"agosto":    {TokenMonth, MonthAugust},
-	"ago":       {TokenMonth, MonthAugust},
-	"settembre": {TokenMonth, MonthSeptember},
-	"set":       {TokenMonth, MonthSeptember},
-	"ottobre":   {TokenMonth, MonthOctober},
-	"ott":       {TokenMonth, MonthOctober},
-	"novembre":  {TokenMonth, MonthNovember},
-	"nov":       {TokenMonth, MonthNovember},
-	"dicembre":  {TokenMonth, MonthDecember},
-	"dic":       {TokenMonth, MonthDecember},
+	"gennaio":   {Type: TokenMonth, Value: MonthJanuary},
+	"gen":       {Type: TokenMonth, Value: MonthJanuary},
+	"febbraio":  {Type: TokenMonth, Value: MonthFebruary},
+	"feb":       {Type: TokenMonth, Value: MonthFebruary},
+	"marzo":     {Type: TokenMonth, Value: MonthMarch},
+	"aprile":    {Type: TokenMonth, Value: MonthApril},
+	"apr":       {Type: TokenMonth, Value: MonthApril},
+	"maggio":    {Type: TokenMonth, Value: MonthMay},
+	"mag":       {Type: TokenMonth, Value: MonthMay},
+	"giugno":    {Type: TokenMonth, Value: MonthJune},
+	"giu":       {Type: TokenMonth, Value: MonthJune},
+	"luglio":    {Type: TokenMonth, Value: MonthJuly},
+	"lug":       {Type: TokenMonth, Value: MonthJuly},
+	"agosto":    {Type: TokenMonth, Value: MonthAugust},
+	"ago":       {Type: TokenMonth, Value: MonthAugust},
+	"settembre": {Type: TokenMonth, Value: MonthSeptember},
+	"set":       {Type: TokenMonth, Value: MonthSeptember},
+	"ottobre":   {Type: TokenMonth, Value: MonthOctober},
+	"ott":       {Type: TokenMonth, Value: MonthOctober},
+	"novembre":  {Type: TokenMonth, Value: MonthNovember},
+	"nov":       {Type: TokenMonth, Value: MonthNovember},
+	"dicembre":  {Type: TokenMonth, Value: MonthDecember},
+	"dic":       {Type: TokenMonth, Value: MonthDecember},
 
 	// --- Direction ---
-	"prossimo":   {TokenDirection, DirectionFuture},
-	"prossima":   {TokenDirection, DirectionFuture},
-	"prossimi":   {TokenDirection, DirectionFuture},
-	"prossime":   {TokenDirection, DirectionFuture},
-	"seguente":   {TokenDirection, DirectionFuture},
-	"successivo": {TokenDirection, DirectionFuture},
-	"successiva": {TokenDirection, DirectionFuture},
-	"scorso":     {TokenDirection, DirectionPast},
-	"scorsa":     {TokenDirection, DirectionPast},
-	"scorsi":     {TokenDirection, DirectionPast},
-	"scorse":     {TokenDirection, DirectionPast},
-	"ultimo":     {TokenDirection, DirectionPast},
-	"ultima":     {TokenDirection, DirectionPast},
-	"passato":    {TokenDirection, DirectionPast},
-	"passata":    {TokenDirection, DirectionPast},
-	"questo":     {TokenDirection, DirectionNearest},
-	"questa":     {TokenDirection, DirectionNearest},
-	"quest'":     {TokenDirection, DirectionNearest}, // "quest'anno" elided — rare standalone
+	"prossimo":   {Type: TokenDirection, Value: DirectionFuture},
+	"prossima":   {Type: TokenDirection, Value: DirectionFuture},
+	"prossimi":   {Type: TokenDirection, Value: DirectionFuture},
+	"prossime":   {Type: TokenDirection, Value: DirectionFuture},
+	"seguente":   {Type: TokenDirection, Value: DirectionFuture},
+	"successivo": {Type: TokenDirection, Value: DirectionFuture},
+	"successiva": {Type: TokenDirection, Value: DirectionFuture},
+	"scorso":     {Type: TokenDirection, Value: DirectionPast},
+	"scorsa":     {Type: TokenDirection, Value: DirectionPast},
+	"scorsi":     {Type: TokenDirection, Value: DirectionPast},
+	"scorse":     {Type: TokenDirection, Value: DirectionPast},
+	"ultimo":     {Type: TokenDirection, Value: DirectionPast},
+	"ultima":     {Type: TokenDirection, Value: DirectionPast},
+	"passato":    {Type: TokenDirection, Value: DirectionPast},
+	"passata":    {Type: TokenDirection, Value: DirectionPast},
+	"questo":     {Type: TokenDirection, Value: DirectionNearest},
+	"questa":     {Type: TokenDirection, Value: DirectionNearest},
+	"quest'":     {Type: TokenDirection, Value: DirectionNearest}, // "quest'anno" elided — rare standalone
 
 	// --- Anchors ---
-	"adesso":      {TokenAnchor, AnchorNow},
-	"oggi":        {TokenAnchor, AnchorToday},
-	"domani":      {TokenAnchor, AnchorTomorrow},
-	"ieri":        {TokenAnchor, AnchorYesterday},
-	"dopodomani":  {TokenAnchor, Anchor2DaysFromNow},
-	"l'altroieri": {TokenAnchor, Anchor2DaysAgo}, // single elided token
-	"altroieri":   {TokenAnchor, Anchor2DaysAgo},
+	"adesso":      {Type: TokenAnchor, Value: AnchorNow},
+	"oggi":        {Type: TokenAnchor, Value: AnchorToday},
+	"domani":      {Type: TokenAnchor, Value: AnchorTomorrow},
+	"ieri":        {Type: TokenAnchor, Value: AnchorYesterday},
+	"dopodomani":  {Type: TokenAnchor, Value: Anchor2DaysFromNow},
+	"l'altroieri": {Type: TokenAnchor, Value: Anchor2DaysAgo}, // single elided token
+	"altroieri":   {Type: TokenAnchor, Value: Anchor2DaysAgo},
 
 	// --- Modifiers ---
-	"fa":    {TokenModifier, ModifierPast},   // "3 giorni fa" = 3 days ago
-	"dopo":  {TokenModifier, ModifierFuture}, // "3 giorni dopo" = 3 days later
-	"prima": {TokenModifier, ModifierPast},   // "3 giorni prima" = 3 days before
+	"fa":    {Type: TokenModifier, Value: ModifierPast},   // "3 giorni fa" = 3 days ago
+	"dopo":  {Type: TokenModifier, Value: ModifierFuture}, // "3 giorni dopo" = 3 days later
+	"prima": {Type: TokenModifier, Value: ModifierPast},   // "3 giorni prima" = 3 days before
 
 	// --- Prepositions ---
-	"fra":  {TokenPrep, nil}, // "fra 3 giorni" = in 3 days
-	"tra":  {TokenPrep, nil}, // synonym for "fra"
-	"in":   {TokenPrep, nil},
-	"a":    {TokenPrep, nil}, // "a mezzogiorno" = at noon
-	"al":   {TokenPrep, nil}, // "al mattino"
-	"alle": {TokenPrep, nil}, // "alle 9:30" = at 9:30
+	"fra":  {Type: TokenPrep, Value: nil}, // "fra 3 giorni" = in 3 days
+	"tra":  {Type: TokenPrep, Value: nil}, // synonym for "fra"
+	"in":   {Type: TokenPrep, Value: nil},
+	"a":    {Type: TokenPrep, Value: nil}, // "a mezzogiorno" = at noon
+	"al":   {Type: TokenPrep, Value: nil}, // "al mattino"
+	"alle": {Type: TokenPrep, Value: nil}, // "alle 9:30" = at 9:30
 
 	// --- Fillers ---
-	"il":    {TokenFiller, nil},
-	"lo":    {TokenFiller, nil},
-	"la":    {TokenFiller, nil},
-	"i":     {TokenFiller, nil},
-	"gli":   {TokenFiller, nil},
-	"le":    {TokenFiller, nil},
-	"di":    {TokenFiller, nil},
-	"del":   {TokenFiller, nil},
-	"della": {TokenFiller, nil},
-	"dei":   {TokenFiller, nil},
-	"e":     {TokenFiller, nil},
-	"circa": {TokenFiller, nil}, // "circa 3 giorni fa" = approximately 3 days ago
-	"l'":    {TokenFiller, nil}, // elided article not followed by a known word
-	"d'":    {TokenFiller, nil},
+	"il":    {Type: TokenFiller, Value: nil},
+	"lo":    {Type: TokenFiller, Value: nil},
+	"la":    {Type: TokenFiller, Value: nil},
+	"i":     {Type: TokenFiller, Value: nil},
+	"gli":   {Type: TokenFiller, Value: nil},
+	"le":    {Type: TokenFiller, Value: nil},
+	"di":    {Type: TokenFiller, Value: nil},
+	"del":   {Type: TokenFiller, Value: nil},
+	"della": {Type: TokenFiller, Value: nil},
+	"dei":   {Type: TokenFiller, Value: nil},
+	"e":     {Type: TokenFiller, Value: nil},
+	"circa": {Type: TokenFiller, Value: nil}, // "circa 3 giorni fa" = approximately 3 days ago
+	"l'":    {Type: TokenFiller, Value: nil}, // elided article not followed by a known word
+	"d'":    {Type: TokenFiller, Value: nil},
 
 	// --- Units ---
 	// "secondo"/"seconda" are also ordinal "2nd"; replaceSecondUnit handles ordinal day-2.
-	"secondo":    {TokenUnit, PeriodSecond}, // masculine; also ordinal "2nd"
-	"seconda":    {TokenUnit, PeriodSecond}, // feminine; also ordinal "2nd" — handled by replaceSecondUnit
-	"secondi":    {TokenUnit, PeriodSecond},
-	"sec":        {TokenUnit, PeriodSecond}, // abbreviation: "3 sec fa"
-	"minuto":     {TokenUnit, PeriodMinute},
-	"minuti":     {TokenUnit, PeriodMinute},
-	"min":        {TokenUnit, PeriodMinute},
-	"ora":        {TokenUnit, PeriodHour},
-	"ore":        {TokenUnit, PeriodHour},
-	"giorno":     {TokenUnit, PeriodDay},
-	"giorni":     {TokenUnit, PeriodDay},
-	"gg":         {TokenUnit, PeriodDay}, // Italian plural abbrev: "2 gg fa"
-	"settimana":  {TokenUnit, PeriodWeek},
-	"settimane":  {TokenUnit, PeriodWeek},
-	"sett":       {TokenUnit, PeriodWeek}, // abbreviation: "2 sett fa"
-	"mese":       {TokenUnit, PeriodMonth},
-	"mesi":       {TokenUnit, PeriodMonth},
-	"anno":       {TokenUnit, PeriodYear},
-	"anni":       {TokenUnit, PeriodYear},
-	"quindicina": {TokenUnit, PeriodFortnight},
-	"quindicine": {TokenUnit, PeriodFortnight},
+	"secondo":    {Type: TokenUnit, Value: PeriodSecond}, // masculine; also ordinal "2nd"
+	"seconda":    {Type: TokenUnit, Value: PeriodSecond}, // feminine; also ordinal "2nd" — handled by replaceSecondUnit
+	"secondi":    {Type: TokenUnit, Value: PeriodSecond},
+	"sec":        {Type: TokenUnit, Value: PeriodSecond}, // abbreviation: "3 sec fa"
+	"minuto":     {Type: TokenUnit, Value: PeriodMinute},
+	"minuti":     {Type: TokenUnit, Value: PeriodMinute},
+	"min":        {Type: TokenUnit, Value: PeriodMinute},
+	"ora":        {Type: TokenUnit, Value: PeriodHour},
+	"ore":        {Type: TokenUnit, Value: PeriodHour},
+	"giorno":     {Type: TokenUnit, Value: PeriodDay},
+	"giorni":     {Type: TokenUnit, Value: PeriodDay},
+	"gg":         {Type: TokenUnit, Value: PeriodDay}, // Italian plural abbrev: "2 gg fa"
+	"settimana":  {Type: TokenUnit, Value: PeriodWeek},
+	"settimane":  {Type: TokenUnit, Value: PeriodWeek},
+	"sett":       {Type: TokenUnit, Value: PeriodWeek}, // abbreviation: "2 sett fa"
+	"mese":       {Type: TokenUnit, Value: PeriodMonth},
+	"mesi":       {Type: TokenUnit, Value: PeriodMonth},
+	"anno":       {Type: TokenUnit, Value: PeriodYear},
+	"anni":       {Type: TokenUnit, Value: PeriodYear},
+	"quindicina": {Type: TokenUnit, Value: PeriodFortnight},
+	"quindicine": {Type: TokenUnit, Value: PeriodFortnight},
 
 	// --- Elided unit forms (single chunk after whitespace split) ---
-	"l'anno": {TokenUnit, PeriodYear}, // for "l'anno prossimo" → UNIT DIRECTION
-	"un'ora": {TokenUnit, PeriodHour}, // for "fra un'ora" → PREP UNIT
+	"l'anno": {Type: TokenUnit, Value: PeriodYear}, // for "l'anno prossimo" → UNIT DIRECTION
+	"un'ora": {Type: TokenUnit, Value: PeriodHour}, // for "fra un'ora" → PREP UNIT
 
 	// --- Multi-word anchors ---
-	"l'altro ieri": {TokenAnchor, Anchor2DaysAgo}, // elided article form
-	"altro ieri":   {TokenAnchor, Anchor2DaysAgo}, // bare form from supplementary data
+	"l'altro ieri": {Type: TokenAnchor, Value: Anchor2DaysAgo}, // elided article form
+	"altro ieri":   {Type: TokenAnchor, Value: Anchor2DaysAgo}, // bare form from supplementary data
 
 	// --- AM/PM ---
-	"am": {TokenAMPM, AMPMAm},
-	"pm": {TokenAMPM, AMPMPm},
+	"am": {Type: TokenAMPM, Value: AMPMAm},
+	"pm": {Type: TokenAMPM, Value: AMPMPm},
 
 	// --- AM/PM time-of-day phrases ---
-	"di mattina":     {TokenAMPM, AMPMAm},
-	"della mattina":  {TokenAMPM, AMPMAm},
-	"del mattino":    {TokenAMPM, AMPMAm},
-	"di pomeriggio":  {TokenAMPM, AMPMPm},
-	"del pomeriggio": {TokenAMPM, AMPMPm},
-	"di sera":        {TokenAMPM, AMPMPm},
-	"della sera":     {TokenAMPM, AMPMPm},
+	"di mattina":     {Type: TokenAMPM, Value: AMPMAm},
+	"della mattina":  {Type: TokenAMPM, Value: AMPMAm},
+	"del mattino":    {Type: TokenAMPM, Value: AMPMAm},
+	"di pomeriggio":  {Type: TokenAMPM, Value: AMPMPm},
+	"del pomeriggio": {Type: TokenAMPM, Value: AMPMPm},
+	"di sera":        {Type: TokenAMPM, Value: AMPMPm},
+	"della sera":     {Type: TokenAMPM, Value: AMPMPm},
 
 	// --- Time-word substitutes ---
-	"mezzogiorno": {TokenTime, "12:00"},
-	"mezzanotte":  {TokenTime, "0:00"},
+	"mezzogiorno": {Type: TokenTime, Value: "12:00"},
+	"mezzanotte":  {Type: TokenTime, Value: "0:00"},
 
 	// --- Number words — Cardinals ---
 	// "secondo"/"seconda" omitted — conflict with TokenUnit PeriodSecond.
-	"uno": {TokenInteger, 1}, "una": {TokenInteger, 1}, "un": {TokenInteger, 1},
-	"due":         {TokenInteger, 2},
-	"tre":         {TokenInteger, 3},
-	"quattro":     {TokenInteger, 4},
-	"cinque":      {TokenInteger, 5},
-	"sei":         {TokenInteger, 6},
-	"sette":       {TokenInteger, 7},
-	"otto":        {TokenInteger, 8},
-	"nove":        {TokenInteger, 9},
-	"dieci":       {TokenInteger, 10},
-	"undici":      {TokenInteger, 11},
-	"dodici":      {TokenInteger, 12},
-	"tredici":     {TokenInteger, 13},
-	"quattordici": {TokenInteger, 14},
-	"quindici":    {TokenInteger, 15},
-	"sedici":      {TokenInteger, 16},
-	"diciassette": {TokenInteger, 17},
-	"diciotto":    {TokenInteger, 18},
-	"diciannove":  {TokenInteger, 19},
-	"venti":       {TokenInteger, 20},
-	"trenta":      {TokenInteger, 30},
+	"uno": {Type: TokenInteger, Value: 1}, "una": {Type: TokenInteger, Value: 1}, "un": {Type: TokenInteger, Value: 1},
+	"due":         {Type: TokenInteger, Value: 2},
+	"tre":         {Type: TokenInteger, Value: 3},
+	"quattro":     {Type: TokenInteger, Value: 4},
+	"cinque":      {Type: TokenInteger, Value: 5},
+	"sei":         {Type: TokenInteger, Value: 6},
+	"sette":       {Type: TokenInteger, Value: 7},
+	"otto":        {Type: TokenInteger, Value: 8},
+	"nove":        {Type: TokenInteger, Value: 9},
+	"dieci":       {Type: TokenInteger, Value: 10},
+	"undici":      {Type: TokenInteger, Value: 11},
+	"dodici":      {Type: TokenInteger, Value: 12},
+	"tredici":     {Type: TokenInteger, Value: 13},
+	"quattordici": {Type: TokenInteger, Value: 14},
+	"quindici":    {Type: TokenInteger, Value: 15},
+	"sedici":      {Type: TokenInteger, Value: 16},
+	"diciassette": {Type: TokenInteger, Value: 17},
+	"diciotto":    {Type: TokenInteger, Value: 18},
+	"diciannove":  {Type: TokenInteger, Value: 19},
+	"venti":       {Type: TokenInteger, Value: 20},
+	"trenta":      {Type: TokenInteger, Value: 30},
 
 	// 21–29 are single compound words in Italian
-	"ventuno": {TokenInteger, 21}, "ventuna": {TokenInteger, 21},
-	"ventidue": {TokenInteger, 22},
-	"ventitré": {TokenInteger, 23}, "ventitre": {TokenInteger, 23},
-	"ventiquattro": {TokenInteger, 24},
-	"venticinque":  {TokenInteger, 25},
-	"ventisei":     {TokenInteger, 26},
-	"ventisette":   {TokenInteger, 27},
-	"ventotto":     {TokenInteger, 28},
-	"ventinove":    {TokenInteger, 29},
-	"trentuno":     {TokenInteger, 31}, "trentuna": {TokenInteger, 31},
+	"ventuno": {Type: TokenInteger, Value: 21}, "ventuna": {Type: TokenInteger, Value: 21},
+	"ventidue": {Type: TokenInteger, Value: 22},
+	"ventitré": {Type: TokenInteger, Value: 23}, "ventitre": {Type: TokenInteger, Value: 23},
+	"ventiquattro": {Type: TokenInteger, Value: 24},
+	"venticinque":  {Type: TokenInteger, Value: 25},
+	"ventisei":     {Type: TokenInteger, Value: 26},
+	"ventisette":   {Type: TokenInteger, Value: 27},
+	"ventotto":     {Type: TokenInteger, Value: 28},
+	"ventinove":    {Type: TokenInteger, Value: 29},
+	"trentuno":     {Type: TokenInteger, Value: 31}, "trentuna": {Type: TokenInteger, Value: 31},
 
 	// --- Number words — Ordinals ---
 	// "secondo"/"seconda" omitted. "quarto"/"quarta" safe (no weekday conflict in Italian).
-	"primo": {TokenInteger, 1}, // "prima" omitted — maps to ModifierPast above
-	"terzo": {TokenInteger, 3}, "terza": {TokenInteger, 3},
-	"quarto": {TokenInteger, 4}, "quarta": {TokenInteger, 4},
-	"quinto": {TokenInteger, 5}, "quinta": {TokenInteger, 5},
-	"sesto": {TokenInteger, 6}, "sesta": {TokenInteger, 6},
-	"settimo": {TokenInteger, 7}, "settima": {TokenInteger, 7},
-	"ottavo": {TokenInteger, 8}, "ottava": {TokenInteger, 8},
-	"nono": {TokenInteger, 9}, "nona": {TokenInteger, 9},
-	"decimo": {TokenInteger, 10}, "decima": {TokenInteger, 10},
+	"primo": {Type: TokenInteger, Value: 1}, // "prima" omitted — maps to ModifierPast above
+	"terzo": {Type: TokenInteger, Value: 3}, "terza": {Type: TokenInteger, Value: 3},
+	"quarto": {Type: TokenInteger, Value: 4}, "quarta": {Type: TokenInteger, Value: 4},
+	"quinto": {Type: TokenInteger, Value: 5}, "quinta": {Type: TokenInteger, Value: 5},
+	"sesto": {Type: TokenInteger, Value: 6}, "sesta": {Type: TokenInteger, Value: 6},
+	"settimo": {Type: TokenInteger, Value: 7}, "settima": {Type: TokenInteger, Value: 7},
+	"ottavo": {Type: TokenInteger, Value: 8}, "ottava": {Type: TokenInteger, Value: 8},
+	"nono": {Type: TokenInteger, Value: 9}, "nona": {Type: TokenInteger, Value: 9},
+	"decimo": {Type: TokenInteger, Value: 10}, "decima": {Type: TokenInteger, Value: 10},
 }

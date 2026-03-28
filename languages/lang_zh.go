@@ -37,85 +37,85 @@ var chineseHandlers = map[string]Handler{
 // chineseWords is the word table for Simplified Chinese.
 var chineseWords = map[string]WordEntry{
 	// --- Anchors ---
-	"现在":   {TokenAnchor, AnchorNow},
-	"刚刚":   {TokenAnchor, AnchorNow}, // just now; supplementary data
-	"此时":   {TokenAnchor, AnchorNow}, // at this moment; supplementary data
-	"这一时间": {TokenAnchor, AnchorNow}, // at this time; supplementary data
-	"今天":   {TokenAnchor, AnchorToday},
-	"今日":   {TokenAnchor, AnchorToday},
-	"明天":   {TokenAnchor, AnchorTomorrow},
-	"明日":   {TokenAnchor, AnchorTomorrow},
-	"昨天":   {TokenAnchor, AnchorYesterday},
-	"昨日":   {TokenAnchor, AnchorYesterday},
-	"后天":   {TokenAnchor, Anchor2DaysFromNow},
-	"前天":   {TokenAnchor, Anchor2DaysAgo},
+	"现在":   {Type: TokenAnchor, Value: AnchorNow},
+	"刚刚":   {Type: TokenAnchor, Value: AnchorNow}, // just now; supplementary data
+	"此时":   {Type: TokenAnchor, Value: AnchorNow}, // at this moment; supplementary data
+	"这一时间": {Type: TokenAnchor, Value: AnchorNow}, // at this time; supplementary data
+	"今天":   {Type: TokenAnchor, Value: AnchorToday},
+	"今日":   {Type: TokenAnchor, Value: AnchorToday},
+	"明天":   {Type: TokenAnchor, Value: AnchorTomorrow},
+	"明日":   {Type: TokenAnchor, Value: AnchorTomorrow},
+	"昨天":   {Type: TokenAnchor, Value: AnchorYesterday},
+	"昨日":   {Type: TokenAnchor, Value: AnchorYesterday},
+	"后天":   {Type: TokenAnchor, Value: Anchor2DaysFromNow},
+	"前天":   {Type: TokenAnchor, Value: Anchor2DaysAgo},
 
 	// --- AM / PM ---
-	"上午": {TokenAMPM, AMPMAm}, // morning
-	"下午": {TokenAMPM, AMPMPm}, // afternoon
-	"凌晨": {TokenAMPM, AMPMAm}, // early morning (before dawn)
-	"晚上": {TokenAMPM, AMPMPm}, // evening
+	"上午": {Type: TokenAMPM, Value: AMPMAm}, // morning
+	"下午": {Type: TokenAMPM, Value: AMPMPm}, // afternoon
+	"凌晨": {Type: TokenAMPM, Value: AMPMAm}, // early morning (before dawn)
+	"晚上": {Type: TokenAMPM, Value: AMPMPm}, // evening
 
 	// --- Time-word substitutes ---
-	"正午": {TokenTime, "12:00"}, // formal noon
-	"中午": {TokenTime, "12:00"}, // colloquial noon
-	"午夜": {TokenTime, "0:00"},  // midnight
+	"正午": {Type: TokenTime, Value: "12:00"}, // formal noon
+	"中午": {Type: TokenTime, Value: "12:00"}, // colloquial noon
+	"午夜": {Type: TokenTime, Value: "0:00"},  // midnight
 
 	// --- Weekdays (星期X full form) ---
 	// Longer keys win over shorter prefix "星期" via longest-match.
-	"星期一": {TokenWeekday, WeekdayMonday},
-	"星期二": {TokenWeekday, WeekdayTuesday},
-	"星期三": {TokenWeekday, WeekdayWednesday},
-	"星期四": {TokenWeekday, WeekdayThursday},
-	"星期五": {TokenWeekday, WeekdayFriday},
-	"星期六": {TokenWeekday, WeekdaySaturday},
-	"星期日": {TokenWeekday, WeekdaySunday},
-	"星期天": {TokenWeekday, WeekdaySunday}, // colloquial Sunday
+	"星期一": {Type: TokenWeekday, Value: WeekdayMonday},
+	"星期二": {Type: TokenWeekday, Value: WeekdayTuesday},
+	"星期三": {Type: TokenWeekday, Value: WeekdayWednesday},
+	"星期四": {Type: TokenWeekday, Value: WeekdayThursday},
+	"星期五": {Type: TokenWeekday, Value: WeekdayFriday},
+	"星期六": {Type: TokenWeekday, Value: WeekdaySaturday},
+	"星期日": {Type: TokenWeekday, Value: WeekdaySunday},
+	"星期天": {Type: TokenWeekday, Value: WeekdaySunday}, // colloquial Sunday
 
 	// --- Weekdays (礼拜X colloquial form — supplementary data) ---
-	"礼拜一": {TokenWeekday, WeekdayMonday},
-	"礼拜二": {TokenWeekday, WeekdayTuesday},
-	"礼拜三": {TokenWeekday, WeekdayWednesday},
-	"礼拜四": {TokenWeekday, WeekdayThursday},
-	"礼拜五": {TokenWeekday, WeekdayFriday},
-	"礼拜六": {TokenWeekday, WeekdaySaturday},
-	"礼拜日": {TokenWeekday, WeekdaySunday},
-	"礼拜天": {TokenWeekday, WeekdaySunday},
+	"礼拜一": {Type: TokenWeekday, Value: WeekdayMonday},
+	"礼拜二": {Type: TokenWeekday, Value: WeekdayTuesday},
+	"礼拜三": {Type: TokenWeekday, Value: WeekdayWednesday},
+	"礼拜四": {Type: TokenWeekday, Value: WeekdayThursday},
+	"礼拜五": {Type: TokenWeekday, Value: WeekdayFriday},
+	"礼拜六": {Type: TokenWeekday, Value: WeekdaySaturday},
+	"礼拜日": {Type: TokenWeekday, Value: WeekdaySunday},
+	"礼拜天": {Type: TokenWeekday, Value: WeekdaySunday},
 
 	// --- Weekdays (周X abbreviated form) ---
-	"周一": {TokenWeekday, WeekdayMonday},
-	"周二": {TokenWeekday, WeekdayTuesday},
-	"周三": {TokenWeekday, WeekdayWednesday},
-	"周四": {TokenWeekday, WeekdayThursday},
-	"周五": {TokenWeekday, WeekdayFriday},
-	"周六": {TokenWeekday, WeekdaySaturday},
-	"周日": {TokenWeekday, WeekdaySunday},
-	"周天": {TokenWeekday, WeekdaySunday},
+	"周一": {Type: TokenWeekday, Value: WeekdayMonday},
+	"周二": {Type: TokenWeekday, Value: WeekdayTuesday},
+	"周三": {Type: TokenWeekday, Value: WeekdayWednesday},
+	"周四": {Type: TokenWeekday, Value: WeekdayThursday},
+	"周五": {Type: TokenWeekday, Value: WeekdayFriday},
+	"周六": {Type: TokenWeekday, Value: WeekdaySaturday},
+	"周日": {Type: TokenWeekday, Value: WeekdaySunday},
+	"周天": {Type: TokenWeekday, Value: WeekdaySunday},
 
 	// --- character month names ---
 	// "十一月"/"十二月" (9 bytes) beat "十月" (6 bytes) via longest-match.
-	"一月":  {TokenMonth, MonthJanuary},
-	"二月":  {TokenMonth, MonthFebruary},
-	"三月":  {TokenMonth, MonthMarch},
-	"四月":  {TokenMonth, MonthApril},
-	"五月":  {TokenMonth, MonthMay},
-	"六月":  {TokenMonth, MonthJune},
-	"七月":  {TokenMonth, MonthJuly},
-	"八月":  {TokenMonth, MonthAugust},
-	"九月":  {TokenMonth, MonthSeptember},
-	"十月":  {TokenMonth, MonthOctober},
-	"十一月": {TokenMonth, MonthNovember},
-	"十二月": {TokenMonth, MonthDecember},
+	"一月":  {Type: TokenMonth, Value: MonthJanuary},
+	"二月":  {Type: TokenMonth, Value: MonthFebruary},
+	"三月":  {Type: TokenMonth, Value: MonthMarch},
+	"四月":  {Type: TokenMonth, Value: MonthApril},
+	"五月":  {Type: TokenMonth, Value: MonthMay},
+	"六月":  {Type: TokenMonth, Value: MonthJune},
+	"七月":  {Type: TokenMonth, Value: MonthJuly},
+	"八月":  {Type: TokenMonth, Value: MonthAugust},
+	"九月":  {Type: TokenMonth, Value: MonthSeptember},
+	"十月":  {Type: TokenMonth, Value: MonthOctober},
+	"十一月": {Type: TokenMonth, Value: MonthNovember},
+	"十二月": {Type: TokenMonth, Value: MonthDecember},
 
 	// --- Relative direction modifiers ---
 	// "前天"/"后天" (6 bytes) beat bare "前"/"后" (3 bytes) via longest-match.
-	"后":  {TokenModifier, ModifierFuture}, // N后 = N later
-	"以后": {TokenModifier, ModifierFuture},
-	"前":  {TokenModifier, ModifierPast}, // N前 = N ago
-	"以前": {TokenModifier, ModifierPast},
+	"后":  {Type: TokenModifier, Value: ModifierFuture}, // N后 = N later
+	"以后": {Type: TokenModifier, Value: ModifierFuture},
+	"前":  {Type: TokenModifier, Value: ModifierPast}, // N前 = N ago
+	"以前": {Type: TokenModifier, Value: ModifierPast},
 
 	// --- Filler particle ---
-	"的": {TokenFiller, nil},
+	"的": {Type: TokenFiller, Value: nil},
 }
 
 // chineseMacros maps compound words to their multi-token expansion.

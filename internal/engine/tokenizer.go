@@ -93,25 +93,14 @@ func (lang *Lang) Tokenize(input string) []Token {
 	normalized := normalize(preprocess(input, lang), lang)
 	chunks := strings.Fields(normalized)
 
-	// Compute the maximum phrase length (in words) lazily on first call.
-	// The result is cached in lang.maxPhraseWords via sync.Once and reused on
-	// subsequent calls. Words never changes after construction, so this is safe.
-	lang.phraseOnce.Do(func() {
-		for key := range lang.Words {
-			if n := strings.Count(key, " ") + 1; n > lang.maxPhraseWords {
-				lang.maxPhraseWords = n
-			}
-		}
-	})
-	maxPhraseWords := lang.maxPhraseWords
-
 	tokens := make([]Token, 0, len(chunks))
 	i := 0
 	for i < len(chunks) {
 		// Phrase match: try longest possible span first, down to 2 words.
-		if maxPhraseWords >= 2 {
+		// MaxPhraseWords is a verified upper bound across all built-in languages.
+		{
 			matched := false
-			for span := maxPhraseWords; span >= 2; span-- {
+			for span := MaxPhraseWords; span >= 2; span-- {
 				if i+span > len(chunks) {
 					continue
 				}

@@ -34,59 +34,59 @@ var japaneseHandlers = map[string]Handler{
 // "月曜日" beats bare "月"; "十一月" beats "十月").
 var japaneseWords = map[string]WordEntry{
 	// --- Anchors ---
-	"今":   {TokenAnchor, AnchorNow},
-	"現在":  {TokenAnchor, AnchorNow}, // formal synonym for 今
-	"今日":  {TokenAnchor, AnchorToday},
-	"明日":  {TokenAnchor, AnchorTomorrow},
-	"昨日":  {TokenAnchor, AnchorYesterday},
-	"一昨日": {TokenAnchor, Anchor2DaysAgo},
-	"明後日": {TokenAnchor, Anchor2DaysFromNow},
+	"今":   {Type: TokenAnchor, Value: AnchorNow},
+	"現在":  {Type: TokenAnchor, Value: AnchorNow}, // formal synonym for 今
+	"今日":  {Type: TokenAnchor, Value: AnchorToday},
+	"明日":  {Type: TokenAnchor, Value: AnchorTomorrow},
+	"昨日":  {Type: TokenAnchor, Value: AnchorYesterday},
+	"一昨日": {Type: TokenAnchor, Value: Anchor2DaysAgo},
+	"明後日": {Type: TokenAnchor, Value: Anchor2DaysFromNow},
 
 	// --- AM / PM ---
-	"午前": {TokenAMPM, AMPMAm},
-	"午後": {TokenAMPM, AMPMPm},
+	"午前": {Type: TokenAMPM, Value: AMPMAm},
+	"午後": {Type: TokenAMPM, Value: AMPMPm},
 
 	// --- Time-word substitutes ---
-	"正午": {TokenTime, "12:00"}, // noon
+	"正午": {Type: TokenTime, Value: "12:00"}, // noon
 
 	// --- Weekdays: full form (月曜日) and single-kanji abbreviation (月) ---
 	// Full forms win via longest-match when both are present.
-	"月曜日": {TokenWeekday, WeekdayMonday},
-	"火曜日": {TokenWeekday, WeekdayTuesday},
-	"水曜日": {TokenWeekday, WeekdayWednesday},
-	"木曜日": {TokenWeekday, WeekdayThursday},
-	"金曜日": {TokenWeekday, WeekdayFriday},
-	"土曜日": {TokenWeekday, WeekdaySaturday},
-	"日曜日": {TokenWeekday, WeekdaySunday},
-	"月":   {TokenWeekday, WeekdayMonday},    // abbreviation (also in 月曜日 — longest match wins)
-	"火":   {TokenWeekday, WeekdayTuesday},   // abbreviation
-	"水":   {TokenWeekday, WeekdayWednesday}, // abbreviation
-	"木":   {TokenWeekday, WeekdayThursday},  // abbreviation
-	"金":   {TokenWeekday, WeekdayFriday},    // abbreviation
-	"土":   {TokenWeekday, WeekdaySaturday},  // abbreviation
-	"日":   {TokenWeekday, WeekdaySunday},    // abbreviation (also in 日曜日 and 今日 — longest match wins)
+	"月曜日": {Type: TokenWeekday, Value: WeekdayMonday},
+	"火曜日": {Type: TokenWeekday, Value: WeekdayTuesday},
+	"水曜日": {Type: TokenWeekday, Value: WeekdayWednesday},
+	"木曜日": {Type: TokenWeekday, Value: WeekdayThursday},
+	"金曜日": {Type: TokenWeekday, Value: WeekdayFriday},
+	"土曜日": {Type: TokenWeekday, Value: WeekdaySaturday},
+	"日曜日": {Type: TokenWeekday, Value: WeekdaySunday},
+	"月":   {Type: TokenWeekday, Value: WeekdayMonday},    // abbreviation (also in 月曜日 — longest match wins)
+	"火":   {Type: TokenWeekday, Value: WeekdayTuesday},   // abbreviation
+	"水":   {Type: TokenWeekday, Value: WeekdayWednesday}, // abbreviation
+	"木":   {Type: TokenWeekday, Value: WeekdayThursday},  // abbreviation
+	"金":   {Type: TokenWeekday, Value: WeekdayFriday},    // abbreviation
+	"土":   {Type: TokenWeekday, Value: WeekdaySaturday},  // abbreviation
+	"日":   {Type: TokenWeekday, Value: WeekdaySunday},    // abbreviation (also in 日曜日 and 今日 — longest match wins)
 
 	// --- Kanji month names (一月–十二月) ---
 	// Longer keys (十一月, 十二月) beat shorter (十月) when both share a prefix.
-	"一月":  {TokenMonth, MonthJanuary},
-	"二月":  {TokenMonth, MonthFebruary},
-	"三月":  {TokenMonth, MonthMarch},
-	"四月":  {TokenMonth, MonthApril},
-	"五月":  {TokenMonth, MonthMay},
-	"六月":  {TokenMonth, MonthJune},
-	"七月":  {TokenMonth, MonthJuly},
-	"八月":  {TokenMonth, MonthAugust},
-	"九月":  {TokenMonth, MonthSeptember},
-	"十月":  {TokenMonth, MonthOctober},
-	"十一月": {TokenMonth, MonthNovember},
-	"十二月": {TokenMonth, MonthDecember},
+	"一月":  {Type: TokenMonth, Value: MonthJanuary},
+	"二月":  {Type: TokenMonth, Value: MonthFebruary},
+	"三月":  {Type: TokenMonth, Value: MonthMarch},
+	"四月":  {Type: TokenMonth, Value: MonthApril},
+	"五月":  {Type: TokenMonth, Value: MonthMay},
+	"六月":  {Type: TokenMonth, Value: MonthJune},
+	"七月":  {Type: TokenMonth, Value: MonthJuly},
+	"八月":  {Type: TokenMonth, Value: MonthAugust},
+	"九月":  {Type: TokenMonth, Value: MonthSeptember},
+	"十月":  {Type: TokenMonth, Value: MonthOctober},
+	"十一月": {Type: TokenMonth, Value: MonthNovember},
+	"十二月": {Type: TokenMonth, Value: MonthDecember},
 
 	// --- Temporal direction modifiers ---
-	"後": {TokenModifier, ModifierFuture}, // 3日後 = 3 days later
-	"前": {TokenModifier, ModifierPast},   // 2週間前 = 2 weeks ago
+	"後": {Type: TokenModifier, Value: ModifierFuture}, // 3日後 = 3 days later
+	"前": {Type: TokenModifier, Value: ModifierPast},   // 2週間前 = 2 weeks ago
 
 	// --- Filler particle ---
-	"の": {TokenFiller, nil},
+	"の": {Type: TokenFiller, Value: nil},
 }
 
 // japaneseMacros maps compound words to their multi-token expansion.

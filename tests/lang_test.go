@@ -2,6 +2,7 @@ package tests
 
 import (
 	//"maps"
+	"strings"
 	"testing"
 	"time"
 
@@ -27,18 +28,18 @@ import (
 //	"mediodia"→ time substitution → "12:00"
 var miniLang = Lang{
 	Words: map[string]WordEntry{
-		"manana":   {TokenAnchor, AnchorTomorrow},
-		"ayer":     {TokenAnchor, AnchorYesterday},
-		"lunes":    {TokenWeekday, WeekdayMonday},
-		"proximo":  {TokenDirection, DirectionFuture},
-		"en":       {TokenPrep, nil},
-		"hace":     {TokenModifier, ModifierPast},
-		"dias":     {TokenUnit, PeriodDay},
-		"horas":    {TokenUnit, PeriodHour},
-		"mediodia": {TokenTime, "12:00"}, // time-word substitution as a Words entry
+		"manana":   {Type: TokenAnchor, Value: AnchorTomorrow},
+		"ayer":     {Type: TokenAnchor, Value: AnchorYesterday},
+		"lunes":    {Type: TokenWeekday, Value: WeekdayMonday},
+		"proximo":  {Type: TokenDirection, Value: DirectionFuture},
+		"en":       {Type: TokenPrep, Value: nil},
+		"hace":     {Type: TokenModifier, Value: ModifierPast},
+		"dias":     {Type: TokenUnit, Value: PeriodDay},
+		"horas":    {Type: TokenUnit, Value: PeriodHour},
+		"mediodia": {Type: TokenTime, Value: "12:00"}, // time-word substitution as a Words entry
 		// AM/PM tokens must be present for time-glued parsing to work
-		"am": {TokenAMPM, AMPMAm},
-		"pm": {TokenAMPM, AMPMPm},
+		"am": {Type: TokenAMPM, Value: AMPMAm},
+		"pm": {Type: TokenAMPM, Value: AMPMPm},
 	},
 	OrdinalSuffixes: []string{}, // no ordinal stripping in this mini language
 }
@@ -171,8 +172,8 @@ func TestLangHandlerOverride(t *testing.T) {
 	// frenchLike extends miniLang with a WEEKDAY DIRECTION handler.
 	frenchLike := Lang{
 		Words: map[string]WordEntry{
-			"lundi":    {TokenWeekday, WeekdayMonday},
-			"prochain": {TokenDirection, DirectionFuture},
+			"lundi":    {Type: TokenWeekday, Value: WeekdayMonday},
+			"prochain": {Type: TokenDirection, Value: DirectionFuture},
 		},
 		// Handler for reversed word order: WEEKDAY DIRECTION ("lundi prochain")
 		Handlers: map[string]Handler{
@@ -249,7 +250,7 @@ func TestLangTimezones(t *testing.T) {
 	// englishWords doesn't include NZST, so add it alongside the override.
 	customWords := make(map[string]WordEntry, len(englishWords)+1)
 	maps.Copy(customWords, englishWords)
-	customWords["nzst"] = WordEntry{TokenTimezone, "nzst"}
+	customWords["nzst"] = WordEntry{Type: TokenTimezone, Value: "nzst"}
 
 	customLang := Lang{
 		Words: customWords,
@@ -320,17 +321,17 @@ func TestLangOrdinalSuffixes(t *testing.T) {
 func TestLangNumberWords(t *testing.T) {
 	numLang := Lang{
 		Words: map[string]WordEntry{
-			"en":    {TokenPrep, nil},
-			"hace":  {TokenModifier, ModifierPast},
-			"horas": {TokenUnit, PeriodHour},
-			"dias":  {TokenUnit, PeriodDay},
-			"am":    {TokenAMPM, AMPMAm},
-			"pm":    {TokenAMPM, AMPMPm},
+			"en":    {Type: TokenPrep, Value: nil},
+			"hace":  {Type: TokenModifier, Value: ModifierPast},
+			"horas": {Type: TokenUnit, Value: PeriodHour},
+			"dias":  {Type: TokenUnit, Value: PeriodDay},
+			"am":    {Type: TokenAMPM, Value: AMPMAm},
+			"pm":    {Type: TokenAMPM, Value: AMPMPm},
 			// number words as TokenInteger entries
-			"una":  {TokenInteger, 1},
-			"un":   {TokenInteger, 1},
-			"dos":  {TokenInteger, 2},
-			"tres": {TokenInteger, 3},
+			"una":  {Type: TokenInteger, Value: 1},
+			"un":   {Type: TokenInteger, Value: 1},
+			"dos":  {Type: TokenInteger, Value: 2},
+			"tres": {Type: TokenInteger, Value: 3},
 		},
 	}
 
@@ -365,19 +366,19 @@ func TestLangNumberWords(t *testing.T) {
 func TestLangPhrases(t *testing.T) {
 	phraseLang := Lang{
 		Words: map[string]WordEntry{
-			"dans":  {TokenPrep, nil},
-			"jours": {TokenUnit, PeriodDay},
-			"hier":  {TokenAnchor, AnchorYesterday},
+			"dans":  {Type: TokenPrep, Value: nil},
+			"jours": {Type: TokenUnit, Value: PeriodDay},
+			"hier":  {Type: TokenAnchor, Value: AnchorYesterday},
 			// Hyphenated forms are single chunks → Words, not phrases
-			"avant-hier": {TokenAnchor, Anchor2DaysAgo},
-			"am":         {TokenAMPM, AMPMAm},
-			"pm":         {TokenAMPM, AMPMPm},
+			"avant-hier": {Type: TokenAnchor, Value: Anchor2DaysAgo},
+			"am":         {Type: TokenAMPM, Value: AMPMAm},
+			"pm":         {Type: TokenAMPM, Value: AMPMPm},
 			// Number words as TokenInteger entries
-			"trois": {TokenInteger, 3},
+			"trois": {Type: TokenInteger, Value: 3},
 			// Multi-word phrases (space-containing keys)
-			"il y a":     {TokenModifier, ModifierPast}, // 3-word phrase
-			"il y":       {TokenUnknown, "unknown"},     // 2-word — must not shadow 3-word above
-			"avant hier": {TokenAnchor, Anchor2DaysAgo}, // space-separated 2-word phrase
+			"il y a":     {Type: TokenModifier, Value: ModifierPast}, // 3-word phrase
+			"il y":       {Type: TokenUnknown, Value: "unknown"},     // 2-word — must not shadow 3-word above
+			"avant hier": {Type: TokenAnchor, Value: Anchor2DaysAgo}, // space-separated 2-word phrase
 		},
 	}
 
@@ -435,9 +436,9 @@ func TestLangPhrases(t *testing.T) {
 func TestLangNDayAnchors(t *testing.T) {
 	anchorLang := Lang{
 		Words: map[string]WordEntry{
-			"anteayer":   {TokenAnchor, Anchor2DaysAgo},
-			"vorgestern": {TokenAnchor, Anchor2DaysAgo},
-			"übermorgen": {TokenAnchor, Anchor2DaysFromNow},
+			"anteayer":   {Type: TokenAnchor, Value: Anchor2DaysAgo},
+			"vorgestern": {Type: TokenAnchor, Value: Anchor2DaysAgo},
+			"übermorgen": {Type: TokenAnchor, Value: Anchor2DaysFromNow},
 		},
 	}
 
@@ -605,6 +606,43 @@ func TestStringMethods(t *testing.T) {
 			t.Errorf("Direction(%d).String() = %q, want %q", int(tc.d), got, tc.want)
 		}
 	}
+}
+
+// TestMaxPhraseWords reports the longest phrase (in words) across all built-in
+// languages. If the maximum is small and stable we can replace the lazy
+// sync.Once computation with a hard-coded constant.
+func TestMaxPhraseWords(t *testing.T) {
+	langs := []struct {
+		name string
+		lang *Lang
+	}{
+		{"en", &LangEn},
+		{"es", &LangEs},
+		{"fr", &LangFr},
+		{"de", &LangDe},
+		{"it", &LangIt},
+		{"pt", &LangPt},
+		{"ru", &LangRu},
+		{"ja", &LangJa},
+		{"zh", &LangZh},
+	}
+
+	overallMax := 0
+	for _, l := range langs {
+		max := 0
+		var longest string
+		for key := range l.lang.Words {
+			if n := strings.Count(key, " ") + 1; n > max {
+				max = n
+				longest = key
+			}
+		}
+		t.Logf("%-4s  maxPhraseWords=%d  longest=%q", l.name, max, longest)
+		if max > overallMax {
+			overallMax = max
+		}
+	}
+	t.Logf("overall max = %d", overallMax)
 }
 
 // TestExpand2DigitYear covers all three branches of the RFC 2822 year expansion rule.
