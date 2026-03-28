@@ -27,18 +27,30 @@ import "github.com/client9/nowandlater"
 
 ### How does it work?
 
-Read the CLAUDE.md summary, but simply it:
+See `docs/architecture.md` for the full pipeline diagram. In brief:
 
 * Turns input into a list of tokens, e.g. "Monday" --> `{ WEEKDAY, Monday }`. This is 99% of variations between different human languages.
-* It's data driven -- the tokens are in a map (e.g. `lang_en.go`)
-* The list of tokens is a "signature" - across all langauges there under 100 signatures (see dispatch.go)
+* It's data driven -- the tokens are in a map (e.g. `languages/lang_en.go`)
+* The list of tokens is a "signature" - across all languages there are under 100 signatures (see `internal/engine/dispatch.go`)
 * The signature is used to find a handler function using a `map`.
 * The handler converts the signature into a golang struct holding numeric values for day, month, hour, etc. The handler `func` is normally a few lines long.
-* The struct is converted into go a `time.Time` object.
+* The struct is converted into a `time.Time` object.
 
-### Can I add another human languages?
+### Project layout
 
-Yes. Look at lang_en.go (English) or lang_es.go (Spanish). Translate that, run tests, perhaps add a handler. Done.
+```
+nowandlater/
+├── parser.go          # Public API — Parser, Parse, ParseInterval
+├── internal/engine/   # Core pipeline: tokenizer, handlers, dispatch, resolve
+├── languages/         # One file per human language (lang_en.go, lang_es.go, …)
+├── tests/             # All tests
+├── cmd/nldate/        # CLI dev tool
+└── docs/              # Architecture and contributor docs
+```
+
+### Can I add another human language?
+
+Yes. Look at `languages/lang_en.go` (English) or `languages/lang_es.go` (Spanish). Translate that, run tests, perhaps add a handler. Done. See `docs/contributing.md` for a step-by-step guide.
 
 Your favorite coding AI assistant can do most of it in 5 minutes.
 

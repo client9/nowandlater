@@ -46,7 +46,7 @@
 //
 // Custom languages can be added by constructing a [Lang] with a [Lang.Words]
 // map, [Lang.OrdinalSuffixes], and optional [Lang.DateOrder] and
-// [Lang.Handlers] overrides. See CLAUDE.md for the full guide.
+// [Lang.Handlers] overrides. See docs/contributing.md for the full guide.
 //
 // # Interval support
 //
