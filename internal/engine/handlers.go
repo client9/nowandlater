@@ -3,6 +3,7 @@ package engine
 import (
 	"fmt"
 	"math"
+	"strconv"
 	"strings"
 )
 
@@ -386,7 +387,12 @@ func parseDateFragment(raw string, order DateOrder) (mo, d, y int, err error) {
 	if len(parts) != 3 {
 		return 0, 0, 0, ErrUnknownSignature
 	}
-	a, b, c := MustAtoi(parts[0]), MustAtoi(parts[1]), MustAtoi(parts[2])
+	a, aerr := strconv.Atoi(parts[0])
+	b, berr := strconv.Atoi(parts[1])
+	c, cerr := strconv.Atoi(parts[2])
+	if aerr != nil || berr != nil || cerr != nil {
+		return 0, 0, 0, fmt.Errorf("nowandlater: DATE_FRAGMENT has non-numeric part: %q", raw)
+	}
 	mo, d = swapDateOrder(a, b, order)
 	y = Expand2DigitYear(c)
 	if mo < 1 || mo > 12 || d < 1 || d > 31 {
