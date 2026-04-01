@@ -6,6 +6,9 @@
 # https://github.com/actions/setup-go
 
 name: Go
+permissions:
+  contents: read
+  pull-requests: write
 
 on:
   push:
