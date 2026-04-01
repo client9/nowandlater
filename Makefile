@@ -19,7 +19,7 @@ lint: fmt
 # test but ignore any fuzz stuff
 cover:
 	rm -f cover.out
-	go test -run='^Test' -coverprofile=cover.out -coverpkg=./... ./...
+	go test -run='^Test' -coverprofile=cover.out -coverpkg=.,./languages,./internal/engine ./...
 	grep -v '/cmd/' cover.out > cover.out.tmp && mv cover.out.tmp cover.out
 	go tool cover -func=cover.out
 

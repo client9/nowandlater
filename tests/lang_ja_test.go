@@ -98,6 +98,18 @@ var japaneseCases = []struct {
 	// --- Skip unknown rune ---
 	{"テスト3日後", u(2026, 3, 25, 10, 0, 0)}, // テスト chars are not in the word map and are skipped
 
+	// --- jaParseNumber: non-4-digit year suffix (年 consumed, emits INTEGER) ---
+	// 5年 → len("5")≠4 → INTEGER(5); then 3月 → MONTH(March) → handleDayMonth → day 5, March
+	{"5年3月", u(2027, 3, 5, 0, 0, 0)},
+
+	// --- jaParseNumber: out-of-range month suffix (月 consumed, emits INTEGER) ---
+	// 13月 → 13 > 12 → INTEGER(13); with date context → YEAR INTEGER INTEGER → month overflow
+	{"2026年13月24日", u(2027, 1, 24, 0, 0, 0)},
+
+	// --- jaParseNumber: default (digit with no recognized unit suffix) ---
+	// bare 24 with no 日 → ClassifyBareInteger → INTEGER(24) → YEAR MONTH INTEGER
+	{"2026年3月24", u(2026, 3, 24, 0, 0, 0)},
+
 	// --- Combined absolute date + AMPM time ---
 	{"2026年3月24日の午後3時", u(2026, 3, 24, 15, 0, 0)},
 	{"2026年3月24日の午後3時30分", u(2026, 3, 24, 15, 30, 0)},

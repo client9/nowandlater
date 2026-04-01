@@ -107,6 +107,14 @@ var chineseCases = []struct {
 
 	// --- Skip unknown rune ---
 	{"X3天后", u(2026, 3, 25, 10, 0, 0)}, // ASCII X is not in the word map and is skipped
+
+	// --- zhParseNumber: out-of-range month suffix (月 consumed, emits INTEGER) ---
+	// 13月 → 13 > 12 → INTEGER(13); with date context → YEAR INTEGER INTEGER → month overflow
+	{"2026年13月24日", u(2027, 1, 24, 0, 0, 0)},
+
+	// --- zhParseNumber: default (digit with no recognized unit suffix) ---
+	// bare 24 with no 日 → ClassifyBareInteger → INTEGER(24) → YEAR MONTH INTEGER
+	{"2026年3月24", u(2026, 3, 24, 0, 0, 0)},
 }
 
 func TestLangZh(t *testing.T) {
