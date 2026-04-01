@@ -2,6 +2,8 @@
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
 
 # https://github.com/actions/checkout
+# https://github.com/golangci/golangci-lint-action
+# https://github.com/actions/setup-go
 
 name: Go
 
@@ -23,7 +25,7 @@ jobs:
       with:
         go-version: '1.26'
 
-    - name: Run golangci-lint
+    - name: Install golangci-lint
       uses: golangci/golangci-lint-action@v9
 
     - name: Build
