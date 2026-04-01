@@ -1,4 +1,7 @@
 
+build:
+	go build ./...
+
 test: lint
 	go test ./...
 
