@@ -2,6 +2,8 @@ version: "2"
 linters:
   enable:
     - gocritic
+    - godoclint
+    - gochecknoinits
   disable:
     - staticcheck
   settings:

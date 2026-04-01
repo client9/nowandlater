@@ -10,6 +10,7 @@ type TokenType int
 
 const (
 	// Word token types
+
 	TokenWeekday   TokenType = iota // Monday, Mon, …
 	TokenMonth                      // January, Jan, …
 	TokenDirection                  // next, last, previous, this, coming
@@ -21,6 +22,7 @@ const (
 	TokenFiller                     // the, of, a, and — kept in token list; dropped at signature step
 
 	// Number token types
+
 	TokenYear         // 4-digit year: 2026
 	TokenTime         // H:MM, HH:MM, H:MM:SS, HH:MM:SS
 	TokenDateFragment // ambiguous partial date with no year or month name: 12/03, 3-15

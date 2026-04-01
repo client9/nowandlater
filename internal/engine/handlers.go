@@ -14,7 +14,7 @@ import (
 // positional indices align exactly with the signature string.
 // ---------------------------------------------------------------------------
 
-// handleAmbiguous is registered for signatures that are recognisable as
+// HandleAmbiguous is registered for signatures that are recognisable as
 // date-like but cannot be resolved to a single meaning without more context.
 // It returns ErrAmbiguous so callers can distinguish "I don't understand this"
 // from "this could mean multiple things".
