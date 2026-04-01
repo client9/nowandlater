@@ -321,10 +321,15 @@ echo "in 2 days" | go run ./cmd/nldate
 Output shows the token list, signature, parsed period, and resolved time.
 Use `-unix` to print only the resolved Unix timestamp (useful for scripting).
 
-## Running tests
+## Building and Running Tests
 
-See Makefile
+| Make         | Description               |
+!--------------|---------------------------|
+| `make build` | Builds library            |
+| `make test`  | Test and Lint             |
+| `make fmt`   | Reformat source code      |
+| `make cover` | Coverage tests            |
+| `make fuzz`  | Run fuzz tests            |
+| `make bench` | Run benchmark tests       |
+| `make clean` | Clean up                  |
 
-```
-go test ./...
-```
