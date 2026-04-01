@@ -46,6 +46,4 @@ See `docs/contributing.md` for step-by-step guides.
 See `TODO.md` for the full list. Highlights:
 - "morning/afternoon/evening" time-of-day ranges (semantics unclear)
 - "start/end of week/month/year" (needs new `Anchor` field design)
-- Unix timestamp (10-digit integer)
-- 2-digit year inference
 - Per-language preprocessing hook (`Lang.Preprocess`) for dotted abbreviations (French "sept.", Portuguese "dez.")
