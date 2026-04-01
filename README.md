@@ -324,7 +324,7 @@ Use `-unix` to print only the resolved Unix timestamp (useful for scripting).
 ## Building and Running Tests
 
 | Make         | Description               |
-!--------------|---------------------------|
+|--------------|---------------------------|
 | `make build` | Builds library            |
 | `make test`  | Test and Lint             |
 | `make fmt`   | Reformat source code      |
