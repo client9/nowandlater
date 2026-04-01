@@ -23,6 +23,9 @@ jobs:
       with:
         go-version: '1.26'
 
+    - name: Run golangci-lint
+      uses: golangci/golangci-lint-action@v9
+
     - name: Build
       run: make build
 
