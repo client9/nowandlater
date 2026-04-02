@@ -9,6 +9,8 @@ date and time strings into `time.Time` values.
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 🇬🇧🇪🇸🇩🇪🇫🇷🇮🇹🇵🇹🇷🇺🇯🇵🇨🇳
 
+Annoucements: [LinkedIn](https://www.linkedin.com/posts/nick-galbreath-1890794_i-built-a-golang-module-client9nowandlater-activity-7445152694492672000--XFA) [golang-nuts](https://groups.google.com/g/golang-nuts/c/b2aRJiDzAl0/m/3Rm-bv_mAwAJ)
+
 ```go
 import "github.com/client9/nowandlater"
 ```
