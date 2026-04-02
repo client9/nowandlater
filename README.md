@@ -26,6 +26,7 @@ import "github.com/client9/nowandlater"
 * Extensible to add additional human languages - PRs welcome!
 * Scalable - adding languages or rules has no additional performance cost.
 * MIT License - do whatever you want with it!
+* See [FAQ](docs/faq.md) for more details.
 
 ## Installation
 
