@@ -56,7 +56,7 @@ into
 tomorrow at 3pm
 ```
 
-but they are not very good at converting that to a standard time format or converting to a native datetime object.  There are a lot of off by one errors, time zone issues, and confusion.
+but they are not very good at converting that to a standard time format or converting to a native date-time object.  There are a lot of off by one errors, time zone issues, and confusion.
 
 Also it's very slow (relative to converting locally).
 
@@ -65,11 +65,11 @@ Also it's very slow (relative to converting locally).
 The existing projects in Go are mostly abandoned or obsolete.  As of 2026:
 
 * [go-anytime](https://github.com/ijt/go-anytime) - last commit in 2023, English only
-* [naturaltime](https://github.com/Sho0pi/naturaltime) - last commit in 2025, runs a javascript interpreter (!!) to execute[chrononode](https://github.com/wanasit/chrono/tree/master) which is pile of regexp.
+* [naturaltime](https://github.com/Sho0pi/naturaltime) - last commit in 2025, runs a javascript interpreter (!!) to execute[chrono-node](https://github.com/wanasit/chrono/tree/master) which is pile of regexp.
 * [when](https://github.com/olebedev/when) - last commit in 2025, complicated rule set using regexp.
 * [go-naturaldate](https://github.com/tj/go-naturaldate) - last commit in 2020, parser/generator PEG based.  English only
 * [naturaldate](https://github.com/anatol/naturaldate.go) - a fork of previous
-* [go-dateparser](https://github.com/markusmobius/go-dateparser) - direct port of python's dateparser, last commit 1 year, has not kept up to date
+* [go-dateparser](https://github.com/markusmobius/go-dateparser) - direct port of python's `dateparser`, last commit 1 year, has not kept up to date
 * [araddon/dateparse](https://github.com/araddon/dateparse) - last commit in 2021, more for fixed computer formats
 * [shadiestgoat/dateparse](https://github.com/shadiestgoat/dateparse) - last commit in 2024, fixed formats
 
@@ -80,7 +80,7 @@ All (?) use regexp soup or some parser/generator.  Go needs something better.
 There are good libraries in other programming languages, some with unique features:
 
 * Python [dateparser](https://github.com/scrapinghub/dateparser)  - actively maintained, regexp based.
-* Typescript [chrononode](https://github.com/wanasit/chrono/tree/master) - complicated, but has a lot of interesting features.
+* Typescript [chrono-node](https://github.com/wanasit/chrono/tree/master) - complicated, but has a lot of interesting features.
 * Ruby [chronic](https://github.com/mojombo/chronic) - English only, last commit in 2023.
 * Java [natty](https://github.com/joestelmach/natty) - Last commit in 2017 - English only - parser/generator
 * GNU date has some interesting date parsing abilities
