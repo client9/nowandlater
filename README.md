@@ -9,7 +9,7 @@ date and time strings into `time.Time` values.
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 🇬🇧🇪🇸🇩🇪🇫🇷🇮🇹🇵🇹🇷🇺🇯🇵🇨🇳
 
-Annoucements: [LinkedIn](https://www.linkedin.com/posts/nick-galbreath-1890794_i-built-a-golang-module-client9nowandlater-activity-7445152694492672000--XFA) [golang-nuts](https://groups.google.com/g/golang-nuts/c/b2aRJiDzAl0/m/3Rm-bv_mAwAJ)
+Announcements: [LinkedIn](https://www.linkedin.com/posts/nick-galbreath-1890794_i-built-a-golang-module-client9nowandlater-activity-7445152694492672000--XFA) [golang-nuts](https://groups.google.com/g/golang-nuts/c/b2aRJiDzAl0/m/3Rm-bv_mAwAJ)
 
 ```go
 import "github.com/client9/nowandlater"
@@ -19,13 +19,13 @@ import "github.com/client9/nowandlater"
 ### What makes it different?
 
 * Fast - 500ns per call
-* Only uses stdlib, no external dependencies
-* No regular expressions
-* No parser/generator langauge (e.g. ANTLR, PEG, Bison)
+* Only uses stdlib -no regular expressions - no parser/generators
+* Supports English, Spanish, French, Italian, Portuguese, Russian, Japanese, and Chinese.
+* Extensible to add additional human languages - Requests and PRs welcome!
 * Extensible to add new date, time, and duration expressions - PRs welcome!
-* Extensible to add additional human languages - PRs welcome!
 * Scalable - adding languages or rules has no additional performance cost.
 * MIT License - do whatever you want with it!
+* Production Ready - >95% test coverage, with fuzz and performance tests
 * See [FAQ](docs/faq.md) for more details.
 
 ## Installation

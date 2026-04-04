@@ -38,7 +38,7 @@ Python's dateparser, takes about 1,000,000ns. That's 2000x faster.
 Go's native time parser on a fixed format is 20ns. That's 25x slower.
 
 
-### Can it be ported to another (computer) lanaguge?
+### Can it be ported to another (computer) language?
 
 Please do so!  It should be easy.  Let me know if you need help.
 
@@ -65,7 +65,7 @@ Also it's very slow (relative to converting locally).
 The existing projects in Go are mostly abandoned or obsolete.  As of 2026:
 
 * [go-anytime](https://github.com/ijt/go-anytime) - last commit in 2023, English only
-* [naturaltime](https://github.com/Sho0pi/naturaltime) - last commit in 2025, runs a javacript interpreter (!!) to execute[chrononode](https://github.com/wanasit/chrono/tree/master) which is pile of regexp.
+* [naturaltime](https://github.com/Sho0pi/naturaltime) - last commit in 2025, runs a javascript interpreter (!!) to execute[chrononode](https://github.com/wanasit/chrono/tree/master) which is pile of regexp.
 * [when](https://github.com/olebedev/when) - last commit in 2025, complicated rule set using regexp.
 * [go-naturaldate](https://github.com/tj/go-naturaldate) - last commit in 2020, parser/generator PEG based.  English only
 * [naturaldate](https://github.com/anatol/naturaldate.go) - a fork of previous
@@ -75,7 +75,7 @@ The existing projects in Go are mostly abandoned or obsolete.  As of 2026:
 
 All (?) use regexp soup or some parser/generator.  Go needs something better.
 
-### What about porting code from other prgramming langauges or libraries?
+### What about porting code from other programming languages or libraries?
 
 There are good libraries in other programming languages, some with unique features:
 
