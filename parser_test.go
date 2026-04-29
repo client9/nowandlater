@@ -85,6 +85,63 @@ func TestParserInputTzOverridesLocation(t *testing.T) {
 	}
 }
 
+func TestParserWeekStartSunday(t *testing.T) {
+	p := Parser{
+		Lang:            &languages.LangEn,
+		Now:             fixedNow(parserNow),
+		WeekStartSunday: true,
+	}
+
+	got, err := p.Parse("next week")
+	if err != nil {
+		t.Fatalf("Parse(\"next week\") error: %v", err)
+	}
+	if !got.Equal(u(2026, 3, 29, 0, 0, 0)) {
+		t.Errorf("Parse(\"next week\") = %v, want %v", got, u(2026, 3, 29, 0, 0, 0))
+	}
+
+	start, end, err := p.ParseInterval("this week")
+	if err != nil {
+		t.Fatalf("ParseInterval(\"this week\") error: %v", err)
+	}
+	if !start.Equal(u(2026, 3, 22, 0, 0, 0)) {
+		t.Errorf("ParseInterval(\"this week\") start = %v, want %v", start, u(2026, 3, 22, 0, 0, 0))
+	}
+	if !end.Equal(u(2026, 3, 29, 0, 0, 0)) {
+		t.Errorf("ParseInterval(\"this week\") end = %v, want %v", end, u(2026, 3, 29, 0, 0, 0))
+	}
+}
+
+func TestParserWeekStartSundayMidWeek(t *testing.T) {
+	// Wednesday 2026-03-25 as reference — the containing Sunday-start week runs
+	// [2026-03-22, 2026-03-29), distinct from the Monday-start week [2026-03-23, 2026-03-30).
+	midWeek := time.Date(2026, 3, 25, 10, 0, 0, 0, time.UTC)
+	p := Parser{
+		Lang:            &languages.LangEn,
+		Now:             fixedNow(midWeek),
+		WeekStartSunday: true,
+	}
+
+	got, err := p.Parse("this week")
+	if err != nil {
+		t.Fatalf("Parse(\"this week\") error: %v", err)
+	}
+	if !got.Equal(u(2026, 3, 22, 0, 0, 0)) {
+		t.Errorf("Parse(\"this week\") = %v, want %v", got, u(2026, 3, 22, 0, 0, 0))
+	}
+
+	start, end, err := p.ParseInterval("this week")
+	if err != nil {
+		t.Fatalf("ParseInterval(\"this week\") error: %v", err)
+	}
+	if !start.Equal(u(2026, 3, 22, 0, 0, 0)) {
+		t.Errorf("ParseInterval(\"this week\") start = %v, want %v", start, u(2026, 3, 22, 0, 0, 0))
+	}
+	if !end.Equal(u(2026, 3, 29, 0, 0, 0)) {
+		t.Errorf("ParseInterval(\"this week\") end = %v, want %v", end, u(2026, 3, 29, 0, 0, 0))
+	}
+}
+
 // spNow is the fixed reference time for LangEs resolver tests.
 // Same date as resolveNow (2026-03-22 10:00:00 UTC, a Sunday) for easy comparison.
 var spNow = time.Date(2026, 3, 22, 10, 0, 0, 0, time.UTC)

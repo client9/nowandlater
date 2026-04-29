@@ -10,8 +10,9 @@
 //	start, end, err := p.ParseInterval("this week")
 //
 // [Parser] is the primary entry point. Its zero value is valid and uses
-// English, [time.Local], [time.Now], and scheduling-oriented ambiguity
-// resolution as defaults.
+// English, [time.Local], [time.Now], scheduling-oriented ambiguity
+// resolution, and Monday-start week boundaries as defaults. Set
+// Parser.WeekStartSunday to true to use Sunday-start weeks.
 //
 // # Supported input formats
 //

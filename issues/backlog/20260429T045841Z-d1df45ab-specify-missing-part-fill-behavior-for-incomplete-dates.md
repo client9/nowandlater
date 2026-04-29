@@ -56,6 +56,15 @@ Examples:
 - `December 2015` is already pinned to a specific month and year. The question is what day to fill in.
 - `2015` is already pinned to a specific year. The question is what month/day to fill in.
 
+## Current behavior
+
+The current resolver already uses canonical start-of-period filling for these forms:
+
+- `2025` -> `2025-01-01`
+- `October 2025` -> `2025-10-01`
+
+So the present baseline is "first missing month" and/or "first missing day", not "current date context".
+
 Possible fill policies include:
 
 - first value of missing component

@@ -30,6 +30,11 @@ type Parser struct {
 	// or "March 5" are resolved. The zero value defaults to scheduling-oriented
 	// behaviour.
 	Ambiguity AmbiguityConfig
+
+	// WeekStartSunday changes week-based boundaries like "this week" and
+	// "next week" to use Sunday instead of Monday. The zero value keeps the
+	// default Monday-start behavior.
+	WeekStartSunday bool
 }
 
 // Parse converts a natural-language date/time string into a time.Time.
@@ -50,7 +55,9 @@ func (p Parser) Parse(input string) (time.Time, error) {
 	if err != nil {
 		return time.Time{}, err
 	}
-	return engine.ResolveWithPolicy(slots, now, p.Ambiguity.resolvePolicy())
+	policy := p.Ambiguity.resolvePolicy()
+	policy.WeekStartSunday = p.WeekStartSunday
+	return engine.ResolveWithPolicy(slots, now, policy)
 }
 
 // ParseInterval converts a natural-language date/time string into a
@@ -75,5 +82,7 @@ func (p Parser) ParseInterval(input string) (start, end time.Time, err error) {
 	if err != nil {
 		return
 	}
-	return engine.ResolveIntervalWithPolicy(slots, now, p.Ambiguity.resolvePolicy())
+	policy := p.Ambiguity.resolvePolicy()
+	policy.WeekStartSunday = p.WeekStartSunday
+	return engine.ResolveIntervalWithPolicy(slots, now, policy)
 }

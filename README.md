@@ -52,7 +52,8 @@ start, end, err := p.ParseInterval("last month")
 ```
 
 `Parser` is safe for concurrent use. Its zero value is valid and defaults to
-English, `time.Local`, `time.Now`, and scheduling-oriented ambiguity handling.
+English, `time.Local`, `time.Now`, scheduling-oriented ambiguity handling, and
+Monday-start week boundaries.
 
 ```go
 // Custom reference time and timezone (useful in tests)
@@ -67,6 +68,9 @@ p := nowandlater.Parser{
 p := nowandlater.Parser{Ambiguity: nowandlater.AmbiguityScheduling}
 p = nowandlater.Parser{Ambiguity: nowandlater.AmbiguityHistorical}
 p = nowandlater.Parser{Ambiguity: nowandlater.AmbiguityStrict}
+
+// Sunday-start week boundaries for "this week", "next week", etc.
+p = nowandlater.Parser{WeekStartSunday: true}
 ```
 
 ## Language Support
@@ -155,8 +159,10 @@ are also supported.
 | `2026` | year | 2026-01-01 00:00 | 2027-01-01 00:00 |
 | `in 2 hours` | hour | 12:00:00 | 13:00:00 |
 
-Weeks start on Monday. `EndOf(start, period)` and `ResolveInterval(slots, now)`
-are available for lower-level use.
+Weeks start on Monday by default. Set `Parser.WeekStartSunday = true` to use
+Sunday-start week boundaries for `this week`, `next week`, `last week`, and
+week intervals. `EndOf(start, period)` and `ResolveInterval(slots, now)` are
+available for lower-level use.
 
 ## DateOrder
 

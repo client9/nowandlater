@@ -12,6 +12,7 @@ type ResolvePolicy struct {
 	CalendarDirection         Direction
 	MonthDayDirection         Direction
 	RejectAmbiguous           bool
+	WeekStartSunday           bool
 }
 
 func legacyResolvePolicy() ResolvePolicy {
@@ -99,7 +100,7 @@ func ResolveWithPolicy(slots *ParsedDateSlots, now time.Time, policy ResolvePoli
 	// --- Direction + anchor: "next week", "last month", "this year" ---
 	// Produced by: handleDirectionUnit.
 	case slots.Direction != 0 && slots.Anchor != 0:
-		return resolveDirectionAnchor(slots.Direction, slots.Anchor, now)
+		return resolveDirectionAnchor(slots.Direction, slots.Anchor, now, policy.WeekStartSunday)
 
 	// --- Full absolute date (year + month + day), optionally with time ---
 	// Produced by: handleMonthDayYear, handleYearIntegerInteger,
@@ -205,30 +206,28 @@ func ResolveWeekday(targetWd Weekday, direction Direction, now time.Time) time.T
 
 // resolveDirectionAnchor resolves "next week", "last month", "this year", etc.
 // Returns the start of the target period:
-//   - week  → Monday 00:00:00
+//   - week  → configurable week boundary at 00:00:00
 //   - month → 1st of month 00:00:00
 //   - year  → Jan 1 00:00:00
 //   - day   → start of day 00:00:00
-func resolveDirectionAnchor(direction Direction, anchor Period, now time.Time) (time.Time, error) {
+func resolveDirectionAnchor(direction Direction, anchor Period, now time.Time, weekStartSunday bool) (time.Time, error) {
 	loc := now.Location()
 	y, m, _ := now.Date()
 
-	// Monday of the current week (days back to Monday).
-	currentMonday := func() time.Time {
-		todayWd := (int(now.Weekday()) + 6) % 7
-		return StartOfDay(now.AddDate(0, 0, -todayWd))
+	currentWeekStart := func() time.Time {
+		return StartOfDay(now.AddDate(0, 0, -weekStartOffset(now, weekStartSunday)))
 	}
 
 	switch anchor {
 	case PeriodWeek:
-		monday := currentMonday()
+		weekStart := currentWeekStart()
 		switch direction {
 		case DirectionFuture:
-			return monday.AddDate(0, 0, 7), nil
+			return weekStart.AddDate(0, 0, 7), nil
 		case DirectionPast:
-			return monday.AddDate(0, 0, -7), nil
+			return weekStart.AddDate(0, 0, -7), nil
 		default: // nearest
-			return monday, nil
+			return weekStart, nil
 		}
 	case PeriodMonth:
 		switch direction {
@@ -290,7 +289,8 @@ func resolveMonthOnly(month int, now time.Time, direction Direction) time.Time {
 	y := now.Year()
 	t := time.Date(y, time.Month(month), 1, 0, 0, 0, 0, loc)
 	if direction == DirectionPast {
-		if !t.Before(startOfPeriod(now, PeriodMonth)) {
+		currentMonthStart := time.Date(y, now.Month(), 1, 0, 0, 0, 0, loc)
+		if !t.Before(currentMonthStart) {
 			return time.Date(y-1, time.Month(month), 1, 0, 0, 0, 0, loc)
 		}
 		return t
@@ -306,8 +306,8 @@ func resolveMonthOnly(month int, now time.Time, direction Direction) time.Time {
 // ---------------------------------------------------------------------------
 
 // startOfPeriod truncates t to the start of the given period in t's location.
-// For PeriodWeek, the week starts on Monday.
-func startOfPeriod(t time.Time, period Period) time.Time {
+// For PeriodWeek, the start of week is configurable.
+func startOfPeriod(t time.Time, period Period, weekStartSunday bool) time.Time {
 	loc := t.Location()
 	y, m, d := t.Date()
 	h, min, s := t.Clock()
@@ -321,9 +321,7 @@ func startOfPeriod(t time.Time, period Period) time.Time {
 	case PeriodDay, PeriodFortnight:
 		return StartOfDay(t)
 	case PeriodWeek:
-		// Monday of the week containing t (Go: Sun=0, Mon=1 → 0-based Mon system).
-		daysToMonday := (int(t.Weekday()) + 6) % 7
-		return StartOfDay(t.AddDate(0, 0, -daysToMonday))
+		return StartOfDay(t.AddDate(0, 0, -weekStartOffset(t, weekStartSunday)))
 	case PeriodMonth:
 		return time.Date(y, m, 1, 0, 0, 0, 0, loc)
 	case PeriodYear:
@@ -385,9 +383,19 @@ func ResolveIntervalWithPolicy(slots *ParsedDateSlots, now time.Time, policy Res
 	if err != nil {
 		return
 	}
-	start = startOfPeriod(pt, slots.Period)
+	start = startOfPeriod(pt, slots.Period, policy.WeekStartSunday)
 	end = EndOf(start, slots.Period)
 	return
+}
+
+// weekStartOffset returns the number of days to subtract to reach the start of
+// the current week in t's location.
+func weekStartOffset(t time.Time, sundayStart bool) int {
+	if sundayStart {
+		return int(t.Weekday())
+	}
+	// Monday-start: Go Sunday=0 becomes 6, Monday=1 becomes 0, etc.
+	return (int(t.Weekday()) + 6) % 7
 }
 
 func policyDurationDirection(policy ResolvePolicy) Direction {

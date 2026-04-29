@@ -219,3 +219,107 @@ func TestResolveInterval(t *testing.T) {
 		})
 	}
 }
+
+func TestResolveWeekStartSunday(t *testing.T) {
+	now := resolveNow // 2026-03-22 10:00:00 UTC, Sunday
+	policy := ResolvePolicy{
+		ImplicitDurationDirection: DirectionFuture,
+		CalendarDirection:         DirectionNearest,
+		MonthDayDirection:         DirectionFuture,
+		WeekStartSunday:           true,
+	}
+
+	cases := []struct {
+		input string
+		want  time.Time
+	}{
+		{"this week", u(2026, 3, 22, 0, 0, 0)},
+		{"next week", u(2026, 3, 29, 0, 0, 0)},
+		{"last week", u(2026, 3, 15, 0, 0, 0)},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.input, func(t *testing.T) {
+			slots, err := LangEn.Parse(tc.input)
+			if err != nil {
+				t.Fatalf("Parse error: %v", err)
+			}
+			got, err := ResolveWithPolicy(slots, now, policy)
+			if err != nil {
+				t.Fatalf("ResolveWithPolicy error: %v", err)
+			}
+			if !got.Equal(tc.want) {
+				t.Errorf("ResolveWithPolicy(%q) = %v, want %v", tc.input, got, tc.want)
+			}
+		})
+	}
+
+	start, end, err := ResolveIntervalWithPolicy(mustParse(t, "this week"), now, policy)
+	if err != nil {
+		t.Fatalf("ResolveIntervalWithPolicy error: %v", err)
+	}
+	if !start.Equal(u(2026, 3, 22, 0, 0, 0)) {
+		t.Errorf("interval start: got %v, want %v", start, u(2026, 3, 22, 0, 0, 0))
+	}
+	if !end.Equal(u(2026, 3, 29, 0, 0, 0)) {
+		t.Errorf("interval end: got %v, want %v", end, u(2026, 3, 29, 0, 0, 0))
+	}
+}
+
+func TestResolveWeekStartSundayMidWeek(t *testing.T) {
+	// Wednesday 2026-03-25: exercises the non-zero offset path for both formulas.
+	// Sunday-start offset = int(Wednesday) = 3 → back to 2026-03-22.
+	// Monday-start offset = (3+6)%7 = 2 → back to 2026-03-23 (verified by existing tests).
+	now := time.Date(2026, 3, 25, 10, 0, 0, 0, time.UTC)
+	policy := ResolvePolicy{
+		ImplicitDurationDirection: DirectionFuture,
+		CalendarDirection:         DirectionNearest,
+		MonthDayDirection:         DirectionFuture,
+		WeekStartSunday:           true,
+	}
+
+	cases := []struct {
+		input string
+		want  time.Time
+	}{
+		{"this week", u(2026, 3, 22, 0, 0, 0)}, // Sun 2026-03-22
+		{"next week", u(2026, 3, 29, 0, 0, 0)}, // Sun 2026-03-29
+		{"last week", u(2026, 3, 15, 0, 0, 0)}, // Sun 2026-03-15
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.input, func(t *testing.T) {
+			slots, err := LangEn.Parse(tc.input)
+			if err != nil {
+				t.Fatalf("Parse error: %v", err)
+			}
+			got, err := ResolveWithPolicy(slots, now, policy)
+			if err != nil {
+				t.Fatalf("ResolveWithPolicy error: %v", err)
+			}
+			if !got.Equal(tc.want) {
+				t.Errorf("ResolveWithPolicy(%q) = %v, want %v", tc.input, got, tc.want)
+			}
+		})
+	}
+
+	start, end, err := ResolveIntervalWithPolicy(mustParse(t, "this week"), now, policy)
+	if err != nil {
+		t.Fatalf("ResolveIntervalWithPolicy error: %v", err)
+	}
+	if !start.Equal(u(2026, 3, 22, 0, 0, 0)) {
+		t.Errorf("interval start: got %v, want %v", start, u(2026, 3, 22, 0, 0, 0))
+	}
+	if !end.Equal(u(2026, 3, 29, 0, 0, 0)) {
+		t.Errorf("interval end: got %v, want %v", end, u(2026, 3, 29, 0, 0, 0))
+	}
+}
+
+func mustParse(t *testing.T, input string) *ParsedDateSlots {
+	t.Helper()
+	slots, err := LangEn.Parse(input)
+	if err != nil {
+		t.Fatalf("Parse(%q) error: %v", input, err)
+	}
+	return slots
+}
