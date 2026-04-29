@@ -10,7 +10,8 @@
 //	start, end, err := p.ParseInterval("this week")
 //
 // [Parser] is the primary entry point. Its zero value is valid and uses
-// English, [time.Local], and [time.Now] as defaults.
+// English, [time.Local], [time.Now], and scheduling-oriented ambiguity
+// resolution as defaults.
 //
 // # Supported input formats
 //

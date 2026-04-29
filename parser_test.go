@@ -1,9 +1,11 @@
 package nowandlater
 
 import (
+	"errors"
 	"testing"
 	"time"
 
+	"github.com/client9/nowandlater/internal/engine"
 	"github.com/client9/nowandlater/languages"
 )
 
@@ -174,5 +176,83 @@ func TestParserParseInterval(t *testing.T) {
 	_, _, err = p.ParseInterval("xyzzy frobozz")
 	if err == nil {
 		t.Error("expected error for unrecognised input, got nil")
+	}
+}
+
+func TestParserAmbiguityScheduling(t *testing.T) {
+	now := time.Date(2026, 4, 28, 10, 0, 0, 0, time.UTC) // Tuesday
+	p := Parser{
+		Lang: &languages.LangEn,
+		Now:  fixedNow(now),
+	}
+
+	cases := []struct {
+		input string
+		want  time.Time
+	}{
+		{"5 hours", u(2026, 4, 28, 15, 0, 0)},
+		{"monday", u(2026, 5, 4, 0, 0, 0)},
+		{"October", u(2026, 10, 1, 0, 0, 0)},
+		{"March 5", u(2027, 3, 5, 0, 0, 0)},
+	}
+	for _, tc := range cases {
+		t.Run(tc.input, func(t *testing.T) {
+			got, err := p.Parse(tc.input)
+			if err != nil {
+				t.Fatalf("Parse(%q) error: %v", tc.input, err)
+			}
+			if !got.Equal(tc.want) {
+				t.Errorf("Parse(%q) got %v, want %v", tc.input, got, tc.want)
+			}
+		})
+	}
+}
+
+func TestParserAmbiguityHistorical(t *testing.T) {
+	now := time.Date(2026, 4, 28, 10, 0, 0, 0, time.UTC) // Tuesday
+	p := Parser{
+		Lang:      &languages.LangEn,
+		Now:       fixedNow(now),
+		Ambiguity: AmbiguityHistorical,
+	}
+
+	cases := []struct {
+		input string
+		want  time.Time
+	}{
+		{"5 hours", u(2026, 4, 28, 5, 0, 0)},
+		{"monday", u(2026, 4, 27, 0, 0, 0)},
+		{"October", u(2025, 10, 1, 0, 0, 0)},
+		{"March 5", u(2026, 3, 5, 0, 0, 0)},
+	}
+	for _, tc := range cases {
+		t.Run(tc.input, func(t *testing.T) {
+			got, err := p.Parse(tc.input)
+			if err != nil {
+				t.Fatalf("Parse(%q) error: %v", tc.input, err)
+			}
+			if !got.Equal(tc.want) {
+				t.Errorf("Parse(%q) got %v, want %v", tc.input, got, tc.want)
+			}
+		})
+	}
+}
+
+func TestParserAmbiguityStrict(t *testing.T) {
+	now := time.Date(2026, 4, 28, 10, 0, 0, 0, time.UTC)
+	p := Parser{
+		Lang:      &languages.LangEn,
+		Now:       fixedNow(now),
+		Ambiguity: AmbiguityStrict,
+	}
+
+	inputs := []string{"5 hours", "monday", "October", "March 5"}
+	for _, input := range inputs {
+		t.Run(input, func(t *testing.T) {
+			_, err := p.Parse(input)
+			if !errors.Is(err, engine.ErrAmbiguous) {
+				t.Fatalf("Parse(%q) error = %v, want ErrAmbiguous", input, err)
+			}
+		})
 	}
 }

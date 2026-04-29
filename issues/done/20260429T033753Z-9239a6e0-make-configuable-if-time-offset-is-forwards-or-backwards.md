@@ -1,7 +1,7 @@
 {
   "title": "make configuable if time offset is forwards or backwards",
   "id": "20260429T033753Z-9239a6e0",
-  "state": "backlog",
+  "state": "done",
   "created": "2026-04-29T03:37:53Z",
   "labels": [],
   "assignees": [],
@@ -13,6 +13,18 @@
       "ts": "2026-04-29T03:37:53Z",
       "type": "filed",
       "to": "backlog"
+    },
+    {
+      "ts": "2026-04-29T05:01:55Z",
+      "type": "moved",
+      "from": "backlog",
+      "to": "active"
+    },
+    {
+      "ts": "2026-04-29T05:13:16Z",
+      "type": "moved",
+      "from": "active",
+      "to": "done"
     }
   ]
 }
@@ -290,3 +302,58 @@ Do not expand this issue to decide how to fill:
 - bare year with missing month/day
 
 That work should be handled in a dedicated follow-up issue so occurrence-selection and missing-component filling do not get conflated again.
+
+## Progress
+
+### 2026-04-28 — Ambiguity presets implemented
+
+What landed:
+
+- Added parser-level ambiguity presets:
+  - `AmbiguityScheduling`
+  - `AmbiguityHistorical`
+  - `AmbiguityStrict`
+- Extended `Parser` with an `Ambiguity` field and routed `Parse` / `ParseInterval` through policy-aware resolution.
+- Added policy-aware resolver paths for:
+  - unsigned durations such as `5 hours`
+  - bare weekdays such as `monday`
+  - bare months such as `October`
+  - month/day without year such as `March 5`
+- Added bare month parsing support (`MONTH` handler), resolving month-only inputs to the first day of the chosen month.
+- Kept explicit forms such as `next Monday`, `last Friday`, and `2 hours ago` unchanged; presets only affect underspecified forms.
+- Added CLI support in `cmd/nldate` via `-ambiguity scheduling|historical|strict`.
+- Updated docs/examples for the new parser field and preset usage.
+
+Tests added/updated:
+
+- Added parser tests covering scheduling / historical / strict behavior.
+- Updated slot-level dispatch tests to reflect that bare weekday ambiguity is now tracked structurally instead of encoded as `DirectionNearest`.
+- Verified with `go test ./...`.
+
+Semantics after this landing:
+
+- Zero-value `Parser` defaults to scheduling-oriented ambiguity handling.
+- `monday` now resolves forward via `Parser{}` and `cmd/nldate` by default.
+- Historical mode resolves underspecified forms backward.
+- Strict mode rejects materially ambiguous underspecified forms instead of guessing.
+
+Still pending:
+
+- Missing-part fill behavior (`December 2015`, `2025`) remains out of scope here and is tracked separately in issue `d1df45ab`.
+
+## Resolution
+
+Implemented with the narrowed design discussed in this issue.
+
+What landed:
+
+- parser-level ambiguity presets for scheduling, historical, and strict behavior
+- policy-aware resolution for unsigned durations, bare weekdays, bare months, and month/day without year
+- bare month parsing support
+- `cmd/nldate` flag support for choosing ambiguity preset
+- parser and dispatch tests covering the new behavior
+
+Deviations from the original issue:
+
+- the implementation uses named ambiguity presets rather than exposing fine-grained public knobs
+- missing-part fill behavior was explicitly split out and deferred to issue `d1df45ab`

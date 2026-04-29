@@ -52,7 +52,7 @@ start, end, err := p.ParseInterval("last month")
 ```
 
 `Parser` is safe for concurrent use. Its zero value is valid and defaults to
-English, `time.Local`, and `time.Now`.
+English, `time.Local`, `time.Now`, and scheduling-oriented ambiguity handling.
 
 ```go
 // Custom reference time and timezone (useful in tests)
@@ -60,6 +60,13 @@ p := nowandlater.Parser{
     Now:      func() time.Time { return fixedNow },
     Location: time.UTC,
 }
+```
+
+```go
+// Ambiguity presets for underspecified input like "5 hours" or "Monday"
+p := nowandlater.Parser{Ambiguity: nowandlater.AmbiguityScheduling}
+p = nowandlater.Parser{Ambiguity: nowandlater.AmbiguityHistorical}
+p = nowandlater.Parser{Ambiguity: nowandlater.AmbiguityStrict}
 ```
 
 ## Language Support
@@ -221,4 +228,3 @@ Use `-unix` to print only the resolved Unix timestamp (useful for scripting).
 | `make fuzz`  | Run fuzz tests            |
 | `make bench` | Run benchmark tests       |
 | `make clean` | Clean up                  |
-

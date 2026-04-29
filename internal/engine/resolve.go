@@ -5,6 +5,23 @@ import (
 	"time"
 )
 
+// ResolvePolicy controls how underspecified forms are turned into concrete
+// dates and times.
+type ResolvePolicy struct {
+	ImplicitDurationDirection Direction
+	CalendarDirection         Direction
+	MonthDayDirection         Direction
+	RejectAmbiguous           bool
+}
+
+func legacyResolvePolicy() ResolvePolicy {
+	return ResolvePolicy{
+		ImplicitDurationDirection: DirectionFuture,
+		CalendarDirection:         DirectionNearest,
+		MonthDayDirection:         DirectionFuture,
+	}
+}
+
 // Resolve converts a ParsedDateSlots into a concrete time.Time using now as the
 // reference point for all relative expressions.
 //
@@ -15,6 +32,12 @@ import (
 // etc.) but does not affect the returned time — resolution is always to the
 // second. Callers can use Period to decide how to display or truncate the result.
 func Resolve(slots *ParsedDateSlots, now time.Time) (time.Time, error) {
+	return ResolveWithPolicy(slots, now, legacyResolvePolicy())
+}
+
+// ResolveWithPolicy converts a ParsedDateSlots into a concrete time.Time using
+// now as the reference point and policy to resolve underspecified forms.
+func ResolveWithPolicy(slots *ParsedDateSlots, now time.Time, policy ResolvePolicy) (time.Time, error) {
 	loc := now.Location()
 	if slots.Location != nil {
 		loc = slots.Location
@@ -34,6 +57,16 @@ func Resolve(slots *ParsedDateSlots, now time.Time) (time.Time, error) {
 	// Produced by: handleAnchor, handleRelativeDelta, handlePrepIntegerUnit,
 	// handlePrepUnit, handleUnitModifier, handleAnchorPrep* variants.
 	case slots.DeltaSeconds != nil:
+		if slots.AmbiguousForm == AmbiguousImplicitDuration {
+			if policy.RejectAmbiguous {
+				return time.Time{}, fmt.Errorf("%w: relative duration %q needs an explicit modifier", ErrAmbiguous, describeSlots(slots))
+			}
+			base := now.Add(time.Duration(absInt(*slots.DeltaSeconds)*directionSign(policyDurationDirection(policy))) * time.Second)
+			if slots.Period <= PeriodHour && (slots.Hour != 0 || slots.Minute != 0) {
+				return applyTimePart(base, slots), nil
+			}
+			return base, nil
+		}
 		base := now.Add(time.Duration(*slots.DeltaSeconds) * time.Second)
 		// Apply a time-of-day only when one was explicitly expressed alongside
 		// the delta (e.g. "today at 9:30"). Period <= PeriodHour is necessary but
@@ -48,9 +81,14 @@ func Resolve(slots *ParsedDateSlots, now time.Time) (time.Time, error) {
 	// --- Weekday (with direction), optionally with a time-of-day ---
 	// Produced by: handleWeekday, handleDirectionWeekday, and withPrepTime variants.
 	case slots.Weekday != 0:
-		direction := DirectionNearest
-		if slots.Direction != 0 {
-			direction = slots.Direction
+		direction := slots.Direction
+		if slots.AmbiguousForm == AmbiguousBareWeekday {
+			if policy.RejectAmbiguous {
+				return time.Time{}, fmt.Errorf("%w: weekday %q needs an explicit direction", ErrAmbiguous, describeSlots(slots))
+			}
+			direction = policy.CalendarDirection
+		} else if direction == 0 {
+			direction = DirectionNearest
 		}
 		base := ResolveWeekday(slots.Weekday, direction, now)
 		if slots.Period <= PeriodHour {
@@ -82,7 +120,23 @@ func Resolve(slots *ParsedDateSlots, now time.Time) (time.Time, error) {
 	// --- Month + day (no year): "March 5", "April 10 at 3 PM" ---
 	// Produced by: handleMonthDay, handleDayMonth, and withPrepTime variants.
 	case slots.Month != 0 && slots.Day != 0:
-		return resolveMonthDay(slots.Month, slots.Day, slots, now)
+		if slots.AmbiguousForm == AmbiguousMonthDay {
+			if policy.RejectAmbiguous {
+				return time.Time{}, fmt.Errorf("%w: month/day %q needs an explicit year", ErrAmbiguous, describeSlots(slots))
+			}
+			return resolveMonthDay(slots.Month, slots.Day, slots, now, policy.MonthDayDirection)
+		}
+		return resolveMonthDay(slots.Month, slots.Day, slots, now, DirectionFuture)
+
+	// --- Month only: "October" ---
+	case slots.Month != 0:
+		if slots.AmbiguousForm == AmbiguousBareMonth {
+			if policy.RejectAmbiguous {
+				return time.Time{}, fmt.Errorf("%w: month %q needs an explicit year", ErrAmbiguous, describeSlots(slots))
+			}
+			return resolveMonthOnly(slots.Month, now, policy.CalendarDirection), nil
+		}
+		return resolveMonthOnly(slots.Month, now, DirectionFuture), nil
 
 	// --- Year only: "2026" ---
 	// Produced by: handleYear.
@@ -211,7 +265,7 @@ func resolveDirectionAnchor(direction Direction, anchor Period, now time.Time) (
 // resolveMonthDay resolves a month+day expression with no year, inferring the
 // year from now: uses the current year if the resulting time is after now,
 // otherwise advances to next year.
-func resolveMonthDay(month, day int, slots *ParsedDateSlots, now time.Time) (time.Time, error) {
+func resolveMonthDay(month, day int, slots *ParsedDateSlots, now time.Time, direction Direction) (time.Time, error) {
 	loc := now.Location()
 	h, m, s := 0, 0, 0
 	if slots.Period <= PeriodHour {
@@ -219,10 +273,32 @@ func resolveMonthDay(month, day int, slots *ParsedDateSlots, now time.Time) (tim
 	}
 	y := now.Year()
 	t := time.Date(y, time.Month(month), day, h, m, s, 0, loc)
+	if direction == DirectionPast {
+		if !t.Before(now) {
+			t = time.Date(y-1, time.Month(month), day, h, m, s, 0, loc)
+		}
+		return t, nil
+	}
 	if !t.After(now) {
 		t = time.Date(y+1, time.Month(month), day, h, m, s, 0, loc)
 	}
 	return t, nil
+}
+
+func resolveMonthOnly(month int, now time.Time, direction Direction) time.Time {
+	loc := now.Location()
+	y := now.Year()
+	t := time.Date(y, time.Month(month), 1, 0, 0, 0, 0, loc)
+	if direction == DirectionPast {
+		if !t.Before(startOfPeriod(now, PeriodMonth)) {
+			return time.Date(y-1, time.Month(month), 1, 0, 0, 0, 0, loc)
+		}
+		return t
+	}
+	if !t.After(now) {
+		return time.Date(y+1, time.Month(month), 1, 0, 0, 0, 0, loc)
+	}
+	return t
 }
 
 // ---------------------------------------------------------------------------
@@ -299,11 +375,53 @@ func EndOf(start time.Time, period Period) time.Time {
 //
 // end is the first moment after the period: end == EndOf(start, slots.Period).
 func ResolveInterval(slots *ParsedDateSlots, now time.Time) (start, end time.Time, err error) {
-	pt, err := Resolve(slots, now)
+	return ResolveIntervalWithPolicy(slots, now, legacyResolvePolicy())
+}
+
+// ResolveIntervalWithPolicy resolves slots to a half-open calendar interval
+// [start, end) using the supplied ambiguity policy.
+func ResolveIntervalWithPolicy(slots *ParsedDateSlots, now time.Time, policy ResolvePolicy) (start, end time.Time, err error) {
+	pt, err := ResolveWithPolicy(slots, now, policy)
 	if err != nil {
 		return
 	}
 	start = startOfPeriod(pt, slots.Period)
 	end = EndOf(start, slots.Period)
 	return
+}
+
+func policyDurationDirection(policy ResolvePolicy) Direction {
+	if policy.ImplicitDurationDirection == 0 {
+		return DirectionFuture
+	}
+	return policy.ImplicitDurationDirection
+}
+
+func directionSign(direction Direction) int {
+	if direction == DirectionPast {
+		return -1
+	}
+	return 1
+}
+
+func absInt(n int) int {
+	if n < 0 {
+		return -n
+	}
+	return n
+}
+
+func describeSlots(slots *ParsedDateSlots) string {
+	switch slots.AmbiguousForm {
+	case AmbiguousImplicitDuration:
+		return "unsigned duration"
+	case AmbiguousBareWeekday:
+		return slots.Weekday.String()
+	case AmbiguousBareMonth:
+		return time.Month(slots.Month).String()
+	case AmbiguousMonthDay:
+		return fmt.Sprintf("%s %d", time.Month(slots.Month), slots.Day)
+	default:
+		return "date expression"
+	}
 }

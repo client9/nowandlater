@@ -222,6 +222,18 @@ func (d Direction) String() string {
 	}
 }
 
+// AmbiguousForm records which underspecified input shape produced the slots.
+// It lets the resolver apply policy decisions without changing token meaning.
+type AmbiguousForm int
+
+const (
+	AmbiguousNone AmbiguousForm = iota
+	AmbiguousImplicitDuration
+	AmbiguousBareWeekday
+	AmbiguousBareMonth
+	AmbiguousMonthDay
+)
+
 // ParsedDateSlots holds the intermediate result of parsing a date/time string.
 // Zero values mean "not present in input". DeltaSeconds uses a pointer because
 // 0 is a valid delta ("now"/"today"). All other fields use value types with
@@ -265,4 +277,8 @@ type ParsedDateSlots struct {
 	// Defaults to PeriodDay when nothing finer or coarser is specified.
 	// Zero value (0) means unset.
 	Period Period
+
+	// AmbiguousForm identifies underspecified inputs whose final meaning depends
+	// on parser policy rather than explicit user wording.
+	AmbiguousForm AmbiguousForm
 }

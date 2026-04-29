@@ -20,6 +20,7 @@ type parseCase struct {
 	delta   *int
 	dir     Direction
 	period  Period
+	ambig   AmbiguousForm
 }
 
 var parseCases = []parseCase{
@@ -30,8 +31,8 @@ var parseCases = []parseCase{
 	{input: "yesterday", delta: new(-86400), period: PeriodDay},
 
 	// --- Weekday ---
-	{input: "Monday", weekday: WeekdayMonday, dir: DirectionNearest, period: PeriodDay},
-	{input: "Sunday", weekday: WeekdaySunday, dir: DirectionNearest, period: PeriodDay},
+	{input: "Monday", weekday: WeekdayMonday, period: PeriodDay, ambig: AmbiguousBareWeekday},
+	{input: "Sunday", weekday: WeekdaySunday, period: PeriodDay, ambig: AmbiguousBareWeekday},
 
 	// --- Direction + weekday ---
 	{input: "next Monday", weekday: WeekdayMonday, dir: DirectionFuture, period: PeriodDay},
@@ -81,6 +82,7 @@ var parseCases = []parseCase{
 
 	// --- Calendar: month name forms ---
 	{input: "March 5", month: 3, day: 5, period: PeriodDay},
+	{input: "October", month: 10, period: PeriodMonth, ambig: AmbiguousBareMonth},
 	{input: "January 21st", month: 1, day: 21, period: PeriodDay},
 	{input: "3rd of January", month: 1, day: 3, period: PeriodDay},
 	{input: "Dec 3rd 2026", year: 2026, month: 12, day: 3, period: PeriodDay},
@@ -166,9 +168,9 @@ var parseCases = []parseCase{
 	{input: "at 12 AM", hour: new(0), period: PeriodHour}, // midnight via 12-hour clock
 
 	// --- Weekday + time (withPrepTime) ---
-	{input: "Monday at 9:30", weekday: WeekdayMonday, dir: DirectionNearest, hour: new(9), minute: new(30), period: PeriodMinute},
-	{input: "Friday at 9:30 PM", weekday: WeekdayFriday, dir: DirectionNearest, hour: new(21), minute: new(30), period: PeriodMinute},
-	{input: "Saturday at 3 PM", weekday: WeekdaySaturday, dir: DirectionNearest, hour: new(15), period: PeriodHour},
+	{input: "Monday at 9:30", weekday: WeekdayMonday, hour: new(9), minute: new(30), period: PeriodMinute, ambig: AmbiguousBareWeekday},
+	{input: "Friday at 9:30 PM", weekday: WeekdayFriday, hour: new(21), minute: new(30), period: PeriodMinute, ambig: AmbiguousBareWeekday},
+	{input: "Saturday at 3 PM", weekday: WeekdaySaturday, hour: new(15), period: PeriodHour, ambig: AmbiguousBareWeekday},
 
 	// --- Direction + weekday + integer + AMPM ---
 	{input: "next Monday at 9 PM", weekday: WeekdayMonday, dir: DirectionFuture, hour: new(21), period: PeriodHour},
@@ -278,6 +280,9 @@ func TestParse(t *testing.T) {
 			}
 			if tc.period != 0 && got.Period != tc.period {
 				t.Errorf("Parse(%q).Period = %q, want %q", tc.input, got.Period, tc.period)
+			}
+			if tc.ambig != 0 && got.AmbiguousForm != tc.ambig {
+				t.Errorf("Parse(%q).AmbiguousForm = %v, want %v", tc.input, got.AmbiguousForm, tc.ambig)
 			}
 		})
 	}

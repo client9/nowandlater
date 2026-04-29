@@ -68,6 +68,7 @@ var handlers = map[string]Handler{
 	"MONTH UNIT YEAR PREP INTEGER AMPM": withPrepTime(handleMonthSecondDayYear),
 
 	// Calendar date: month-name forms
+	"MONTH":                                handleMonth,
 	"MONTH INTEGER":                        handleMonthDay,
 	"MONTH INTEGER TIME":                   withTrailingTime(handleMonthDay), // Go Stamp format
 	"INTEGER MONTH":                        handleDayMonth,

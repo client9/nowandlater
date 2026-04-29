@@ -25,6 +25,11 @@ type Parser struct {
 	// expressions ("tomorrow", "next week", etc.). If nil, time.Now is used.
 	// Set this to a fixed function for deterministic tests.
 	Now func() time.Time
+
+	// Ambiguity controls how underspecified inputs like "5 hours", "monday",
+	// or "March 5" are resolved. The zero value defaults to scheduling-oriented
+	// behaviour.
+	Ambiguity AmbiguityConfig
 }
 
 // Parse converts a natural-language date/time string into a time.Time.
@@ -45,7 +50,7 @@ func (p Parser) Parse(input string) (time.Time, error) {
 	if err != nil {
 		return time.Time{}, err
 	}
-	return engine.Resolve(slots, now)
+	return engine.ResolveWithPolicy(slots, now, p.Ambiguity.resolvePolicy())
 }
 
 // ParseInterval converts a natural-language date/time string into a
@@ -70,5 +75,5 @@ func (p Parser) ParseInterval(input string) (start, end time.Time, err error) {
 	if err != nil {
 		return
 	}
-	return engine.ResolveInterval(slots, now)
+	return engine.ResolveIntervalWithPolicy(slots, now, p.Ambiguity.resolvePolicy())
 }

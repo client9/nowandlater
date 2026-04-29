@@ -39,9 +39,9 @@ func handleAnchor(tokens []Token) (*ParsedDateSlots, error) {
 func handleWeekday(tokens []Token) (*ParsedDateSlots, error) {
 	toks := FilterFillers(tokens)
 	return &ParsedDateSlots{
-		Weekday:   toks[0].Value.(Weekday),
-		Direction: DirectionNearest,
-		Period:    PeriodDay,
+		Weekday:       toks[0].Value.(Weekday),
+		Period:        PeriodDay,
+		AmbiguousForm: AmbiguousBareWeekday,
 	}, nil
 }
 
@@ -104,9 +104,10 @@ func handleMonthDay(tokens []Token) (*ParsedDateSlots, error) {
 	toks := FilterFillers(tokens)
 	d := toks[1].Value.(int)
 	return &ParsedDateSlots{
-		Month:  int(toks[0].Value.(Month)),
-		Day:    d,
-		Period: PeriodDay,
+		Month:         int(toks[0].Value.(Month)),
+		Day:           d,
+		Period:        PeriodDay,
+		AmbiguousForm: AmbiguousMonthDay,
 	}, nil
 }
 
@@ -119,9 +120,21 @@ func handleDayMonth(tokens []Token) (*ParsedDateSlots, error) {
 	toks := FilterFillers(tokens)
 	d := toks[0].Value.(int)
 	return &ParsedDateSlots{
-		Month:  int(toks[1].Value.(Month)),
-		Day:    d,
-		Period: PeriodDay,
+		Month:         int(toks[1].Value.(Month)),
+		Day:           d,
+		Period:        PeriodDay,
+		AmbiguousForm: AmbiguousMonthDay,
+	}, nil
+}
+
+// handleMonth handles: MONTH
+// Example: "October"
+func handleMonth(tokens []Token) (*ParsedDateSlots, error) {
+	toks := FilterFillers(tokens)
+	return &ParsedDateSlots{
+		Month:         int(toks[0].Value.(Month)),
+		Period:        PeriodMonth,
+		AmbiguousForm: AmbiguousBareMonth,
 	}, nil
 }
 
@@ -215,8 +228,9 @@ func handleIntegerUnit(tokens []Token) (*ParsedDateSlots, error) {
 	period := toks[1].Value.(Period)
 	secs := periodToSeconds[period]
 	return &ParsedDateSlots{
-		DeltaSeconds: new(n * secs),
-		Period:       period,
+		DeltaSeconds:  new(n * secs),
+		Period:        period,
+		AmbiguousForm: AmbiguousImplicitDuration,
 	}, nil
 }
 
@@ -231,7 +245,11 @@ func handleDecimalUnit(tokens []Token) (*ParsedDateSlots, error) {
 	toks := FilterFillers(tokens)
 	n := toks[0].Value.(float64)
 	period := toks[1].Value.(Period)
-	return &ParsedDateSlots{DeltaSeconds: new(decimalUnitSeconds(n, period)), Period: period}, nil
+	return &ParsedDateSlots{
+		DeltaSeconds:  new(decimalUnitSeconds(n, period)),
+		Period:        period,
+		AmbiguousForm: AmbiguousImplicitDuration,
+	}, nil
 }
 
 // handlePrepDecimalUnit handles: PREP DECIMAL UNIT
@@ -306,7 +324,11 @@ func handlePrepIntegerUnitIntegerUnit(tokens []Token) (*ParsedDateSlots, error) 
 func handleIntegerUnitIntegerUnit(tokens []Token) (*ParsedDateSlots, error) {
 	toks := FilterFillers(tokens)
 	secs, period := sumTwoUnits(toks, 0)
-	return &ParsedDateSlots{DeltaSeconds: new(secs), Period: period}, nil
+	return &ParsedDateSlots{
+		DeltaSeconds:  new(secs),
+		Period:        period,
+		AmbiguousForm: AmbiguousImplicitDuration,
+	}, nil
 }
 
 // handleIntegerUnitIntegerUnitModifier handles: INTEGER UNIT INTEGER UNIT MODIFIER
