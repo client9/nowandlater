@@ -31,8 +31,11 @@ func TestResolveTimezone(t *testing.T) {
 		{"9:30 AM UTC", time.Date(2026, 3, 22, 9, 30, 0, 0, time.UTC)},
 		// Weekday + time in a named zone
 		{"next Monday at 9 AM PST", time.Date(2026, 3, 23, 9, 0, 0, 0, pst)},
-		// Full date + time with Z suffix (ISO 8601)
+		// Full date + time with Z suffix (ISO 8601 dashed)
 		{"2026-12-04T09:30:00Z", time.Date(2026, 12, 4, 9, 30, 0, 0, time.UTC)},
+		// Compact ISO 8601 UTC (YYYYMMDDThhmmssZ)
+		{"20260429T030444Z", time.Date(2026, 4, 29, 3, 4, 44, 0, time.UTC)},
+		{"20260429t030444z", time.Date(2026, 4, 29, 3, 4, 44, 0, time.UTC)},
 		// Full date + time with numeric offset glued
 		{"2026-12-04T09:30:00-07:00",
 			time.Date(2026, 12, 4, 9, 30, 0, 0, time.FixedZone("-07:00", -7*3600))},

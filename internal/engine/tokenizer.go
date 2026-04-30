@@ -169,6 +169,7 @@ func Signature(tokens []Token) string {
 
 // preprocess performs surface-level substitutions that simplify the tokenizer:
 //   - lowercases the input
+//   - expands compact ISO 8601 ("20260429T030444Z") to dashed form ("2026-04-29t03:04:44z")
 //   - replaces the ISO 8601 T date/time separator (digit T digit) with a space
 //   - replaces time-dot notation when followed by AM/PM: "7.15pm" → "7:15pm"
 //
@@ -176,6 +177,15 @@ func Signature(tokens []Token) string {
 // expressed as Words entries and handled by the tokenizer's phrase/word lookup.
 func preprocess(s string, lang *Lang) string {
 	s = strings.ToLower(s)
+
+	// Compact ISO 8601 UTC: "20260429T030444Z" (16 chars, Z suffix required).
+	// Rewrite to dashed form so the T-separator pass below produces the standard
+	// "YEAR INTEGER INTEGER TIME TIMEZONE" token sequence.
+	if len(s) == 16 && s[8] == 't' && s[15] == 'z' &&
+		allDigits(s[0:8]) && allDigits(s[9:15]) {
+		s = s[0:4] + "-" + s[4:6] + "-" + s[6:8] +
+			"t" + s[9:11] + ":" + s[11:13] + ":" + s[13:15] + "z"
+	}
 
 	// ISO 8601 T separator: "2026-12-04T09:30:00" → "2026-12-04 09:30:00".
 	// Replace any 't' that is immediately preceded and followed by a digit.
