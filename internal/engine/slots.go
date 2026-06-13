@@ -241,6 +241,16 @@ const (
 //
 // Modeled on libc struct tm with three additions: delta, direction, and anchor.
 type ParsedDateSlots struct {
+
+	// Relative offset from now, pre-normalized to seconds.
+	// e.g. "3 days ago" → -259200
+	// nil means no relative delta was expressed.
+	DeltaSeconds *int
+
+	// Location is the timezone parsed from the input (e.g. "EST", "+05:30", "Z").
+	// nil means no timezone was specified; the resolver uses now.Location().
+	Location *time.Location
+
 	// Absolute fields (0 = not mentioned in input, except Weekday/Hour/Minute/Second)
 	Year    int     // full year, e.g. 2026; 0 = not specified
 	Month   int     // 1–12; 0 = not specified
@@ -249,11 +259,6 @@ type ParsedDateSlots struct {
 	Hour    int     // 0–23 (24-hour); 0 = unset or midnight — use Period to distinguish
 	Minute  int     // 0–59
 	Second  int     // 0–59
-
-	// Relative offset from now, pre-normalized to seconds.
-	// e.g. "3 days ago" → -259200
-	// nil means no relative delta was expressed.
-	DeltaSeconds *int
 
 	// UnixTime holds an absolute Unix timestamp (seconds since 1970-01-01 UTC).
 	// When set, all other fields are ignored by Resolve.
@@ -268,10 +273,6 @@ type ParsedDateSlots struct {
 	// Valid values: PeriodDay | PeriodWeek | PeriodMonth | PeriodYear.
 	// Zero value means no anchor was expressed.
 	Anchor Period
-
-	// Location is the timezone parsed from the input (e.g. "EST", "+05:30", "Z").
-	// nil means no timezone was specified; the resolver uses now.Location().
-	Location *time.Location
 
 	// Period is the coarsest time component present in the input.
 	// Defaults to PeriodDay when nothing finer or coarser is specified.

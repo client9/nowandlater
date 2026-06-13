@@ -80,8 +80,8 @@ func (t TokenType) String() string {
 // Value holds a typed semantic value for word tokens, or a raw string for
 // numeric/timezone tokens. See WordEntry for the type convention per TokenType.
 type Token struct {
-	Type  TokenType
 	Value any
+	Type  TokenType
 }
 
 // Tokenize preprocesses and normalizes input, splits on whitespace, classifies

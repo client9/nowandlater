@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Reorder structs to save memory using [betteralign](https://github.com/dkorunic/betteralign/)
+
 ## [0.9.0] - 2026-04-28
 
 Initial public pre-release. The library API is considered stable; documentation

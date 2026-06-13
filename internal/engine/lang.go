@@ -49,8 +49,8 @@ const MaxPhraseWords = 3
 // Raw/numeric tokens (TokenYear, TokenTime, TokenInteger, TokenTimezone, etc.)
 // carry string values and are created directly by the tokenizer, not via WordEntry.
 type WordEntry struct {
-	Type  TokenType
 	Value any // typed semantic value — see above
+	Type  TokenType
 }
 
 // Lang holds all language-specific tokenizer rules.
@@ -72,12 +72,6 @@ type Lang struct {
 	//   - multi-word numbers:     "twenty first": {TokenInteger, "21"}
 	Words map[string]WordEntry
 
-	// OrdinalSuffixes lists suffixes to strip from trailing digit sequences
-	// during normalization. All entries must be lowercase.
-	// Example English: ["st", "nd", "rd", "th"] strips "1st"→"1", "3rd"→"3".
-	// Example French:  ["er", "re", "me", "ème"] — supports multibyte suffixes.
-	OrdinalSuffixes []string
-
 	// TokenizerFunc is an optional custom tokenizer. When non-nil it replaces the
 	// default whitespace-splitting tokenizer entirely. Use for languages (e.g.
 	// Japanese) that do not use spaces as word delimiters. The function receives
@@ -90,12 +84,6 @@ type Lang struct {
 	// Use this to override ambiguous abbreviations (e.g. IST) or add custom zones.
 	Timezones map[string]*time.Location
 
-	// DateOrder controls how ambiguous all-numeric dates are interpreted.
-	// It applies to the INTEGER INTEGER YEAR signature ("02/03/2016" etc.).
-	// The zero value MDY matches US English convention.
-	// Set to DMY for European/Latin-American languages, YMD for ISO-style input.
-	DateOrder DateOrder
-
 	// Handlers provides language-specific handler overrides and additions.
 	// Parse checks Handlers first; if the signature is not found here, it falls
 	// back to the global handlers map (which covers language-neutral patterns:
@@ -105,4 +93,16 @@ type Lang struct {
 	//   "WEEKDAY DIRECTION" → handleWeekdayDirection  (French "lundi prochain")
 	// Leave nil to use only the global handlers (correct for English).
 	Handlers map[string]Handler
+
+	// OrdinalSuffixes lists suffixes to strip from trailing digit sequences
+	// during normalization. All entries must be lowercase.
+	// Example English: ["st", "nd", "rd", "th"] strips "1st"→"1", "3rd"→"3".
+	// Example French:  ["er", "re", "me", "ème"] — supports multibyte suffixes.
+	OrdinalSuffixes []string
+
+	// DateOrder controls how ambiguous all-numeric dates are interpreted.
+	// It applies to the INTEGER INTEGER YEAR signature ("02/03/2016" etc.).
+	// The zero value MDY matches US English convention.
+	// Set to DMY for European/Latin-American languages, YMD for ISO-style input.
+	DateOrder DateOrder
 }
