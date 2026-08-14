@@ -2,10 +2,11 @@ package tests
 
 import (
 	"errors"
-	. "github.com/client9/nowandlater/internal/engine"
-	. "github.com/client9/nowandlater/languages"
 	"testing"
 	"time"
+
+	. "github.com/client9/nowandlater/internal/engine"
+	. "github.com/client9/nowandlater/languages"
 )
 
 // spNow is the fixed reference time for LangEs resolver tests.

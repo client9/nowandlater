@@ -1,10 +1,11 @@
 package tests
 
 import (
-	. "github.com/client9/nowandlater/internal/engine"
-	. "github.com/client9/nowandlater/languages"
 	"testing"
 	"time"
+
+	. "github.com/client9/nowandlater/internal/engine"
+	. "github.com/client9/nowandlater/languages"
 )
 
 // resolveNow is the fixed reference time used across all resolver tests.

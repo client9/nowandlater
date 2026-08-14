@@ -1,9 +1,10 @@
 package nowandlater
 
 import (
+	"strings"
+
 	"github.com/client9/nowandlater/internal/engine"
 	"github.com/client9/nowandlater/languages"
-	"strings"
 )
 
 type Lang = engine.Lang

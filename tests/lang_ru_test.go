@@ -1,10 +1,11 @@
 package tests
 
 import (
-	. "github.com/client9/nowandlater/internal/engine"
-	. "github.com/client9/nowandlater/languages"
 	"testing"
 	"time"
+
+	. "github.com/client9/nowandlater/internal/engine"
+	. "github.com/client9/nowandlater/languages"
 )
 
 // ruNow is the fixed reference time for LangRu resolver tests.
