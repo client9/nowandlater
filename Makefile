@@ -13,6 +13,13 @@ build: ## build
 test: ## test
 	go test ./...
 
+.PHONY: version
+version: ## print OS, Go, and golangci versions
+	@echo $$0
+	@uname -a
+	@go version
+	@golangci-lint --version
+
 .PHONY: clean
 clean: ## cleanup
 	rm -f nldate
@@ -50,3 +57,7 @@ fuzz: ## fuzz test
 .PHONY: bench
 bench: ## benchmarks
 	go test -bench=. -benchmem -benchtime=3s ./...
+
+.PHONY: env
+env: ## set up local environment
+	curl -sSfL https://golangci-lint.run/install.sh | sh -s -- -b $(go env GOPATH)/bin v2.13.1
