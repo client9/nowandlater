@@ -16,21 +16,33 @@ on:
   pull_request:
     branches: [ "main" ]
 
+
 jobs:
 
   build:
     runs-on: ubuntu-latest
+
+    strategy:
+      # Report both versions rather than cancelling the matrix on the first
+      # failure: knowing whether a break is version-specific is the point.
+      fail-fast: false
+      matrix:
+        go-version: ['1.26', 'stable']
+
+    name: build (go ${{ matrix.go-version }})
+
     steps:
     - uses: actions/checkout@v7
 
     - name: Set up Go
       uses: actions/setup-go@v7
       with:
-        go-version: '1.26'
+        go-version: ${{ matrix.go-version }}
 
     - name: Install golangci-lint
       uses: golangci/golangci-lint-action@v9
       with:
+          version: latest
           install-only: true
 
     - name: Version
